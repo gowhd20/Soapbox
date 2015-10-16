@@ -1,0 +1,169 @@
+var _MSG_INTRODUCTION    = "MSG_Action_Introduction";
+var FRAMEWORK_UI;
+var TOKBOX_VIDEO_WINDOW;
+var _SPEECH_BEGIN			= "speech_started";
+var _SPEECH_END 			= "speech_ended";
+
+var WebRocketApplication = IApplication.$extend(
+{
+    __init__ : function()
+    {
+        this.$super("soapbox_virtual");
+
+        //this.initUi();
+		console.log("client connected");
+		console.log(this.entity);
+		console.log(this);
+		
+		var foothold = Tundra.scene.entityByName("soapbox_footbold");
+		
+        // Listen for client/server sent entity actions
+        this.entity.onEntityAction(this, this.onEntityAction);
+		foothold.onEntityAction(this, this.onEntityAction);
+
+        // Introduce client app to the server
+        this.entity.exec(EntityAction.Server, _MSG_INTRODUCTION);
+		//this.entity.exec(EntityAction.Local, _SPEECH_BEGIN);
+		//var jsonData = Tundra.asset.requestAsset("hotspots.json");
+		//jsonData.onCompleted(this, this.haejongAsset);
+		
+		var onRenderFcts = [];
+		//var cameraEnt = Tundra.client.cameraApplications[0].application.cameraEntity;		
+		
+		console.log(Tundra.client);
+		//console.log(Tundra.client.APIs[2].messageHandlers[1].log.class);
+		//var test = new Tundra.client.APIs[5].loadScript("loadScript.js");
+		/////////////////// webRTC //////////////////////////////
+		
+		var video = document.createElement('video');
+		this.video = video;
+		video.width = 320;
+		video.height = 240;
+		video.autoplay = false;
+		video.loop = true;
+		
+		if( navigator.webkitGetUserMedia ){
+			navigator.webkitGetUserMedia({video:true}, function(stream){
+				video.src	= URL.createObjectURL(stream);
+			}, function(error){
+				alert('you got no WebRTC webcam');
+			});		
+		}else if(navigator.mozGetUserMedia){
+			navigator.mozGetUserMedia({video:true}, function(stream){
+				video.src	= URL.createObjectURL(stream);
+			}, function(error){
+				alert('you got no WebRTC webcam');
+			});				
+		}else	
+		console.assert(false)
+	
+	
+		var texture = new THREE.Texture(video);
+		this.texture = texture;
+		onRenderFcts.push(function(){
+			webRocketApplication.videoTextureUpdate();
+		});
+		
+	
+		///////////////////////////////////////////////////////
+		
+
+
+		
+		console.log(foothold, Tundra.scene);
+		var geometry = new THREE.BoxGeometry( 4, 4, 4 );
+		var material = new THREE.MeshBasicMaterial( { map: texture} );
+
+		var cubeMesh = new THREE.Mesh( geometry, material );
+		cubeMesh.position.x = 61;
+		cubeMesh.position.y = 9.59;
+		cubeMesh.position.z = -44;
+		
+		
+		var threeGroup = new THREE.Object3D();
+		threeGroup.add(cubeMesh);
+		Tundra.renderer.scene.add(threeGroup);
+		
+		//cameraEnt.placeable.lookAt(cubeMesh.position);
+		//console.log(cubeMesh.position);
+		console.log(cubeMesh);
+		
+		requestAnimationFrame(function animation(){
+			onRenderFcts.forEach(function(onRenderFcts){
+				onRenderFcts();
+			})
+			requestAnimationFrame(animation);
+		})
+
+    },
+	
+	videoTextureUpdate : function(){
+		if( this.video.readyState !== this.video.HAVE_ENOUGH_DATA )	
+			return;
+		this.texture.needsUpdate	= true;			
+	},
+	
+    onEntityAction : function (entityAction)
+    {
+		this.log.info(entityAction);
+        if (entityAction.name === _MSG_INTRODUCTION)
+        {
+            this.log.info("Server messaged it is ready");
+        }
+		else if (entityAction.name === _SPEECH_BEGIN)
+        {
+            this.log.info("speech started");
+			this.video.play();
+        }
+		else if (entityAction.name === _SPEECH_END)
+        {
+            this.log.info("speech ended");
+			this.video.pause();
+        }
+    },
+	
+    haejongAsset : function (asset)
+    {
+		
+		var entity_soapHolder = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
+		var entity_hotspot = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
+		//var entity_soapbox = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
+		
+		entity_soapHolder.name = "soapbox_foothold";
+		entity_hotspot.name = "hotpot";
+		//entity_soapbox.name = "soapbox";
+		
+		entity_soapHolder.mesh.meshRef = "local://soapbox_foothold.mesh";
+		entity_soapHolder.mesh.materialRefs = ["local://soapbox_foothold.material"];
+		
+		//entity_soapbox.mesh.meshRef = "local://soapbox.mesh";
+		//entity_soapbox.mesh.materialRefs = ["local://soapbox.material"];
+
+		entity_hotspot.mesh.meshRef = "local://Cube.001.mesh";
+		entity_hotspot.mesh.materialRefs = [			
+			"local://sides.material",
+			"local://front.material",
+			"local://back.material"];
+
+		entity_soapHolder.placeable.setPosition(new THREE.Vector3(66.21,9.59,-44));
+		entity_soapHolder.placeable.setScale(new THREE.Vector3(1, 1, 1));
+		entity_soapHolder.placeable.setRotation(new THREE.Vector3(0, 52, 0));
+					
+		//entity_soapbox.placeable.setPosition(new THREE.Vector3(66.20,8.59,-44.36));
+		//entity_soapbox.placeable.setScale(new THREE.Vector3(1, 1, 1));
+		//entity_soapbox.placeable.setRotation(new THREE.Vector3(0, 52, 0));
+		
+		entity_hotspot.placeable.setPosition(new THREE.Vector3(70.2041016,7.68280506,-44.3602066));
+		entity_hotspot.placeable.setScale(new THREE.Vector3(1, 1, 1));
+		entity_hotspot.placeable.setRotation(new THREE.Vector3(0, 52, 0));
+		console.log(entity_soapHolder);	    
+		
+	}
+
+  
+
+});
+
+
+// Start the application by instantiating it
+var webRocketApplication = new WebRocketApplication();

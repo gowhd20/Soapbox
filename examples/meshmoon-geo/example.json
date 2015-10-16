@@ -1,0 +1,13 @@
+{
+    "Name": "Meshmoon GEO",
+    "Description": "Visualize geographic data",
+    "Txml": "scene.txml",
+    "Img": "scene.jpg",
+    "SourceDir": "",
+    "SourceWebRocket": "app-web-rocket.webrocketjs",
+    "SourceRocket": "",
+    "CompatibleWebRocket": true,
+    "CompatibleRocket": false,
+    "CompatibleServer": false,
+    "Layers": []
+}

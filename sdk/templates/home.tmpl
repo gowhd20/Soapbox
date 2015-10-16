@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <title>Meshmoon SDK</title>
+
+  <!-- Scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+  
+  <script src="sdk/js/main.js"></script>
+  <script src="sdk/js/classy.js"></script>
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500|Source+Code+Pro:400,500,700" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="sdk/css/bootstrap.min.css">
+  <link rel="stylesheet" href="sdk/css/main.css">
+
+  <!-- Polyfill for non WebComponent compliant browsers -->
+  <script src="sdk/bower/webcomponentsjs/webcomponents.min.js"></script>
+
+  <!-- Polymer -->
+  <link rel="import" href="sdk/bower/core-icons/core-icons.html">
+
+  <link rel="import" href="sdk/bower/paper-shadow/paper-shadow.html">
+  <link rel="import" href="sdk/bower/paper-toast/paper-toast.html">
+
+  <link rel="import" href="sdk/components/sdk-toolbar.html">
+  <link rel="import" href="sdk/components/sdk-application.html">
+  <link rel="import" href="sdk/components/sdk-browser.html">
+</head>
+<body unresolved fullbleed touch-action="auto">
+
+  <sdk-toolbar root="{{.Root}}" username="{{if .User}}{{.User.GetName}}{{end}}" avatarurl="{{if .User}}{{.User.GetPictureUrl}}{{end}}"></sdk-toolbar>
+
+  <div class="container">
+
+    <section>
+      <paper-shadow z="1" animated="true">
+        <div class="section-title" align="center">Examples</div>
+        
+        <div class="section-stats" align="center">
+          <div layout horizontal center center-jusitified>
+            <core-icon icon="apps" class="stats-icon"></core-icon>
+            <div flex>{{ len .Examples }}</div>
+          </div>
+        </div>
+
+        <div class="section-content">
+          <div class="examples-sidearea"></div>
+          {{ range .Examples }}
+            <sdk-application
+              name="{{.Name}}"
+              description="{{.Description}}"
+              txml="{{.Txml}}"
+              img="{{.Img}}"
+              compatibleWebRocket="{{.CompatibleWebRocket}}"
+              compatibleRocket="{{.CompatibleRocket}}"
+              compatibleServer="{{.CompatibleServer}}"
+              sourceDir="{{.SourceDir}}"
+              sourceWebRocket="{{.SourceWebRocket}}"
+              sourceRocket="{{.SourceRocket}}"
+              ></sdk-application>
+          {{ end }}
+        </div>
+      </paper-shadow>
+    </section>
+
+  </div>
+
+  <paper-toast id="sdk-toast" duration="8000" onclick="this.dismiss();"></paper-toast>
+  <sdk-browser id="sdk-browser"></sdk-browser>
+
+  <script type="text/javascript">
+    var numApps = $("sdk-application").length;
+    $("sdk-application").each(function(index, elem) {
+      if (index >= numApps-1)
+        return;
+      $(this).after($("<div/>", { class : "examples-separator" } ));
+    });
+  </script>
+</body>
+</html>

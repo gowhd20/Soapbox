@@ -1,0 +1,152 @@
+
+<!-- Polymer -->
+<link rel="import" href="../bower/polymer/polymer.html">
+
+<!-- Deps -->
+<link rel="import" href="../bower/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower/core-item/core-item.html">
+<link rel="import" href="../bower/core-transition/core-transition.html">
+<link rel="import" href="../bower/core-overlay/core-overlay.html">
+
+<link rel="import" href="../bower/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower/paper-button/paper-button.html">
+<link rel="import" href="../bower/paper-input/paper-input.html">
+<link rel="import" href="../bower/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../components/sdk-space-list.html">
+
+<polymer-element name="sdk-create-application-dialog" constructor="SDKCreateApplicationDialog">
+  <!-- HTML -->
+  <template>
+    
+    <link href="meshmoon-sdk.css" rel="stylesheet">
+
+    <paper-dialog id="dialog" 
+      heading=""
+      backdrop="true"
+      layered="true"
+      opened="true"
+      autoCloseDisabled="true"
+      transition="paper-dialog-transition-center" style="width: 800px">
+        <div layout horizontal>
+          <div layout vertical>
+            <!--<div style="font-size: 18px; font-weight: 500; text-transform: uppercase; color: rgb(8,149,195);">Name</div>-->
+            <paper-input id="inputname" label="Name" required value="{{name}}" validate="^[a-zA-Z0-9_\- ]*$" error="Name must be set" style="font-size: 18px; font-weight: 400; width: 300px;"></paper-input>
+
+            <!--<div style="font-size: 18px; font-weight: 500; text-transform: uppercase; color: rgb(8,149,195);">Description</div>-->
+            <paper-input id="inputdesc" label="Description" value="{{description}}" style="font-size: 18px; font-weight: 400;  width: 300px;"></paper-input>
+            
+            <div style="font-size: 18px; font-weight: 500; margin-top: 20px; text-transform: uppercase; color: rgb(8,149,195);">Application logic in</div>
+            <paper-checkbox id="checkboxwebrocket" label="Web Rocket" checked="{{compatibleWebRocket}}" style="margin-left: 25px; margin-top: 15px;"></paper-checkbox>
+            <paper-checkbox id="checkboxrocket" label="Rocket" checked="{{compatibleRocket}}" style="margin-left: 25px; margin-top: 25px;"></paper-checkbox>
+            <paper-checkbox id="checkboxserver" label="Server" checked="{{compatibleServer}}" style="margin-left: 25px; margin-top: 25px;"></paper-checkbox>
+          </div>
+          <div style="margin-right: 60px"></div>
+          <div layout vertical flex>
+            <div style="font-size: 18px; font-weight: 500; text-transform: uppercase; color: rgb(8,149,195); margin-bottom: 5px;">Layers</div>
+            <sdk-space-list id="spacelist" spaces="{{ administratedSpaces }}" height="350" flex></sdk-space-list>
+          </div>
+        </div>
+        <div id="errormsg" style="padding-top: 40px; padding-bottom: 20px; font-size: 17px; color: red;"></div>
+
+        <div layout horizontal center end-justified>
+          <paper-button id="buttoncancel" raisedButton class="hover colored" style="min-width: 110px; margin-right: 10px;">Cancel</paper-button>
+          <paper-button id="buttoncreate" raisedButton class="hover colored" style="min-width: 110px; background: rgb(8,149,195); color: #fff;" default>Create</paper-button>
+        </div>
+    </paper-dialog>
+
+  </template>
+
+  <!-- Script -->
+  <script>
+    Polymer({
+        publish :
+        {
+            name        : "",
+            description : "",
+
+            txml        : "",
+            img         : "",
+
+            sourceDir       : "",
+            sourceWebRocket : "",
+            sourceRocket    : "",
+
+            administratedSpaces : [],
+            
+            compatibleWebRocket : true,
+            compatibleRocket    : true,
+            compatibleServer    : true
+        },
+
+        ready : function() 
+        {
+            $(this.$.buttoncreate).click(this.create.bind(this));           
+            $(this.$.buttoncancel).click(this.cancel.bind(this));
+
+            this.$.inputname.addEventListener("input-invalid", function(e, e2, e3) {
+              if (e.detail.value !== "")
+                  this.$.inputname.error = "Invalid characters, use alphanumerics.";
+              else
+                  this.$.inputname.error = "Name must be set"
+            }.bind(this));
+        },
+
+        create : function()
+        {
+            if (this.$.inputname.invalid === true)
+                return;
+            if (!this.compatibleWebRocket && !this.compatibleRocket && !this.compatibleServer)
+            {
+                $(this.$.errormsg).text("No application logic units selected");
+                return;
+            }
+            $(this.$.errormsg).text("");
+
+            $.ajax({
+                type : "POST",
+                url  : "/api/create/app",
+                contentType : "application/json",
+                data : JSON.stringify(
+                {
+                    Name                : this.name,
+                    Description         : this.description,
+                    
+                    CompatibleWebRocket : this.compatibleWebRocket,
+                    CompatibleRocket    : this.compatibleRocket,
+                    CompatibleServer    : this.compatibleServer,
+
+                    Layers : this.selectedSpaces()
+                }),
+                context : this,
+                success : function(data, textStatus, jqXHR)
+                {
+                    showToast("Application " + this.name + " created");
+                    this.close(true);
+                },
+                error : function(jqXHR, textStatus, errorThrown)
+                {
+                    showToast("Failed to create application");
+                    $(this.$.errormsg).text(jqXHR.responseText);
+                }
+            });
+        },
+
+        cancel : function()
+        {
+            this.close(false);
+        },
+
+        close : function(created)
+        {
+            this.$.dialog.opened = false;
+            this.fire("closed", { created : created });
+        },
+
+        selectedSpaces : function()
+        {
+            return this.$.spacelist.selected();
+        }
+    });
+  </script>
+</polymer-element>

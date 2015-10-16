@@ -1,0 +1,263 @@
+
+<!-- Polymer -->
+<link rel="import" href="../bower/polymer/polymer.html">
+
+<!-- Deps -->
+<link rel="import" href="../bower/core-icons/core-icons.html">
+<link rel="import" href="../bower/core-icon-button/core-icon-button.html">
+<link rel="import" href="../bower/core-tooltip/core-tooltip.html">
+<link rel="import" href="../bower/paper-button/paper-button.html">
+<link rel="import" href="../bower/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower/paper-ripple/paper-ripple.html">
+
+<polymer-element name="sdk-application" constructor="SDKApplication">
+  <!-- HTML -->
+  <template>
+    
+    <link href="meshmoon-sdk.css" rel="stylesheet">
+    <style>
+    paper-ripple {
+      color: #114E0B;
+    }
+    </style>
+
+    <div layout horizontal>
+        <div id="appimg" style="background-image: url({{img}});" class="app-img">
+            <paper-ripple id="ripple" class="app-img" style="position: absolute; border: 0px;"></paper-ripple>
+
+            <!-- Badges -->
+            <div layout vertical style="height: inherit;">
+                <div flex></div>
+                <div layout horizontal wrap style="">
+                    <template bind if="{{ compatibleServer }}">
+                        <div flex class="badge badge-server">
+                            <template bind if="{{ layerCount }}">
+                                <span style="color: #C6C6C6;">{{ layerCount }} layers </span><span style="color: rgba(255,255,255,0.2);">|</span>
+                            </template>
+                        server</div>
+                    </template>
+                    <template bind if="{{ compatibleRocket }}">
+                        <div flex class="badge badge-rocket">rocket</div>
+                    </template>
+                    <template bind if="{{ compatibleWebRocket }}">
+                        <div flex class="badge badge-webrocket">web rocket</div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <div layout vertical flex>
+            <!-- Name and source dir link -->
+            <div layout horizontal center>
+                <div class="app-title" flex>{{name}}</div>
+                <core-tooltip large position="left" class="fancy">
+                    <div tip>Browse example</div>
+                    <core-icon-button sidebar title id="show-app-source" icon="polymer"></core-icon-button>
+                </core-tooltip>
+            </div>
+
+            <!-- Expanding description -->      
+            <div style="margin-right: 50px;" flex>{{description}}</div>
+            
+            <!-- Run and source code button depending on what is supported by the app -->
+            <template bind if="{{ compatibleWebRocket }}">
+                <div layout horizontal center>
+                    <paper-button id="run-web-rocket-button" raisedButton class="colored hover app-run" flex>
+                        <core-icon icon="tab"></core-icon>
+                        <div flex>run web rocket</div>
+                    </paper-button>
+                    <core-tooltip large position="left" class="fancy" label="Inspect Web Rocket script source code" style="visibility: {{ !sourceWebRocket ? 'hidden' : 'visible' }};">
+                        <core-icon-button sidebar id="show-web-rocket-source" icon="polymer" style="margin-left: 10px;"></core-icon-button>
+                    </core-tooltip>                    
+                </div>
+            </template>
+            <div style="margin-top: 10px;"></div>
+            <template bind if="{{ compatibleRocket }}">
+                <div layout horizontal center>
+                    <paper-button id="run-rocket-button" raisedButton class="colored hover app-run" flex>
+                        <core-icon icon="launch"></core-icon>
+                        <div flex>run rocket</div>
+                    </paper-button>
+                    <core-tooltip large position="left" class="fancy" label="Inspect Rocket script source code" style="visibility: {{ !sourceRocket ? 'hidden' : 'visible' }};">
+                        <core-icon-button sidebar id="show-rocket-source" icon="polymer" style="margin-left: 10px;"></core-icon-button>
+                    </core-tooltip>
+                </div>
+            </template>
+            <template bind if="{{ !compatibleWebRocket && !compatibleRocket }}">
+                <div layout horizontal center>
+                    <paper-button id="run-server-button" raisedButton class="colored hover app-run" flex>
+                        <core-icon icon="launch"></core-icon>
+                        <div flex>run server</div>
+                    </paper-button>
+                    <core-tooltip large position="left" class="fancy" label="Inspect Server script source code" style="visibility: {{ !sourceRocket ? 'hidden' : 'visible' }};">
+                        <core-icon-button sidebar id="show-rocket-source" icon="polymer" style="margin-left: 10px;"></core-icon-button>
+                    </core-tooltip>
+                </div>
+            </template>
+
+            <!-- Editable aka user created app -->
+            <template bind if="{{ editable }}">
+                <div layout horizontal center start-justified style="margin-right: 50px; margin-top: 10px;">
+                    <paper-button id="control-edit-button" raisedButton class="colored colored-control hover nomargin" flex>Dev</paper-button>
+                    <paper-button id="control-remove-button" raisedButton class="colored colored-control hover-red nomargin" style="margin-right:0px;" flex>Remove</paper-button>
+                </div>
+            </template>
+        </div>
+    </div>
+  </template>
+
+  <!-- Script -->
+  <script>
+    Polymer({
+        publish :
+        {
+            name        : "",
+            description : "",
+
+            txml        : "",
+            img         : "",
+
+            sourceDir       : "",
+            sourceWebRocket : "",
+            sourceRocket    : "",
+
+            layerCount : 0,
+            
+            compatibleWebRocket : false,
+            compatibleRocket    : false,
+            compatibleServer    : false,
+
+            editable : false
+        },
+
+        ready : function()
+        {
+            // @todo This is stupid. Use on-click event.
+            if (this.$["run-web-rocket-button"])
+            {
+                this.$["run-web-rocket-button"].addEventListener("click", function() {
+                    this.run(true, false);
+                }.bind(this));
+            }
+            if (this.$["run-rocket-button"])
+            {
+                this.$["run-rocket-button"].addEventListener("click", function() {
+                    this.run(false, true);
+                }.bind(this));
+            }
+            if (this.$["run-server-button"])
+            {
+                this.$["run-server-button"].addEventListener("click", function() {
+                    this.run(false, false);
+                }.bind(this));
+            }
+            if (this.$["show-app-source"])
+            {
+                this.$["show-app-source"].addEventListener("click", function() {
+                    this.open(this.sourceDir, true);
+                }.bind(this));
+            }
+            if (this.$["show-web-rocket-source"])
+            {
+                this.$["show-web-rocket-source"].addEventListener("click", function() {
+                    this.open(this.sourceWebRocket);
+                }.bind(this));
+            }
+            if (this.$["show-rocket-source"])
+            {
+                this.$["show-rocket-source"].addEventListener("click", function() {
+                    this.open(this.sourceRocket);
+                }.bind(this));
+            }
+            if (this.$["control-edit-button"])
+            {
+                this.$["control-edit-button"].addEventListener("click", function() {
+                    this.control("edit");
+                }.bind(this));
+            }
+            if (this.$["control-remove-button"])
+            {
+                this.$["control-remove-button"].addEventListener("up", function() {
+                    this.remove();
+                }.bind(this));
+            }
+        },
+
+        run : function(webrocket, rocket)
+        {
+            $.ajax({
+                type: "POST",
+                url: "/api/run?rocket=" + rocket,
+                data: this.txml,
+                context : this,
+                success : function(data, textStatus, jqXHR)
+                {
+                    if (webrocket)
+                    {
+                        var browser = $("body").find("#sdk-browser")[0];
+                        browser.webrocket = true;
+                        browser.autoconnect = (jqXHR.status === 200 ? 5 : 2);
+                        browser.opened = true;
+                    }
+                    else
+                        showToast("Starting Rocket to " + this.name + "...");
+                },
+                error : function()
+                {
+                    showToast("Failed to start " + this.name + "...");
+                }
+            });
+        },
+
+        open : function(path, webbrowser)
+        {
+            var browser = $("body").find("#sdk-browser")[0];
+            if (webbrowser === true)
+                browser.url = path;
+            else
+                browser.downloadCode(path);
+            browser.opened = true;
+        },
+
+        control : function(action)
+        {
+            $.ajax({
+                type: "POST",
+                url: "/api/control?action=" + action + "&source=" + this.sourceDir,
+                data: this.txml,
+                context : this,
+                success : function(data, textStatus, jqXHR)
+                {
+                    if (action === "edit")
+                        showToast("OS file browser opened to <SDK>" + this.sourceDir);
+                },
+                error : function(jqXHR)
+                {
+                    showToast(jqXHR.responseText !== "" ? jqXHR.responseText : "Failed to execute " + action + "...");
+                }
+            });
+        },
+
+        remove : function()
+        {
+            var dialog = $("#application-remove-dialog");
+            if (dialog.length > 0)
+                dialog.remove();
+            
+            dialog = $("<paper-dialog/>");
+            dialog.attr({
+                id : "application-remove-dialog",
+                backdrop : true,
+                opened   : true,
+                transition : "paper-transition-center"
+            });
+            $("body").append(dialog);
+            
+            dialog.append($("<div>Applications cannot be removed from the web interface.<br><br>"+
+                            "If you want to proceed you must remove the directory<br><code style='color: rgb(200,0,0);'>&lt;SDK&gt;" + this.sourceDir + "</code> by hand.</div>"));
+            dialog.append($("<paper-button affirmative raisedButton label='close'></paper-button>"));
+        }
+    });
+  </script>
+</polymer-element>

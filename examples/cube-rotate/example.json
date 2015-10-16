@@ -1,0 +1,13 @@
+{
+    "Name"            : "Rotating Cube",
+    "Description"     : "Clients can command server to start and stop rotating a cube.",
+    
+    "Txml"            : "scene.txml",
+    "Img"             : "scene.jpg",
+    "SourceWebRocket" : "cube-rotate.webrocketjs",
+    "SourceRocket"    : "cube-rotate.js",
+
+    "CompatibleWebRocket" : true,
+    "CompatibleRocket"    : true,
+    "CompatibleServer"    : true
+}

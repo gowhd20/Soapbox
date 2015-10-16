@@ -1,0 +1,129 @@
+
+<!-- Polymer -->
+<link rel="import" href="../bower/polymer/polymer.html">
+
+<!-- Deps -->
+<link rel="import" href="../bower/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower/core-item/core-item.html">
+<link rel="import" href="../bower/core-tooltip/core-tooltip.html">
+<link rel="import" href="../bower/paper-icon-button/paper-icon-button.html">
+
+<polymer-element name="sdk-toolbar" constructor="SDKToolbar">
+  <!-- HTML -->
+  <template>
+    
+    <link href="meshmoon-sdk.css" rel="stylesheet">
+
+    <style>
+    core-item[page] {
+        min-width: 100px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    core-item[page]:hover {
+        color: white;
+        margin-top: 2px;
+        border-bottom: 2px solid #DDD;
+    }
+    .current-page {
+        border-bottom: 1px solid #69C6E4;
+    }
+    .unselectable,
+    core-item.unselectable {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    .sdk-path {
+        font-family: "Source Code Pro";
+        font-size: 14px;
+        color: #E5E5E5;
+    }
+    .user-name {
+        font-size: 16px;
+        cursor: default;
+    }
+    paper-icon-button#userpic {
+        overflow: hidden;
+        padding: 0px;
+        border-radius: 50%;
+    }
+    core-tooltip#userpictooltip {
+        width: 42px;
+        height: 42px;
+    }
+    paper-icon-button#userpic::shadow #icon {
+        width: 42px;
+        height: 42px;
+    }
+    core-item#page-login {
+        background-color: rgb(19,109,138);
+    }
+    @media (max-width:1000px) {
+      .sdk-path {
+        visibility: hidden;
+        position: absolute;
+      }
+    }
+    </style>
+
+    <core-toolbar>
+        <core-item label="Meshmoon SDK" flex></core-item>
+
+        <!-- User logged in -->
+        <template if="{{ username }}">
+            <core-item page center-justified class="unselectable" id="page-home" href="/">Home</core-item>
+            <core-item page center-justified class="unselectable" id="page-apps" href="/my-apps">My Apps</core-item>
+            <core-item page center-justified class="unselectable" id="page-doc" href="/doc">Doc</core-item>
+
+            <div flex></div>
+            
+            <core-item class="user-name unselectable" label="{{ username }}"></core-item>
+            <core-tooltip id="userpictooltip" label="Logout {{ username }}" large position="left" class="fancy">
+            <a href="/logout">
+                <template if="{{ avatarurl }}">
+                    <paper-icon-button id="userpic" src="{{ avatarurl }}"></paper-icon-button>
+                </template>
+                <template if="{{ !avatarurl }}">
+                    <paper-icon-button id="userpic" icon="account-circle" style="color: #DDD;"></paper-icon-button>
+                </template>
+            </a>
+            </core-tooltip>
+        </template>
+
+      </core-toolbar>  
+  </template>
+
+  <!-- Script -->
+  <script>
+    Polymer({
+        publish :
+        {
+            root      : "",
+            username  : "",
+            avatarurl : ""
+        },
+
+        ready : function()
+        {
+            for (var id in this.$)
+            {
+                var item = $(this.$[id]);
+                item.click(this.linkClicked);
+                if (item.attr("href") === window.location.pathname)
+                    item.addClass("current-page");
+            }
+        },
+
+        linkClicked : function()
+        {
+            var url = $(this).attr("href");
+            console.log(url)
+            if (typeof url === "string" && url !== "")
+                window.location = url;
+
+        }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <title>Meshmoon SDK</title>
+
+  <!-- Scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+  
+  <script src="sdk/js/main.js"></script>
+  <script src="sdk/js/classy.js"></script>
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500|Source+Code+Pro:400,500,700" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="sdk/css/bootstrap.min.css">
+  <link rel="stylesheet" href="sdk/css/main.css">
+  <link rel="stylesheet" href="sdk/components/meshmoon-sdk.css">
+
+  <!-- Polyfill for non WebComponent compliant browsers -->
+  <script src="sdk/bower/webcomponentsjs/webcomponents.min.js"></script>
+
+  <!-- Polymer -->
+  <link rel="import" href="sdk/bower/core-icons/core-icons.html">
+
+  <link rel="import" href="sdk/bower/paper-shadow/paper-shadow.html">
+  <link rel="import" href="sdk/bower/paper-button/paper-button.html">
+  <link rel="import" href="sdk/bower/paper-toast/paper-toast.html">
+
+  <link rel="import" href="sdk/components/sdk-toolbar.html">
+  <link rel="import" href="sdk/components/sdk-application.html">
+  <link rel="import" href="sdk/components/sdk-browser.html">
+  <link rel="import" href="sdk/components/sdk-create-application-dialog.html">
+</head>
+<body unresolved fullbleed touch-action="auto">
+
+  <sdk-toolbar root="{{.Root}}" username="{{if .User}}{{.User.GetName}}{{end}}" avatarurl="{{if .User}}{{.User.GetPictureUrl}}{{end}}"></sdk-toolbar>
+
+  {{ if gt (len .Applications) 0 }}
+  <div layout horizontal center center-justified style="background-color: rgb(235,235,235); border-bottom: 1px solid rgb(220,220,220);">
+    <paper-button id="create-application-button" raisedButton icononly class="colored hover">
+      <core-icon icon="add"></core-icon>
+    </paper-button>
+    <div class="title unselectable" style="margin-left: 10px; pointer-events: none;">Create a new application</div>
+  </div>
+  {{ end }}
+
+  <div class="container">
+
+    <section>
+      <paper-shadow z="1" animated="true">
+        <div class="section-title" align="center">Applications</div>
+          
+        <div class="section-stats" align="center">
+          <div layout horizontal center center-jusitified>
+            <core-icon icon="apps" class="stats-icon"></core-icon>
+            <div flex>{{ len .Applications }}</div>
+          </div>
+        </div>
+
+        <div class="section-content">
+          {{ if len .Applications | eq 0 }}
+            <div layout horizontal center center-justified>
+              <paper-button id="create-application-button" raisedButton class="colored hover icon-pad">
+                <core-icon icon="add"></core-icon>Create
+              </paper-button>
+              <div class="title unselectable" style="margin-left: 10px; pointer-events: none;">Maybe it's time to create an app?</div>
+            </div>
+          {{ else }}
+            <div class="examples-sidearea"></div>
+            {{ range .Applications }}
+            <sdk-application
+              name="{{.Name}}"
+              description="{{.Description}}"
+              txml="{{.Txml}}"
+              img="{{.Img}}"
+              compatibleWebRocket="{{.CompatibleWebRocket}}"
+              compatibleRocket="{{.CompatibleRocket}}"
+              compatibleServer="{{.CompatibleServer}}"
+              sourceDir="{{.SourceDir}}"
+              sourceWebRocket="{{.SourceWebRocket}}"
+              sourceRocket="{{.SourceRocket}}"
+              layerCount="{{len .Layers}}"
+              editable="true"
+              ></sdk-application>
+            {{ end }}
+          {{ end }}
+        </div>
+      </paper-shadow>
+    </section>
+
+  </div>
+
+  <paper-toast id="sdk-toast" duration="8000" onclick="this.dismiss();"></paper-toast>
+  <sdk-browser id="sdk-browser"></sdk-browser>
+
+  <script type="text/javascript">
+    $("#create-application-button").click(function() {        
+        var dialog = $("<sdk-create-application-dialog/>")[0];
+        if (dialog != null)
+        {
+            $("body").append(dialog);
+            dialog.administratedSpaces = {{ .MeshmoonAPI.Spaces.Administered }};
+            dialog.opened = true;
+            dialog.addEventListener("closed", function(e) {
+                var dlg = $(this);
+                setTimeout(function() {
+                    dlg.remove();
+                    // Refresh this apps page if was created succesfully
+                    if (e.detail.created === true)
+                        setTimeout(function() { window.location.reload(); }, 1000);
+                }, 500);
+            });
+        }
+    });
+    var numApps = $("sdk-application").length;
+    $("sdk-application").each(function(index, elem) {
+      if (index >= numApps-1)
+        return;
+      $(this).after($("<div/>", { class : "examples-separator" } ));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1923 @@
+<!DOCTYPE Scene>
+<scene>
+ <entity id="1" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/ubi2015/ouluStreetBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluStreetBridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="ouluStreetBridge.003" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-17.727232,5.95456886,106.254929,0,56.9977989,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="2" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge.005" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="14.757041,5.47094393,156.019897,0.0318769999,56.5434036,0.0210469998,0.999998987,1,0.999998987" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="3" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge.004" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="12.3039618,5.49298477,154.397522,-179.968109,-56.5454483,179.978943,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="4" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/AdministrationParkBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="AdministrationParkBlock" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="5" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/ouluStreetBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluStreetBridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="ouluStreetBridge" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-22.3314266,6.0218401,75.6360626,-179.981461,-56.8217354,179.900467,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="6" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge.003" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-32.0941925,5.66426611,23.5749931,-179.981705,-18.8673763,179.987762,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="7" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge.002" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-30.9461956,5.71871281,27.0694389,-0.0341209993,16.751461,-0.0217029992,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="8" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/hallituskatu11.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/hallituskatu11.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="hallituskatu11" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-56.0599632,6.69256592,49.3455048,180,33.6668282,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="9" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu9.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu9.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Hallituskatu9" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-48.9513741,6.65502787,38.6487694,0,-33.552845,0,0.871910989,0.871910989,0.871910989" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="10" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu4.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu4.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Asemakatu4" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-121.829216,7.24652815,73.1547699,0,-32.7589684,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="11" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/SnelmannsBlockRiver.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/grass.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_st-dirt.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="SnelmannsBlockRiver" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,-3.00000011e-006,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="12" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/SnelmannsBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="SnelmannsBlock" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,0.0210980009,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="13" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/asemakatu2.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu2.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu2walls.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="asemakatu2" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-55.0165672,6.71210718,83.5575562,180,-56.703022,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="14" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/asemakatu_10.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu10.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="asemakatu_10" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-212.968887,8.01018047,14.3165665,180,-57.3450508,180,1.04098499,1.04098499,1.04098499" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="15" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/asemakatu6.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Asemakatu6.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="asemakatu6" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-145.476883,8.51302528,40.4286079,0,-32.6548386,0,1.16290498,1.16290498,1.16290498" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="16" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu19.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu19.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Isokatu19" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-119.375603,6.89402723,10.5396919,180,32.4594154,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="17" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluBlock30.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluBlock30" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,0.0210980009,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="18" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_9b.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_9b.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="pakkahuoneenkatu_9b" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="97.459671,5.99400616,13.1533155,0,-33.4721909,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="19" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu12.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu12.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Hallituskatu12" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="23.7336102,6.18464422,52.9029846,0,-32.6757431,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="20" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu10.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu10.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Hallituskatu10" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="64.1908875,4.93524599,79.0767822,0,-32.6547089,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="21" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/YhdystorniBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="YhdystorniBlock" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="22" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluBlock20.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluBlock20" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="23" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu16.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Hallituskatu16.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Hallituskatu16" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-57.17239,5.9882102,-31.8069916,0,-33.7289734,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="24" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/hallituskatu14.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/hallituskatu14.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="hallituskatu14" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-18.3039989,6.924119,-5.45623398,0,-33.6299438,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="25" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_10.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_10.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="pakkahuoneenkatu_10" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="111.886047,5.52714396,-13.3679123,0,57.0677147,0,0.999998987,1,0.999998987" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="26" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu11.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu11.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Kauppurienkatu11" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="126.024887,7.94652414,-120.763748,180,33.6152191,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="27" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/kauppurienkatu9.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu09.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="kauppurienkatu9" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="201.28035,7.20851612,-69.079422,180,34.9874077,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="28" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/PallasBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="PallasBlock" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="29" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/kauppurienkatu_13.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/kauppurienkatu_13.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="kauppurienkatu_13" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="114.88765,7.33444691,-128.264557,180,33.8932915,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="30" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu17.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu17.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Kirkkokatu17" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="61.7847633,7.79347706,-82.3839569,0,57.2891693,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="31" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu20-22.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu20_22.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Isokatu20-22" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="21.7092953,6.3274951,-148.538879,180,-57.7740326,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="32" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/KauppuriBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="KauppuriBlock.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="33" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu17.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu17.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Kauppurienkatu17" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="12.664443,6.2997942,-194.053024,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="34" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu19.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu19.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Kauppurienkatu19" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-24.4946499,5.98800278,-218.396027,180,33.6064796,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="35" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/uusikatu_28.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/uusikatu_28.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="uusikatu_28" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-36.8379402,6.05588198,-189.880219,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="36" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu23.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Isokatu23.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Isokatu23" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-11.7834463,5.82699299,-129.883286,0,57.0892181,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="37" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_22.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_22.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="pakkahuoneenkatu_22" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-104.907753,4.99650717,-152.055542,180,-56.3314476,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="38" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/KarhisParkBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="KarhisParkBlock" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,0.0210980009,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="39" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/ouluStreetBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluStreetBridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="ouluStreetBridge.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-68.6884384,5.96427822,-14.1134186,0.172167003,56.7356987,0.431955993,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="40" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/ouluStreetBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluStreetBridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="ouluStreetBridge.002" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-78.0093307,6.00153685,-28.446888,-179.693649,-56.7912216,179.464172,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="41" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-107.129158,5.7578969,-76.391098,0.0198350009,25.5693779,0.012844,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="42" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/OuluParkBridge.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_park_bridge.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="OuluParkBridge" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-108.840141,5.77993822,-80.1239777,-179.980103,-25.7964611,179.987091,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="43" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/BenchPark3.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Bench.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="BenchPark.007" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-56.1478462,5.97129583,-83.5560226,180,-59.0722008,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="44" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/BenchPark3.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Bench.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="BenchPark.006" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-64.3325119,5.97129583,-84.2164001,180,31.7831459,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="45" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/BenchPark3.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Bench.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="BenchPark.005" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-69.819252,5.97129583,-87.6176147,180,31.7831459,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="46" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/BenchPark3.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Bench.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="BenchPark.004" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-73.6427383,5.97129583,-95.9601288,0,58.2167168,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="47" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu2.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu2Details.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu2Base.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kirkkokatu2_vaakuna.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Kirkkokatu2.002" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="25.8650055,15.787818,98.4893417,180,-56.1680565,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="48" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/water.001.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="water.002" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-109.0084,4.80796099,-82.2587967,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="49" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_12.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_12.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_12_signs.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_12" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="98.782135,5.97738695,-78.6459503,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="50" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_11.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_11_signs.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_11.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_11" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="68.2912521,7.04610205,-22.5676193,180,-56.6330681,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="51" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_13.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_13.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_13_signs.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_13" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="49.8108406,7.07722998,-34.838356,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="52" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_18.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_18.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_18_signs.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_18" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-68.4745102,5.81862688,-127.820496,0,-33.8086967,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="53" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_14-16.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_14-16_signs.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_14-16.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_14-16" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-19.0078869,6.22023487,-94.8999786,0,-33.2066498,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="54" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_pakkahuoneenkatu_15.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_15_signs.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_railing_2.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_15.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_railing_1.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/pakkahuoneenkatu_15_sign_boards.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_pakkahuoneenkatu_15" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-23.6319714,6.18985987,-83.7453003,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="55" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_AdministrationParkBlockRiver.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/grass.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_st-dirt.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_AdministrationParkBlockRiver.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,-3.00000011e-006,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="56" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_hallituskatu_13-17.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/hallituskatu13_17.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_hallituskatu_13-17.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-93.3430099,6.1254878,-5.81124496,180,33.268219,180,0.996809006,0.996809006,0.996809006" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="57" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_Pakkahuoneenkatu9a.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Pakkahuoneenkatu9BalconieRailing.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Pakkahuoneenkatu9a.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_Pakkahuoneenkatu9a.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="120.840485,17.1050625,33.652668,180,-56.5060463,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="58" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_Kauppurienkatu15.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/Kauppurienkatu15.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/railing_bars.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_Kauppurienkatu15.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="75.532547,6.12857294,-154.255386,180,32.1717529,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="59" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_GalleriaBlock.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_road.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/side_humps.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_side-walk.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_ground.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ GalleriaBlock.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203564,0.0210980009,-100.707947,180,32.6548386,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="60" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_KarhisParkBlockRiver.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/grass.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/oulu_st-dirt.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_KarhisParkBlockRiver" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-28.3203487,0.0210980009,-100.707947,180,32.6549301,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="61" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_ParkLampsWest.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamp2.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamps1.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ParkLampsWest" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-68.7781448,5.38211107,-42.3987579,0,58.0688171,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="62" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_ParkLampsNorth.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamps1.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamp2.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ParkLampsNorth" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-96.7120438,5.24776697,-35.455162,180,62.6548996,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="63" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_ParkLampsSouth.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamps1.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamp2.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ParkLampsSouth" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-117.17524,5.24776697,-131.600601,180,62.6548996,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="64" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_ParkLampsMid.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamps1.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ParkLampsMid" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-126.205498,5.24776697,-92.4214325,180,62.6548996,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="65" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_ParkLampsEast.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamps1.material;http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/StreetLamp2.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_ParkLampsEast" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-150.38356,5.24776697,-82.2408142,180,62.6548996,180,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="66" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_TreesBushesWest.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/TreesAndBushes.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_TreesBushesWest.001" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-85.0876083,5.57998419,-38.5537338,0,-0.270660013,0,1.17015004,1.17015004,1.35918701" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="67" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_TreesBushesMid.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/TreesAndBushes.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_TreesBushesMid" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-86.0684128,5.59104395,-100.286415,180,54.6170769,180,5.06057119,5.06057215,5.06057119" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="68" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_TreesBushesSouth.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/TreesAndBushes.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_TreesBushesSouth" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-109.828423,5.57470417,-136.454651,180,88.0348663,180,5.06057119,5.06057215,5.06057119" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="69" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_TreesBushesNorth.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/TreesAndBushes.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_TreesBushesNorth" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-127.278526,5.45433521,-76.1921844,0,43.4558144,0,5.06057215,5.06057215,5.06057215" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="70" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/merge_TreesBushesEast.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="http://tundra-blueshift.s3.amazonaws.com/VirtualOulu/ubi2015/TreesAndBushes.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="merge_TreesBushesEast" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-115.75985,5.57470417,-124.615204,0,50.2156487,0,5.06057215,5.06057215,5.06057215" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="71" sync="true">
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="SkyDome.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="SkyDome.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="0,0,-29.9243431,0,0,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="SkyDome" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+ </entity>
+ <entity id="72" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="FreeLookCameraSpawnPos" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="-239.898529,105.309875,-165.023926,-24.3000011,237.599991,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+ </entity>
+ <entity id="73" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="sky" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="10" type="Sky" sync="true">
+   <attribute value="Ogre Media:RexSkyBox.material" type="AssetReference" id="materialRef" name="Material"/>
+   <attribute value="" type="AssetReferenceList" id="textureRefs" name="Texture"/>
+   <attribute value="999" type="real" id="distance" name="Distance"/>
+   <attribute value="0 0 0 1" type="Quat" id="orientation" name="Orientation"/>
+   <attribute value="true" type="bool" id="drawFirst" name="Draw first"/>
+   <attribute value="true" type="bool" id="enabled" name="Enabled"/>
+  </component>
+ </entity>
+ <entity id="74" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="ground" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="0,7,0,0,-0,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+  <component typeId="23" type="RigidBody" sync="true">
+   <attribute value="0" type="real" id="mass" name="Mass"/>
+   <attribute value="0" type="int" id="shapeType" name="Shape type"/>
+   <attribute value="1000 1 1000" type="float3" id="size" name="Size"/>
+   <attribute value="" type="AssetReference" id="collisionMeshRef" name="Collision mesh ref"/>
+   <attribute value="0.5" type="real" id="friction" name="Friction"/>
+   <attribute value="0" type="real" id="restitution" name="Restitution"/>
+   <attribute value="0" type="real" id="linearDamping" name="Linear damping"/>
+   <attribute value="0" type="real" id="angularDamping" name="Angular damping"/>
+   <attribute value="1 1 1" type="float3" id="linearFactor" name="Linear factor"/>
+   <attribute value="1 1 1" type="float3" id="angularFactor" name="Angular factor"/>
+   <attribute value="false" type="bool" id="kinematic" name="Kinematic"/>
+   <attribute value="false" type="bool" id="phantom" name="Phantom"/>
+   <attribute value="true" type="bool" id="drawDebug" name="Draw Debug"/>
+   <attribute value="0 0 0" type="float3" id="linearVelocity" name="Linear velocity"/>
+   <attribute value="0 0 0" type="float3" id="angularVelocity" name="Angular velocity"/>
+   <attribute value="-1" type="int" id="collisionLayer" name="Collision Layer"/>
+   <attribute value="-1" type="int" id="collisionMask" name="Collision Mask"/>
+   <attribute value="0.5" type="real" id="rollingFriction" name="Rolling friction"/>
+   <attribute value="true" type="bool" id="useGravity" name="Use gravity"/>
+  </component>
+ </entity>
+
+
+ <entity id="75" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="AdminoAvatarManager" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="5" type="Script" sync="true">
+   <attribute value="http://meshmoon.data.s3.amazonaws.com/app/spinningwire/avatar-manager-deploy.js" type="AssetReferenceList" id="scriptRef" name="Script ref"/>
+   <attribute value="true" type="bool" id="runOnLoad" name="Run on load"/>
+   <attribute value="0" type="int" id="runMode" name="Run mode"/>
+   <attribute value="" type="string" id="applicationName" name="Script application name"/>
+   <attribute value="" type="string" id="className" name="Script class name"/>
+  </component>
+  <component typeId="25" type="DynamicComponent" sync="true" name="AdminotechApplicationSettings">
+   <attribute value="http://meshmoon.data.s3.amazonaws.com/app/spinningwire/avatar-creator/avatar/Avatar-man.xml" type="string" id="Forced avatar appearance" name="Forced avatar appearance"/>
+   <attribute value="-90" type="real" id="Spawn rotation" name="Spawn rotation"/>
+   <attribute value="60" type="real" id="Spawn x" name="Spawn x"/>
+   <attribute value="25" type="real" id="Spawn y" name="Spawn y"/>
+   <attribute value="-40" type="real" id="Spawn z" name="Spawn z"/>
+  </component>
+ </entity>
+ 
+
+ 
+ <entity id="83" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="soapbox" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="66.20,8.59,-44.36,0,52,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+  <component typeId="17" type="Mesh" sync="true">
+	 <attribute value="soapbox.mesh" name="Mesh ref" />
+	 <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+	 <attribute value="soapbox.material" name="Mesh materials" />
+	 <attribute value="0" name="Draw distance" />
+	 <attribute value="false" name="Cast shadows" />
+  </component>
+  <component typeId="23" type="RigidBody" sync="true">
+   <attribute value="0" type="real" id="mass" name="Mass"/>
+   <attribute value="4" type="int" id="shapeType" name="Shape type"/>
+   <attribute value="1 1 1" type="float3" id="size" name="Size"/>
+   <attribute value="" type="AssetReference" id="collisionMeshRef" name="Collision mesh ref"/>
+   <attribute value="0.5" type="real" id="friction" name="Friction"/>
+   <attribute value="0" type="real" id="restitution" name="Restitution"/>
+   <attribute value="0" type="real" id="linearDamping" name="Linear damping"/>
+   <attribute value="0" type="real" id="angularDamping" name="Angular damping"/>
+   <attribute value="1 1 1" type="float3" id="linearFactor" name="Linear factor"/>
+   <attribute value="1 1 1" type="float3" id="angularFactor" name="Angular factor"/>
+   <attribute value="false" type="bool" id="kinematic" name="Kinematic"/>
+   <attribute value="false" type="bool" id="phantom" name="Phantom"/>
+   <attribute value="true" type="bool" id="drawDebug" name="Draw Debug"/>
+   <attribute value="0 0 0" type="float3" id="linearVelocity" name="Linear velocity"/>
+   <attribute value="0 0 0" type="float3" id="angularVelocity" name="Angular velocity"/>
+   <attribute value="-1" type="int" id="collisionLayer" name="Collision Layer"/>
+   <attribute value="-1" type="int" id="collisionMask" name="Collision Mask"/>
+   <attribute value="0.5" type="real" id="rollingFriction" name="Rolling friction"/>
+   <attribute value="true" type="bool" id="useGravity" name="Use gravity"/>
+  </component>
+ </entity>
+ 
+ <entity id="84" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="soapbox_footbold" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="66.21,9.59,-44.36,0,52,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="false" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+  <component typeId="17" type="Mesh" sync="true">
+	 <attribute value="soapbox_foothold.mesh" name="Mesh ref" />
+	 <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+	 <attribute value="soapbox_foothold.material" name="Mesh materials" />
+	 <attribute value="0" name="Draw distance" />
+	 <attribute value="false" name="Cast shadows" />
+  </component>
+  <component typeId="5" type="Script" sync="true" name="System Trigger">
+   <attribute value="volumetrigger.js" type="AssetReferenceList" id="scriptRef" name="Script ref"/>
+   <attribute value="true" type="bool" id="runOnLoad" name="Run on load"/>
+   <attribute value="0" type="int" id="runMode" name="Run mode"/>
+   <attribute value="" type="string" id="applicationName" name="Script application name"/>
+   <attribute value="" type="string" id="className" name="Script class name"/>
+  </component>  
+
+ </entity>
+ 
+ <entity id="76" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="hotspot" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="20" type="Placeable" sync="true">
+   <attribute value="70.2041016,7.68280506,-44.3602066,0,52,0,1,1,1" type="Transform" id="transform" name="Transform"/>
+   <attribute value="false" type="bool" id="drawDebug" name="Show bounding box"/>
+   <attribute value="true" type="bool" id="visible" name="Visible"/>
+   <attribute value="1" type="int" id="selectionLayer" name="Selection layer"/>
+   <attribute value="" type="EntityReference" id="parentRef" name="Parent entity ref"/>
+   <attribute value="" type="string" id="parentBone" name="Parent bone name"/>
+  </component>
+  <component typeId="17" type="Mesh" sync="true">
+   <attribute value="0,0,0,0,0,0,1,1,1" type="Transform" id="nodeTransformation" name="Transform"/>
+   <attribute value="Cube.001.mesh" type="AssetReference" id="meshRef" name="Mesh ref"/>
+   <attribute value="" type="AssetReference" id="skeletonRef" name="Skeleton ref"/>
+   <attribute value="sides.material;front.material;back.material" type="AssetReferenceList" id="materialRefs" name="Mesh materials"/>
+   <attribute value="0" type="real" id="drawDistance" name="Draw distance"/>
+   <attribute value="false" type="bool" id="castShadows" name="Cast shadows"/>
+   <attribute value="false" type="bool" id="useInstancing" name="Use instancing"/>
+  </component>
+ </entity>
+
+  <entity id="999" sync="true">
+  <component typeId="26" type="Name" sync="true">
+   <attribute value="Application: soapbox_virtual" type="string" id="name" name="Name"/>
+   <attribute value="" type="string" id="description" name="Description"/>
+   <attribute value="Applications" type="string" id="group" name="Group"/>
+  </component>
+  <component typeId="5" type="Script" sync="true" name="Desktop">
+   <attribute value="app-server-and-rocket.js" type="AssetReferenceList" id="scriptRef" name="Script ref"/>
+   <attribute value="true" type="bool" id="runOnLoad" name="Run on load"/>
+   <attribute value="0" type="int" id="runMode" name="Run mode"/>
+   <attribute value="" type="string" id="applicationName" name="Script application name"/>
+   <attribute value="" type="string" id="className" name="Script class name"/>
+  </component>
+  
+  <component typeId="5" type="Script" sync="true" name="Web">
+   <attribute value="app-web-rocket.webrocketjs" type="AssetReferenceList" id="scriptRef" name="Script ref"/>
+   <attribute value="true" type="bool" id="runOnLoad" name="Run on load"/>
+   <attribute value="1" type="int" id="runMode" name="Run mode"/>
+   <attribute value="" type="string" id="applicationName" name="Script application name"/>
+   <attribute value="" type="string" id="className" name="Script class name"/>
+  </component>  
+
+ </entity>
+ 
+</scene>

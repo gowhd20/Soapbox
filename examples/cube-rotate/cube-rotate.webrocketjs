@@ -1,0 +1,91 @@
+
+var _MSG_TOGGLE_ROTATING    = "ToggleRotating";
+var _MSG_ROTATE_STATE       = "RotateState";
+var _MSG_ROTATE_STATE_QUERY = "RotateStateQuery";
+
+var RotateCubeApplication = IApplication.$extend(
+{
+    __init__ : function()
+    {
+        this.$super("Rotate Cube");
+
+        // Move initial camera position to the cube
+        var activeCamera = Tundra.renderer.activeCameraEntity();
+        if (activeCamera != null && activeCamera.placeable != null)
+        {
+            var t = activeCamera.placeable.transform;
+            t.pos.set(-21, 22, 14);
+            t.rot.set(-12, -56, 0);
+            activeCamera.placeable.transform = t;
+        }
+
+        this.initUi();
+
+        // Monitor entity mouse clicks on hover
+        this.subscribeEvent(Tundra.input.onMousePress(this, this.onMousePress));
+        this.subscribeEvent(Tundra.input.onMouseMove(this, this.onMouseMove));
+
+        // Listen for server triggered entity action about state change.
+        this.entity.onEntityAction(this, this.onEntityAction);
+
+        // Query server current rotate state
+        this.entity.exec(EntityAction.Server, _MSG_ROTATE_STATE_QUERY);
+    },
+
+    initUi : function()
+    {
+        this.ui = {};
+        this.baseCSS = {
+            "position" : "absolute",
+            "padding"  : 25,
+            "top" : 25,
+            "left" : 25,
+            "font-family" : "RobotoDraft, Arial",
+            "color" : "white",
+            "background-color" : "rgba(8,149,195,0.8)"
+        };
+
+        this.ui.help = $("<div/>", { text : "Click the cube to command the server to toggle rotation state" });
+        this.ui.help.css(this.baseCSS);
+        this.ui.help.hide();
+
+        this.ui.state = $("<div/>");
+        this.ui.state.css(this.baseCSS);
+        this.ui.state.css("top", 100);
+        this.ui.state.hide();
+
+        this.framework.ui.addWidgetToScene([this.ui.help, this.ui.state]);
+        this.ui.help.fadeIn(5000);
+    },
+
+    onMouseMove : function()
+    {
+        var result = this.framework.renderer.raycast();
+        if (result.entity != null && result.entity.name == "cube")
+            this.ui.help.text("Click me");
+        else
+            this.ui.help.text("Click the cube to command the server to toggle rotation state");
+    },
+
+    onMousePress : function()
+    {
+        // Raycast to our cube, if hit, send entity action to the server.
+        var result = this.framework.renderer.raycast();
+        if (result.entity != null && result.entity.name == "cube")
+            this.entity.exec(EntityAction.Server, _MSG_TOGGLE_ROTATING);
+    },
+
+    onEntityAction : function (entityAction)
+    {
+        if (entityAction.name === _MSG_ROTATE_STATE)
+        {
+            this.ui.state.text("Rotating: " + entityAction.parameters[0]);
+            if (!this.ui.state.is(":visible"))
+                this.ui.state.fadeIn(5000);
+        }
+
+    }
+});
+
+// Start application
+var rotateCubeApplication = new RotateCubeApplication();

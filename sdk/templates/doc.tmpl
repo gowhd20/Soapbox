@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <title>Meshmoon SDK</title>
+
+  <!-- Scripts -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+  
+  <script src="sdk/js/main.js"></script>
+  <script src="sdk/js/classy.js"></script>
+
+  <!-- Fonts -->
+  <link href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500|Source+Code+Pro:400,500,700" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="sdk/css/bootstrap.min.css">
+  <link rel="stylesheet" href="sdk/css/main.css">
+
+  <!-- Polyfill for non WebComponent compliant browsers -->
+  <script src="sdk/bower/webcomponentsjs/webcomponents.min.js"></script>
+
+  <!-- Polymer -->
+  <link rel="import" href="sdk/bower/core-icons/core-icons.html">
+  <link rel="import" href="sdk/bower/paper-shadow/paper-shadow.html">
+
+  <link rel="import" href="sdk/components/sdk-toolbar.html">
+
+  <style>
+    a.grey-link {
+      color: #444;
+    }
+  </style>
+</head>
+<body unresolved fullbleed touch-action="auto">
+
+  <sdk-toolbar root="{{.Root}}" username="{{if .User}}{{.User.GetName}}{{end}}" avatarurl="{{if .User}}{{.User.GetPictureUrl}}{{end}}"></sdk-toolbar>
+
+  <section id="doc-section" style="margin-left: 130px; margin-right: 20px; height: calc(100% - 145px)">
+    <paper-shadow z="1" animated="true" fit>
+      <div layout horizontal start start-justified fit>
+          <div layout vertical start start-justified id="doc-links" relative style="position: relative; left: -120px;">
+            <core-item menuitem class="unselectable current-doc" id="doc-webrocket" label="Web Rocket" href="/web-rocket/doc"></core-item>
+            <core-item menuitem class="unselectable" id="doc-meshmoon" label="Meshmoon" href="http://doc.meshmoon.com/index.html?page=documentation"></core-item>
+            <core-item menuitem class="unselectable" id="doc-rocket" label="Rocket" href="http://doc.meshmoon.com/doxygen"></core-item>
+          </div>
+          <iframe id="doc-frame" src="" style="width:100%; height:100%; border: 0px;" fit></iframe>
+      </div>
+      <div id="doc-frame-url" style="position: absolute; margin-top: 5px; padding: 5px; padding-left: 0px; font-family: 'Source Code Pro'; font-size: 16px; color: #444; background-color: transparent; border: 0px; top: 100%;"></div>
+    </paper-shadow>
+  </section>
+  
+  <script type="text/javascript">
+    $("core-item", "#doc-links").each(function(index, elem) {
+        $(this).click(function() {
+            $("#doc-frame").attr("src", $(this).attr("href"));
+            $("core-item", "#doc-links").each(function(index, elem) {
+                $(this).removeClass("current-doc");
+            });
+            $(this).addClass("current-doc");
+        });
+    });
+
+    var frame = $("#doc-frame");
+    frame.load(function() {
+        $("#doc-frame-url").html($("<a/>", { href : this.src, text : this.src, target : "_blank", class : "grey-link" }));
+        if (!frame.is(":visible"))
+            frame.show();
+    });
+    frame.hide();
+    
+    var current = $("#doc-links").find(".current-doc");
+    frame.attr("src", current.attr("href"));
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+    "hotspots": [
+        {
+            "instance_id": "toripolliisi-1",
+            "hostname": "toripolliisi-1.ubioulu.fi",
+            "description": "Toripollisi UBI point 1",
+            "panoulubt": "panoulubt12",
+            "lat": "65.013386",
+            "lon": "25.464613"
+        },
+        {
+            "instance_id": "toripolliisi-2",
+            "hostname": "toripolliisi-2.ubioulu.fi",
+            "description": "Toripollisi UBI point 2",
+            "panoulubt": "panoulubt12",
+            "lat": "65.08199",
+            "lon": "25.45490"
+        },
+        {
+            "instance_id": "rotuaari-east-1",
+            "hostname": "rotuaari-east-1.ubioulu.fi",
+            "description": "Rotuaari East UBI point 1",
+            "panoulubt": "panoulubt11",
+            "lat": "65.05932",
+            "lon": "25.46629"
+        }
+    ]
+}

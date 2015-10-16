@@ -1,0 +1,157 @@
+
+core-toolbar {
+  font-size: 22px;
+  background-color: rgb(8,149,195);
+  color: #f1f1f1;
+}
+
+core-icon-button[title] {
+  margin-top: -5px;
+}
+
+core-icon-button[sidebar] {
+  position: relative;
+  left: 12px;
+}
+
+core-tooltip.fancy::shadow .polymer-tooltip {
+  opacity: 0;
+  -webkit-transition: all 300ms cubic-bezier(0,1.92,.99,1.07);
+  transition: all 300ms cubic-bezier(0,1.92,.99,1.07);
+  -webkit-transform: translate3d(0, -10px, 0);
+  transform: translate3d(0, -10px, 0);
+}
+
+core-tooltip.fancy:hover::shadow .polymer-tooltip,
+core-tooltip.fancy:focus::shadow .polymer-tooltip {
+  opacity: 1;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+core-tooltip.fancy:focus {
+  visibility: hidden !important;
+}
+
+paper-button {
+  margin: 1em;
+  min-width: 7em;
+}
+paper-button:not([icononly]) > core-icon {
+  margin-right: 10px;
+}
+paper-button.icon-pad {
+  padding-right: 10px;
+}
+paper-button.app-run {
+  margin: 0px;
+  text-align: left;
+}
+paper-button.nomargin {
+  margin: 0px;
+}
+paper-button.colored {
+  color: #4285f4;
+}
+paper-button[raisedButton].colored {
+  background: rgb(8,149,195);
+  color: #fff;
+}
+paper-button[raisedButton].colored.hover:hover {
+  background: rgb(0,140,195);
+}
+paper-button[raisedButton].colored::shadow #ripple {
+  color: white;
+}
+paper-button[raisedButton].colored::shadow #focusBg {
+  background: #3367d6;
+}
+paper-button[raisedButton].colored-control {
+  min-width: 9em;
+  font-size: 14px;
+  background: rgb(19,109,138);
+  margin-right: 10px;
+  padding: 0px;
+}
+paper-button[raisedButton].colored-control.hover:hover {
+  background: rgb(23,101,126);
+}
+paper-button[raisedButton].colored-control.hover-red:hover {
+  background: rgb(206,51,51);
+}
+paper-button[raisedButton].colored-control.hover-green:hover {
+  background: #114E0B;
+  opacity: 0.9;
+}
+
+html /deep/ paper-checkbox::shadow #checkbox.checked {
+  background-color: #3E8E51;
+  border-color: #3E8E51;
+}
+
+.box-inset {
+  border: 1px solid rgb(220,220,220);
+  -webkit-box-shadow: inset 0px 0px 10px 0px rgb(255,255,255);
+  -moz-box-shadow: inset 0px 0px 10px 0px rgb(255,255,255);
+  box-shadow: inset 0px 0px 10px 0px rgb(255,255,255);
+}
+
+.app-title {
+  padding-top: 0px;
+  margin-top: -5px;
+  margin-bottom: 0px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.app-img {
+  border: 1px solid #C0C0C0;
+  border-bottom: 0px;
+  width: 550px;
+  height: 350px;
+  display: block;
+  margin-right: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+@media (max-width:1200px) {
+  .app-img {
+    width: 275px;
+  }
+}
+
+@media (max-width:995px) {
+  .app-img {
+    width: 0px;
+    border: 0px;
+    margin-right: 0px;
+  }
+  .badge {
+    visibility: hidden;
+  }
+}
+
+.badge {
+    color: white;
+    text-align: right;
+    font-size: 12pt;
+    min-height: 27px;
+    min-width: 120px;
+    padding: 6px;
+    padding-right: 15px;
+    padding-bottom: 1px;
+    margin: 0px;
+    pointer-events: none;
+    opacity: 0.9;
+}
+.badge-server {
+    background-color: #123125;
+}
+.badge-rocket {
+    background-color: #114E0B;
+}
+.badge-webrocket {
+    background-color: rgb(34, 129, 38);
+}
+

@@ -1,0 +1,28 @@
+{
+    "Processes" :
+    [
+        {
+            "Name"    : "Meshmoon Rocket",
+            "Process" :
+            {
+                "windows" : "C:/Program Files (x86)/Meshmoon/Rocket/RocketConsole.exe",
+                "darwin"  : "/Applications/Rocket.app/Contents/MacOS/Rocket"
+            }
+        },
+        {
+            "Name"    : "Meshmoon Server",
+            "Process" :
+            {
+                "windows" : "C:/Program Files (x86)/Meshmoon/Rocket/TundraConsole.exe",
+                "darwin"  : "/Applications/Rocket.app/Contents/MacOS/Tundra"
+            }
+        },
+        {
+            "Name"    : "Google Chrome",
+            "Process" :
+            {
+                "darwin"  : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            }
+        }
+    ]
+}

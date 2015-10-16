@@ -1,0 +1,214 @@
+
+<!-- Polymer -->
+<link rel="import" href="../bower/polymer/polymer.html">
+<link rel="import" href="sdk-js-browser.html">
+
+
+<!-- Deps -->
+<link rel="import" href="../bower/highlightjs-element/highlightjs-element.html">
+
+<polymer-element name="sdk-browser">
+  <!-- HTML -->
+  <template>
+    
+    <link href="meshmoon-sdk.css" rel="stylesheet">
+
+    <style>
+      .browser {
+        z-index: 100;
+        border: 0px;
+        position: fixed;
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 85%;
+        background-color: white;
+      }
+      .codebrowser {
+        z-index: 100;
+        border: 0px;
+        position: fixed;
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 85%;
+        background-color: white;
+      }
+      div.close-button {
+        z-index: 100;
+        border: 0px;
+        position: fixed;
+        top: 90%;
+        right: 10%;
+        height: 45px;
+        width: 80%;
+        background-color: #098CB5;
+        color: #f1f1f1;
+        line-height: 45px;
+        text-align: center;
+        cursor: pointer;
+      }
+      div.backdrop {
+        z-index: 90;
+        border: 0px;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.7);
+      }
+      .animated {
+        visibility: hidden;
+
+        opacity: 0;
+        -webkit-transform: translate3d(0, -200px, 0) scale(0.9, 1);
+        transform: translate3d(0, -200px, 0) scale(0.9, 1);
+
+        -webkit-transition: opacity 400ms, transform 500ms;
+        transition: opacity 400ms,  transform 500ms;
+        -webkit-transition-delay: 0.2s, 0.2s;
+        transition-delay: 0.2s, 0.2s;
+      }
+      .animated-opacity
+      {
+        visibility: hidden;
+
+        opacity: 0;
+
+        -webkit-transition: opacity 400ms;
+        transition: opacity 400ms;
+        -webkit-transition-delay: 0.2s;
+        transition-delay: 0.2s;
+      }
+      .visible {
+        visibility: visible;
+
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0) scale(1, 1);
+        transform: translate3d(0, 0, 0) scale(1, 1);
+      }
+    </style>
+
+    <div id="backdrop" class="backdrop animated-opacity"></div>
+    
+    <iframe id="browser" src="" class="browser animated"></iframe>
+    <sdk-js-browser id="codebrowser" class="codebrowser animated"></sdk-js-browser>
+
+    <div center center-justified id="closebutton" class="close-button unselectable animated">CLOSE</div>
+
+  </template>
+
+  <!-- Script -->
+  <script>
+    Polymer({
+        publish :
+        {
+            opened : false,
+
+            code : false,
+            webrocket : true,
+            autoconnect : 5,
+
+            url : ""
+        },
+
+        closing : false,
+
+        toString : function()
+        {
+            return "open " + this.opened + " url '" + this.url + "' rocket " + this.webrocket + " code " + this.code;
+        },
+
+        ready : function() 
+        {
+            $(this.$.closebutton).click(function() {
+                this.closing = true;
+                this._animate(false);
+            }.bind(this));
+            
+            this.$.backdrop.addEventListener("transitionend", function() {
+                if (this.closing === true)
+                {
+                    this.opened = false;
+                    this.closing = false;
+
+                    this.url = "";
+                }
+            }.bind(this), true);
+        },
+
+        urlChanged : function()
+        {
+            if (this.url !== "")
+            {
+                this.code = false;
+                this.webrocket = false;
+            }
+        },
+
+        webrocketChanged : function()
+        {
+            if (this.webrocket)
+                this.code = false;
+        },
+
+        codeChanged : function()
+        {
+            this.webrocket = !this.code;
+        },
+
+        openedChanged : function()
+        {
+            if (!this.code)
+                this.$.browser.src = (this.opened ? (this.webrocket ? "/web-rocket/client-polymer.html?autoconnect=" + this.autoconnect : this.url) : "");
+            this._animate(this.opened);
+        },
+
+        downloadCode : function(url)
+        {
+            this.url = "";
+            this.code = true;
+            this.webrocket = false;
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType : "text",
+                context : this,
+                success : function(data, textStatus, jqXHR)
+                {
+                    this.$.codebrowser.text = data;
+                },
+                error : function(jqXHR, textStatus, errorThrown)
+                {
+                    console.log(jqXHR, textStatus, errorThrown);
+                    this.$.codebrowser.text = "Failed to load code from " + url;
+                    showToast("Failed to load code from " + url);
+                }
+            });
+        },
+
+        _animate : function(visible)
+        {
+            var elems = [ this.$.backdrop, (!this.code ? this.$.browser : this.$.codebrowser), this.$.closebutton ];
+            for (var i = elems.length - 1; i >= 0; i--)
+            {
+                var elem = $(elems[i]);
+                if (visible)
+                    elem.addClass("visible");
+                else
+                    elem.removeClass("visible");
+
+                if (this.closing)
+                    elem.css("visibility", "visible");
+                else if (!visible)
+                    elem.removeAttr("style");
+            };
+            var disabledBrowser = $(this.code ? this.$.browser : this.$.codebrowser);
+            disabledBrowser.removeClass("visible");
+            disabledBrowser.removeAttr("style");
+        }
+    });
+  </script>
+</polymer-element>

@@ -1,0 +1,98 @@
+
+<!-- Polymer -->
+<link rel="import" href="../bower/polymer/polymer.html">
+
+<!-- Deps -->
+<link rel="import" href="../bower/core-list/core-list.html">
+
+<polymer-element name="sdk-space-list" attributes="spaces">
+  <!-- HTML -->
+  <template>
+
+    <style>
+      core-list {
+        
+      }
+
+      .item {
+        box-sizing: border-box;
+        height: 60px;
+        border-bottom: 1px solid #ddd;
+        padding: 5px;
+        cursor: pointer;
+        color: #444;
+        overflow: hidden;
+      }
+
+      .selected {
+        background-color: rgb(8,149,195);
+        color: #f1f1f1;
+      }
+
+      .image {
+        height: 50px;
+        width: 50px;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        margin-right: 15px;
+      }
+      
+      .name {
+        line-height: 15px;
+      }
+      
+      .company {
+        font-weight: 400;
+      }
+    </style>
+
+    <core-list id="list" data="{{ spaces }}" height="60" multi style="height: {{ height }}px;">
+      <template>
+        <div layout horizontal class="item {{ { selected: selected } | tokenList }}" id="{{model.TxmlId}}">
+          <div class="image" style="background-image: url('{{ model.TxmlImageUrl || model.CompanyImageUrl || 'sdk/img/meshmoon-logo.png' }}');"></div>
+          <div layout vertical flex>
+            <div class="name">{{ model.TxmlName }}</div>
+            <div class="company" flex>{{ model.CompanyName }}</div>
+          </div>
+        </div>
+      </template>
+      <template if="{{ spaces.length == 0 }}">
+        <div layout horizontal class="item">
+          <div layout vertical flex>
+            <div class="company" flex>You are not administrator for any Space in Meshmoon</div>
+          </div>
+        </div>
+      </template>
+    </core-list>
+
+  </template>
+
+  <!-- Script -->
+  <script>
+    Polymer({
+        publish :
+        {
+            height : 150
+        },
+
+        created : function()
+        {
+            this.spaces = [];
+        },
+
+        spacesChanged : function()
+        {
+          console.log(this.spaces);
+        },
+
+        selected : function()
+        {
+            var txmlIds = [];
+            $(".selected", this.$.list).each(function() {
+                txmlIds.push($(this).attr("id"));
+            });
+            return txmlIds;
+        }
+    });
+  </script>
+</polymer-element>
