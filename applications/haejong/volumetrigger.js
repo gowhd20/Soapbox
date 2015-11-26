@@ -1,8 +1,8 @@
 //var ACTIVE_MATERIAL = "local://green.material";
 //var UNACTIVE_MATERIAL = "local://red.material";
 
-var _SPEECH_BEGIN			= "speech_started";
-var _SPEECH_END 			= "speech_ended";
+var _MSG_SPEECH_BEGIN			= "speech_started";
+var _MSG_SPEECH_END 			= "speech_ended";
 
 if (Soapbox == undefined)
 	var Soapbox = {};
@@ -45,7 +45,7 @@ Soapbox.volumeTrigger.prototype = {
 
 		console.LogInfo("speech begins by "+ ent.name);
 		/* singal to peers that speech begins*/
-		me.Exec(4, _SPEECH_BEGIN);
+		me.Exec(4, _MSG_SPEECH_BEGIN);
 	    /*
 		var mats = me.mesh.meshMaterial;
 		mats[0] = ACTIVE_MATERIAL;
@@ -56,7 +56,7 @@ Soapbox.volumeTrigger.prototype = {
 	entityLeft : function(ent) {
 		console.LogInfo("speech ends by " + ent.name);
 		/* singal to peers that speech ends */
-		me.Exec(4, _SPEECH_END);
+		me.Exec(4, _MSG_SPEECH_END);
 	/*
     var mats = me.mesh.meshMaterial;
     mats[0] = UNACTIVE_MATERIAL;

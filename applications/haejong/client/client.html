@@ -44,28 +44,6 @@
     <!-- Meshmoon Web Rocket -->
     <script src="lib/meshmoon-webrocket-deps.js"></script>
     <script src="meshmoon-webrocket.js"></script>
-
-
-	<!-- Meshmoon scene -->
-	<script src="Signals.js"></script>
-	<script src="scene/Component2.js"></script>
-	<script src="scene/Attribute2.js"></script>
-
-	<script src="DataSerializer2.js"></script>
-	<script src="DataDeserializer2.js"></script>
-	<script src="WebTundraModel2.js"></script>
-	<script src="WebSocketClient2.js"></script>
-	<script src="scene/EC_DynamicComponent2.js"></script>
-	<script src="scene/EC_Mesh2.js"></script>
-	<script src="scene/EC_Name2.js"></script>
-	<script src="scene/EC_Placeable2.js"></script>
-	<script src="scene/EC_RigidBody2.js"></script>
-	<script src="scene/EC_Script2.js"></script>
-	<script src="scene/EC_AnimationController2.js"></script>
-	
-	<script src="scriptTest.js"></script>
-	<script src="App.js"></script>
-
 </head>
 <body>
 
@@ -100,14 +78,12 @@
             }
         }
     });
-	console.log("scriptttttttttttttttttttttttttttttttttt");
     EC_Script.registerNativeScriptReplacement({
         "avatar-manager" : "meshmoon-applications://meshmoon/avatar/avatar-manager.webrocketjs",
         "user-presence"  : "meshmoon-applications://meshmoon/user-presence/user-presence.webrocketjs",
         "communication"  : "meshmoon-applications://meshmoon/comms/communication.webrocketjs",
         "rts-camera"     : "meshmoon-applications://meshmoon/rts-camera/rts-camera.webrocketjs",
-        "rss-reader"     : "meshmoon-applications://meshmoon/rss-feed-reader/rss-feed-reader.webrocketjs",
-		
+        "rss-reader"     : "meshmoon-applications://meshmoon/rss-feed-reader/rss-feed-reader.webrocketjs"
     });
 </script>
 

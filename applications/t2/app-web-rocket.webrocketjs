@@ -1,4 +1,5 @@
 var _MSG_INTRODUCTION    = "MSG_Action_Introduction";
+var _MSG_RAYCAST = "MSG_raycast";
 
 console.log("haha");
 var WebRocketApplication = IApplication.$extend(
@@ -6,12 +7,25 @@ var WebRocketApplication = IApplication.$extend(
     __init__ : function()
     {
         this.$super("t2");
-
+		var self = this;
         this.initUi();
+
+		var rayCastEnt;
+		this.rayCastEnt = rayCastEnt;
+		window.AudioContext	= window.AudioContext || window.webkitAudioContext;
+		var context	= new AudioContext();
+		console.log(context);
+		var listOfMeshObject = [];
+		listOfMeshObject = this.getListOfMeshObj();
+		this.listOfMeshObject = listOfMeshObject;
+		
 		console.log("client connected");
 		console.log(this.entity);
+		var foothold = Tundra.scene.entityByName("soapbox_footbold");
+		this.foothold = foothold;
         // Listen for client/server sent entity actions
         this.entity.onEntityAction(this, this.onEntityAction);
+		this.foothold.onEntityAction(this, this.object);
 
         // Introduce client app to the server
         this.entity.exec(EntityAction.Server, _MSG_INTRODUCTION);
@@ -19,10 +33,10 @@ var WebRocketApplication = IApplication.$extend(
 		var loader = new THREE.JSONLoader();
 		
 		var jsonData = Tundra.asset.requestAsset("hotspots.json");
-		entFoothold = jsonData.onCompleted(this, this.haejongAsset);
+		entFoothold = jsonData.onCompleted(this, this.haejongAsset)
 		
 		/* dynamic objects and movement that require to render everytime*/
-		var onRenderFcts = []; 
+		var onRenderFctsWithoutParam = []; 
 		/* get camera entity*/
 		var cameraEnt = Tundra.client.cameraApplications[0].application.cameraEntity;		
 		
@@ -52,46 +66,41 @@ var WebRocketApplication = IApplication.$extend(
 				alert('you have got no WebRTC webcam');
 			});				
 		}else	
-		console.assert(false)
+		console.assert(false);
+	
+		console.log(this);
 		//---------------------------------------//
 		
 		/*create video texture */
-		var texture = new THREE.Texture(video);
-		this.texture = texture;
+		var videotexture = new THREE.Texture(video);
+		this.videotexture = videotexture;
 		
-		onRenderFcts.push(function(){
-			webRocketApplication.videoTextureUpdate();
+		onRenderFctsWithoutParam.push(function(){
+			self.videoTextureUpdate();
 		});
+		onRenderFctsWithoutParam.push(function(){
+			self.rayCast();
+		});		
 		var bufferGeoTest = THREE.BufferGeometry();
 		console.log(Tundra.renderer.scene, bufferGeoTest);
 	
 		///////////////////////////////////////////////////////
 		
 
-/* 		url = 'soapbox_foothold.json';
-
-		loader.load(url, function(geometry, materials){
+		var sub = Tundra.events.subscribe("MyCustomEvent", function(msg, list, isSomething) {
+			console.log(msg);         // "Hello Subscriber"
+			console.log(list);        // [ 12, 15 ]
+			console.log(isSomething); // false
+		});
 		
-			var material = new THREE.MeshBasicMaterial(materials);
-			var soapHolderMesh = new THREE.Mesh(geometry, material);
-			soapHolderMesh.name = "soap_holder";
-			soapHolderMesh.position.x = 66.21;
-			soapHolderMesh.position.y = 9.59;
-			soapHolderMesh.position.z = -44;
-			
-			var threeGroup = new THREE.Object3D();
-			threeGroup.add(soapHolderMesh);
-			Tundra.renderer.scene.add(threeGroup);
-			console.log(soapHolderMesh);  
-		}); */
-
-
+		
+		
 		/////////////////////////////////////
 		
-		var foothold = Tundra.scene.entityByName("soapbox_footbold");
+
 		console.log(foothold, Tundra.scene);
 		var geometry = new THREE.BoxGeometry( 5, 5, 5 );
-		var material = new THREE.MeshBasicMaterial( { map: texture} );
+		var material = new THREE.MeshBasicMaterial( { map: this.videotexture} );
 		console.log(geometry);
 		var cubeMesh = new THREE.Mesh( geometry, material );
 		
@@ -101,28 +110,88 @@ var WebRocketApplication = IApplication.$extend(
 		cubeMesh.name = "video screen";
 
 		var threeGroup = new THREE.Object3D();
-		threeGroup.add(cubeMesh);
-		Tundra.renderer.scene.add(threeGroup);
+		this.threeGroup = threeGroup;
+		this.threeGroup.add(cubeMesh);
 		
 		cameraEnt.placeable.lookAt(cubeMesh.position);
-		console.log(cubeMesh.position);
+
+/* 		url = 'soapbox_foothold.json';
+
+		loader.load(url, function(geometry, materials){
 		
-		console.log(cubeMesh);
-		
+			var material = new THREE.MeshBasicMaterial(materials);
+			var soapHolderMesh = new THREE.Mesh(geometry, material);
+			itself.soapHolderMesh = soapHolderMesh;
+			soapHolderMesh.name = "soap_holder";
+			soapHolderMesh.position.x = 66.21;
+			soapHolderMesh.position.y = 9.59;
+			soapHolderMesh.position.z = -44;
+			itself.threeGroup.add(soapHolderMesh);
+		}); */
+
+		Tundra.renderer.scene.add(threeGroup);
+		console.log(Tundra.renderer.scene);
+
 		/* render dynamic objects one by one */
 		requestAnimationFrame(function animation(){
-			onRenderFcts.forEach(function(onRenderFcts){
-				onRenderFcts();
+		
+			onRenderFctsWithoutParam.forEach(function(onRenderFctsWithoutParam){
+				onRenderFctsWithoutParam();
 			})
 			requestAnimationFrame(animation);
 		})
 		console.log(Tundra.renderer.scene);
     },
 	/* update video state */
-	videoTextureUpdate : function(){
+	videoTextureUpdate : function()
+	{
 		if( this.video.readyState !== this.video.HAVE_ENOUGH_DATA )	
 			return;
-		this.texture.needsUpdate	= true;			
+		this.videotexture.needsUpdate	= true;	
+	},
+	
+	getListOfMeshObj : function()
+	{
+		var arr = [];
+		Tundra.renderer.scene.traverse(function(object)
+		{
+			if(object instanceof THREE.Mesh)
+				arr.push(object);
+		}, function(error)
+		{
+			console.log("getting list of object failed");
+		});
+		if(arr.length !== 0)
+			return arr;
+		else
+			return false;
+
+		
+	},
+	
+	rayCast : function()
+	{	
+		var rayCastEnt = Tundra.renderer.raycast();
+		var threeRacaster = Tundra.renderer.raycaster;
+		var obj = threeRacaster.intersectObjects(this.listOfMeshObject);
+		
+		if(obj)
+		{
+			var raycastData;
+			this.raycastData = obj;
+			this.entity.exec(EntityAction.Local, _MSG_RAYCAST);
+		}
+	},
+	rayCastForThreeObj : function()
+	{
+	},
+	
+	object : function(entityAction)
+	{
+		if (entityAction.name === _MSG_RAYCAST)
+		{
+			console.log(entityAction);
+		}
 	},
 
     /** 
@@ -152,7 +221,7 @@ var WebRocketApplication = IApplication.$extend(
             "background-color" : "rgba(8,149,195,0.8)"
         };
 
-        this.ui.welcome = $("<div/>", { text : "Welcome to the 't2' application" });
+        this.ui.welcome = $("<div/>", { text : "Welcome to the 'virtual_test' application" });
         this.ui.welcome.css(this.ui.baseCSS);
         this.ui.welcome.hide();
 
@@ -161,19 +230,22 @@ var WebRocketApplication = IApplication.$extend(
     },
 
     onEntityAction : function (entityAction)
-    {
-		console.log(entityAction);
+	{
         if (entityAction.name === _MSG_INTRODUCTION)
         {
             this.log.info("Server messaged it is ready");
         }
+		else if (entityAction.name === _MSG_RAYCAST)
+		{
+			//this.log.info("rayyyy");
+		}
     },
 	
     haejongAsset : function (asset)
-    {
+	{
         var obj = asset.data;
 		console.log(obj);
-        console.log( "hotspot length is "+obj.hotspots.length );
+        //console.log( "hotspot length is "+obj.hotspots.length );
 		
 /* 		var entity = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
 		entity.name = "soapbox_footbold";
@@ -208,6 +280,5 @@ var WebRocketApplication = IApplication.$extend(
     }
 	
 });
-
 // Start the application by instantiating it
 var webRocketApplication = new WebRocketApplication();

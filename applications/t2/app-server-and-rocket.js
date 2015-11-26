@@ -6,7 +6,7 @@
 // Include dependency scripts.
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/class.js");
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/admino-utils-common-deploy.js");
-//engine.IncludeFile("local://volumetrigger.js");
+
 
 // Import QtCore for both server and client. Import QtGui only on client.
 engine.ImportExtension("qt.core"); 

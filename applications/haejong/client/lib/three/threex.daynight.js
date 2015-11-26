@@ -1,0 +1,19 @@
+/**
+    @author https://github.com/jeromeetienne/threex.daynight
+    MIT license https://github.com/jeromeetienne/threex.daynight/blob/master/LICENSE
+
+    Modified later by Adminotech Oy to fit WebRocket usage.
+*/
+var THREEx=THREEx||{};THREEx.DayNight={},THREEx.DayNight.domeRadius=2e3,THREEx.DayNight.currentPhase=function(a){var b=Math.sin(0),c=Math.sin(a);return c>b?"day":c>Math.sin(-Math.PI/6)?"twilight":"night"},
+////////////////////// StarField
+THREEx.DayNight.StarField=function(a){var b=new THREE.MeshBasicMaterial({map:a,side:THREE.BackSide,color:8421504,depthWrite:!1}),c=new THREE.SphereGeometry(THREEx.DayNight.domeRadius-50,32,32),d=new THREE.Mesh(c,b);d.renderDepth=-1e5,this.object3d=d,this.update=function(a){var c=THREEx.DayNight.currentPhase(a);if("day"===c)d.visible=!1;else if("twilight"===c)d.visible=!1;else{var e=Math.abs(Math.sin(a));d.visible=!0,d.rotation.y=a/5,b.color.setRGB(e,e,e)}}},
+////////////////////// SunLight
+THREEx.DayNight.SunLight=function(){var a=new THREE.DirectionalLight(16777215,1);this.object3d=a,this.update=function(b){a.position.x=0,a.position.y=9e4*Math.sin(b),a.position.z=9e4*Math.cos(b);var c=THREEx.DayNight.currentPhase(b);"day"===c?a.color.set("rgb(255,"+(Math.floor(200*Math.sin(b))+55)+","+Math.floor(200*Math.sin(b))+")"):"twilight"===c&&
+// Original logic set 1 intensity during on "twilight"
+a.color.set("rgb("+(255-Math.floor(510*Math.sin(b)*-1))+","+(55-Math.floor(110*Math.sin(b)*-1))+",0)")},this.setIntensity=function(b){
+/// Tundra setter, value comes from sky components brightness
+a.intensity=.5*b,a.intensity>.5&&(a.intensity=.5)}},
+////////////////////// SunSphere
+THREEx.DayNight.SunSphere=function(){var a=new THREE.SphereGeometry(50,32,32),b=new THREE.MeshBasicMaterial({color:16711680}),c=new THREE.Mesh(a,b);c.renderDepth=-1e5,this.object3d=c,this.update=function(a){var b=THREEx.DayNight.domeRadius-100;1e3>b&&(b=1e3),c.position.x=0,c.position.y=Math.sin(a)*b,c.position.z=Math.cos(a)*b;var d=THREEx.DayNight.currentPhase(a);"day"===d?c.material.color.set("rgb(255,"+(Math.floor(200*Math.sin(a))+55)+","+(Math.floor(200*Math.sin(a))+5)+")"):"twilight"===d&&c.material.color.set("rgb(255,55,5)")}},
+////////////////////// Skydom
+THREEx.DayNight.Skydom=function(){var a=new THREE.SphereGeometry(THREEx.DayNight.domeRadius,32,32),b=THREEx.DayNight.Skydom.Shader,c=THREE.UniformsUtils.clone(b.uniforms),d=new THREE.ShaderMaterial({depthWrite:!1,vertexShader:b.vertexShader,fragmentShader:b.fragmentShader,uniforms:c,side:THREE.BackSide}),e=new THREE.Mesh(a,d);e.renderDepth=-1e5,this.object3d=e,this.update=function(a){var b=THREEx.DayNight.currentPhase(a);"day"===b?(c.topColor.value.set("rgb(0,120,255)"),c.bottomColor.value.set("rgb(255,"+(Math.floor(200*Math.sin(a))+55)+","+Math.floor(200*Math.sin(a))+")")):"twilight"===b?(c.topColor.value.set("rgb(0,"+(120-Math.floor(240*Math.sin(a)*-1))+","+(255-Math.floor(510*Math.sin(a)*-1))+")"),c.bottomColor.value.set("rgb("+(255-Math.floor(510*Math.sin(a)*-1))+","+(55-Math.floor(110*Math.sin(a)*-1))+",0)")):(c.topColor.value.set("black"),c.bottomColor.value.set("black"))}},THREEx.DayNight.Skydom.Shader={uniforms:{topColor:{type:"c",value:(new THREE.Color).setHSL(.6,1,.75)},bottomColor:{type:"c",value:new THREE.Color(16777215)},offset:{type:"f",value:400},exponent:{type:"f",value:.6}},vertexShader:["varying vec3 vWorldPosition;","void main() {","   vec4 worldPosition = modelMatrix * vec4( position, 1.0 );","   vWorldPosition = worldPosition.xyz;","   gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );","}"].join("\n"),fragmentShader:["uniform vec3 topColor;","uniform vec3 bottomColor;","uniform float offset;","uniform float exponent;","varying vec3 vWorldPosition;","void main() {","   float h = normalize( vWorldPosition + offset ).y;","   gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( h, exponent ), 0.0 ) ), 1.0 );","}"].join("\n")};

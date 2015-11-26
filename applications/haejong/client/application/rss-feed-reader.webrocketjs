@@ -1,0 +1,16 @@
+/*
+ * Meshmoon WebRocket v1.5.8
+ * www.adminotech.com / www.meshmoon.com
+ *
+ * Copyright Adminotech Ltd. 2013-2015 - All Rights Reserved.
+ * No part of this script or any of its contents
+ * may be used, reproduced, copied, modified or adapted,
+ * without the prior written consent of the author.
+ *
+ * See included 3rd party libraries for their licenses.
+ *
+ * Commit   1.5.8-0-af30dbf
+ * Date     20.7.2015 9:55:32 UTC
+ * Meta     @preserve
+ */
+var RssReader=IApplication.$extend({__init__:function(){this.$super("RssReader"),this.ui={},this.rssUrl="",Tundra.asset.loadScript("http://meshmoon.data.s3.amazonaws.com/app/banner-rss/jquery.li-scroller.1.0.js").done(function(a,b){this.initUi()}.bind(this)).fail(function(){this.log.error("Failed to load RSS library dependency from http://meshmoon.data.s3.amazonaws.com/app/banner-rss/jquery.li-scroller.1.0.js. Cannot start application.")}.bind(this))},initUi:function(){$("head").append('<link rel="stylesheet" href="css/li-scroller.css">');var a=this.entity.component("DynamicComponent","AdminotechApplicationSettings"),b=null!=a?a.attribute("Content"):void 0;if(void 0!==b&&null!==b&&"string"==typeof b.value)this.rssUrl=b.value,this.log.debug("Application settings read. Feed URL",this.rssUrl);else try{this.rssUrl=this.entity.component("DynamicComponent","RssReader_settings").attribute("URL").getClone()}catch(c){}if(this.ui.list=$("<ul/>",{id:"__RssReaderList"}),""===this.rssUrl||"string"!=typeof this.rssUrl)return void this.log.warn("RSS feed url not set to 'Content' in settings.");var d=Tundra.asset.requestAsset(this.rssUrl);null!=d&&d.onCompleted(this,function(a){var b=this.ui.list;$(a.data).find("item").each(function(){var a=$("<li/>"),c=$("<span/>"),d=$("<a/>");c.append($(this).find("pubDate").text()),c.appendTo(a),d.attr("href",$(this).find("link").text()),d.attr("target","_blank"),d.append($(this).find("title").text()),d.appendTo(a),a.appendTo(b)}),Tundra.ui.addWidgetToScene(this.ui.list),this.ui.list.liScroll(),this.ui.widget=this.ui.list.parent().parent(),this.ui.widget.css({position:"absolute","z-index":6}),this.ui.widget.position({my:"bottom center",at:"top center",of:Tundra.ui.taskbar})})}});new RssReader;
