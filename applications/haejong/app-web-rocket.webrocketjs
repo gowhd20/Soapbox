@@ -1,4 +1,4 @@
-var _MSG_INTRODUCTION    = "MSG_Action_Introduction";
+var _MSG_INITIATION    = "MSG_client_initiation";
 
 
 /* SYSTEM MESSAGES */
@@ -8,6 +8,13 @@ var _MSG_RAYCAST 				= "MSG_intersected_objects";
 var _MSG_MOUSE_PRESS			= "MSG_mouse_press";
 var _MSG_MOUSE_RELEASE			= "MSG_mouse_release";
 var _MSG_MOUSE_HOVER			= "MSG_mouse_hover_object";
+var _MSG_COMMENTS				= "MSG_recieved";
+var _MSG_BROADCAST				= "MSG_broadcast";
+var _MSG_SEARCH_USER			= "MSG_search_request";
+var _MSG_FOUND_USER				= "MSG_found_response";
+var _MSG_NOT_FOUND_USER 		= "MSG_not_found_response";
+var _MSG_VOTE					= "MSG_user_vote";
+
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -29,19 +36,18 @@ var WebRocketApplication = IApplication.$extend(
 		}); */
 		
 		// load scripts for middleware connection
-
 		
 		console.log(Physijs);
-
 		
 		var self = this;
         this.$super("soapbox_virtual");
 		console.log("client connected");
+		
 		// user id
-		var userId = Tundra.client.loginProperties.username;
-		this.userId = userId;
-		var speech_info = {name : this.userId};
-		console.log(speech_info);
+		var userName = Tundra.client.loginProperties.username;
+		var userInfo = {"name" : userName, "id" : ""};
+		this.userInfo = userInfo;
+		console.log(this.userInfo);
 
 		this.initUi(self);
 		
@@ -49,11 +55,21 @@ var WebRocketApplication = IApplication.$extend(
 		var onRenderFctsWithParams = [];
 		var listOfMeshObject = [];
 		var listOfThreeGroup = [];
-		var raycastData;
+		var raycastData;		
+		var isSpeechOn;
+		var speakerInfo;
+		var availableVote = 1;
+		var hexOfBtn1;
+		var hexOfBtn2;
 		
 		// create obj for middleware
 		var soapbox = new Soapbox();
 		this.soapbox = soapbox;
+		
+		this.speakerInfo = speakerInfo;
+		this.availableVote = availableVote;
+		this.hexOfBtn1 = hexOfBtn1;
+		this.hexOfBtn2 = hexOfBtn2;
 		console.log(this.soapbox);
 		
 
@@ -66,36 +82,18 @@ var WebRocketApplication = IApplication.$extend(
 
 		this.video.width = 320;
 		this.video.height = 240;
-		this.video.autoplay = false;
+		
+		// because sometimes video.autoplay = false not working!
+		this.video.autoplay = true;
 		this.video.loop = true;
-
+		
 		/* THREE */
-		var videoTexture = new THREE.Texture(this.video);
+		var videoTexture = new THREE.Texture(video);
 		this.videoTexture = videoTexture;
-		var context	= this.getAudioContext();
-		this.context = context;
 
 		var threeMeshGroup = new THREE.Object3D();
 		this.threeMeshGroup = threeMeshGroup;
-		
-		console.log(this.videoTexture);
-		console.log(this.context);
-		
-		
-		//--have to look later 20/10/2015
-/* 		this.videoTexture.addEventListener('play', function(event)
-		{
-			// create a source node from the mediaElement
-			var sourceNode	= this.context.createMediaElementSource(this.videoTexture.image);
-			// connect it to WebAudio API
-			sourceNode.connect(this.context.destination);
-			console.log(sourceNode);
-			
-		}, function(error){
-			consosle.log("get audio failed");
-		}); */
-		//////////////////
-		console.log(this.videoTexture);
+
 		
 		////////////////////////////////////
 		//* create objects for the scene *//
@@ -108,7 +106,7 @@ var WebRocketApplication = IApplication.$extend(
 		objPosition = [60.21,9.59,-44.35];
 		geo = [4, 4, 4];
 		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", objPosition, geo);
-		
+
 		objPosition = [63.20,8.00,-46.36];
 		url = './localAssets/vote.jpg'; 
 		geo = [1, 1, 1];
@@ -116,17 +114,14 @@ var WebRocketApplication = IApplication.$extend(
 		
 		url = './localAssets/vote2.jpg'; 	
 		objPosition = [63.20,8.00,-42.36];
-		var btnMesh_2 = this.createBtnObj(url, "button2", objPosition, geo); // button2
-		console.log(btnMesh, screenMesh);
+		var btnMesh2 = this.createBtnObj(url, "button2", objPosition, geo); // button2
 
 		// to change texture's emissive attribute
-		var hex1 = this.threeMeshGroup.children[1].material.emissive.getHex();
-		this.hex1 = hex1;
-		var hex2 = this.threeMeshGroup.children[2].material.emissive.getHex();
-		this.hex2 = hex2;
+		hexOfBtn1 = this.getHexValue(btnMesh);
+		hexOfBtn2 = this.getHexValue(btnMesh2);
+ 
 		// add objects to the three.scene
 		Tundra.renderer.scene.add(this.threeMeshGroup);
-		console.log(this.threeMeshGroup);
 
 
         ////* Listeners *////
@@ -136,22 +131,17 @@ var WebRocketApplication = IApplication.$extend(
 		
 		// mouse event listeners
 		var mouseEvents = Tundra.input.onMouseEvent(this, this.onMouseEvent); // function(context, callback) 
-		console.log(Tundra.renderer);		
 		Tundra.events.subscribe(_MSG_MOUSE_PRESS, this, this.onMousePress); 
 		Tundra.events.subscribe(_MSG_MOUSE_RELEASE, this, this.onMouseRelease);
 		Tundra.events.subscribe(_MSG_MOUSE_HOVER, this, this.onMouseHoverObj);
+		
+		// user search event listeners
+		//this.entity.onEntityAction(_MSG_found_user, this, sendActionRequest);
 
-        // Introduce client app to the server
-        this.entity.exec(EntityAction.Server, _MSG_INTRODUCTION);
+        // introduce this user to the server
+        this.entity.exec(EntityAction.Server, _MSG_INITIATION);
 
 		console.log(Tundra.client);
-		
-		
-		// get video stream
-/* 		if(this.getVideoStream(this, this.video))
-			this.video = this.getVideoStream(this, this.video);
-		else
-			console.log("Loading video failed"); */
 
 		// connect to middleware
 		//this.connToMiddleware(this);
@@ -200,9 +190,10 @@ var WebRocketApplication = IApplication.$extend(
 			console.assert(false)
 		/*******************************************/
 
+		console.log(this);
 		
 		/***********connect to middleware******************/
-		stomp = soapbox.connect(function()
+/* 		stomp = soapbox.connect(function()
 		{
 			soapbox.submit({"lefttime": "17/10/2015 12:00", "name": "Jilin",
                         "topic": "Today is hot!", "password": 1234});
@@ -212,7 +203,7 @@ var WebRocketApplication = IApplication.$extend(
 		}, function(error)
 		{
 			console.log("attempt to connect to middleware has failed");
-		});		
+		});	 */	
 		/**************************************************/
 		
 		// stop soapbox 
@@ -235,9 +226,6 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(tex);
 		///////////////////////////////////////////////////////
 
-
-		console.log(this.foothold, Tundra.scene);
-		console.log(Tundra.renderer);
 /* 		var newScene = Tundra.renderer.scene.clone(new Physijs.Scene);
 		Tundra.renderer.scene = newScene;
 		console.log(Tundra.renderer); */
@@ -248,10 +236,9 @@ var WebRocketApplication = IApplication.$extend(
 
 /* 		listOfThreeGroup = this.getListOfObj3D();
 		this.listOfThreeGroup = listOfThreeGroup; */
-		
-		console.log(Tundra.input);
 
 		// loop for video render etc.
+		// im thinking this function title is not predetermined
 		requestAnimationFrame(function animation()
 		{
 			if(onRenderFctsWithoutParam.length !== 0)
@@ -275,17 +262,63 @@ var WebRocketApplication = IApplication.$extend(
 			}
 			requestAnimationFrame(animation);
 		})
-		
-	
     },
 
 	///////////////////////////////////////////
 	//*  this.methods in alphabetical order *//
 	///////////////////////////////////////////
+	
 
-	createBtnObj : function(url, name, initPosition, geo)
-	{
-		console.log(url);
+	addNewComment : function(comment, name, id){
+		
+		var commentInnerDiv = document.createElement("div");
+		var userIdInner = document.createElement("b");
+		
+		this.commentInnerDiv = commentInnerDiv;
+		this.userIdInner = userIdInner;
+		
+		this.commentInnerDiv.className = "commentDiv";
+		
+		this.commentInnerDiv.id = "commentInnerDiv";
+		this.userIdInner.id = "userIdInnerDiv";
+		
+		
+		$(this.userIdInner).css({
+			position : "relative",
+			top : "5px",
+			width : "100%",
+			height : "30px",
+			color : "black",
+			//font-weight : "bold";				
+		});	
+		$(this.commentInnerDiv).css({
+			position : "relative",
+			top : "5px",
+			width : "100%",
+			height : "30px",
+			color : "black",
+			//font-weight : "bold"			
+		});		
+		
+		this.userIdInner.innerHTML = name + ": ";
+		this.commentInnerDiv.innerHTML = comment;
+		
+		/* //mouse hover, not used 			
+		$(self.userIdInner).mouseover(function(){
+			$(self.userIdInner).css("background-color", "red");
+		});
+		$(self.userIdInner).mouseout(function(){
+			$(self.userIdInner).css("background-color", "white");
+		});	 */	
+		
+				
+		this.commentDiv.appendChild(this.userIdInner);
+		this.commentDiv.appendChild(this.commentInnerDiv);
+
+	},
+	
+	createBtnObj : function(url, name, initPosition, geo){
+
 		if(!url){
 			console.log("error, no url of texture for the obj");
 			return;
@@ -319,9 +352,8 @@ var WebRocketApplication = IApplication.$extend(
 
 	},
 	
-	createCubeObj : function(texture, name, initPosition, geo)
-	{
-		console.log(texture);
+	createCubeObj : function(texture, name, initPosition, geo){
+
 		if(!texture){
 			console.log("error, no url of texture for the obj");
 			return false;
@@ -357,28 +389,11 @@ var WebRocketApplication = IApplication.$extend(
 		return cubeMesh;
 	},
 	
-	getAudioContext : function()
-	{ //-- http://srchea.com/experimenting-with-web-audio-api-three-js-webgl
-		try {
-			if(typeof webkitAudioContext === 'function') { // webkit-based
-				var context = new webkitAudioContext();
-			}
-			else { // other browsers that support AudioContext
-				var context = new AudioContext();
-			}
-		}
-		catch(e) {
-			// Web Audio API is not supported in this browser
-			alert("Web Audio API is not supported in this browser");
-		}
-		if(context)
-			return context;
-		else
-			return false;
+	getHexValue : function(obj){
+		return obj.material.emissive.getHex();
 	},
 	
-	getListOfMeshObj : function()
-	{
+	getListOfMeshObj : function(){
 		var arr = [];
 		Tundra.renderer.scene.traverse(function(object)
 		{
@@ -397,8 +412,7 @@ var WebRocketApplication = IApplication.$extend(
 		
 	},
 	
-	getListOfObj3D : function()
-	{
+	getListOfObj3D : function(){
 		var arr = [];
 		Tundra.renderer.scene.traverse(function(object)
 		{
@@ -415,8 +429,7 @@ var WebRocketApplication = IApplication.$extend(
 		
 	},
 
-    initUi : function(self)
-    {
+    initUi : function(self){
         this.ui = {};
         this.ui.baseCSS = {
             "position" : "absolute",
@@ -476,13 +489,6 @@ var WebRocketApplication = IApplication.$extend(
 		var txt = document.createTextNode("send comment");
 		this.sendCommBtn = sendCommBtn;
 		
-		// comment sent triggered
-		$(this.sendCommBtn).click(function(){
-			var v = document.getElementById("commentInput");
-			console.log(v.value);
-			v.value == "";
-		});
-		
 		this.sendCommBtn.appendChild(txt);
 		this.sendCommBtn.setAttribute("type", "button");
 		this.sendCommBtn.className = "commentBtn";
@@ -507,57 +513,71 @@ var WebRocketApplication = IApplication.$extend(
 			bottom : "150px",
 			width : "100%",
 			height : "50%",
-			background : "green",
-			color : "white"		
+			background : "white"			
 		});
 		this.commentDiv.style.overflow = "scroll";
 		
 		this.dashboard.appendChild(this.commentDiv);
 		
-		// inner div for comment area
-		var commentInnerDiv = document.createElement("div");
-		this.commentInnerDiv = commentInnerDiv;
-		this.commentInnerDiv.className = "commentDiv";
-		this.commentInnerDiv.id = "commentInnerDiv";
-		$(this.commentInnerDiv).css({
-			position : "relative",
-			top : "5px",
-			width : "100%",
-			height : "30px",
-			color : "white"		
-		});
-		this.commentInnerDiv.innerHTML = "comment will be shown in this areaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-				
-		$(this.commentInnerDiv).mouseover(function(){
-			$(self.commentInnerDiv).css("background-color", "red");
-		});
-		$(this.commentInnerDiv).mouseout(function(){
-			$(self.commentInnerDiv).css("background-color", "green");
-		});
+		
+		// comment btn clicked
+		$(this.sendCommBtn).click(function(){
+			var v = document.getElementById("commentInput");
+			//addNewComment(self, v.value);
+			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, v.value);
 
+			v.value == "";
+		});
 		
-		this.commentDiv.appendChild(this.commentInnerDiv);
-		
-		//$("dashboard").hide();
+		$("dashboard").hide();
 		/**********************************************************/
-		
     },
 
-    onEntityAction : function(entityAction)
-	{
-        if(entityAction.name === _MSG_INTRODUCTION)
+    onEntityAction : function(entityAction){
+		
+        if(entityAction.name === _MSG_INITIATION)
 		{
+			// CLIENT INIT
             this.log.info("Server messaged it is ready");
+			
+			// user init with init params received from the server
+			// speech state, user id determined by server
+			this.userInit(entityAction.parameters[0], entityAction.parameters[1]);
         }
+		else if(entityAction.name === _MSG_BROADCAST)
+		{ 
+		// entityAction.parameters[0] -> text
+		// entityAction.parameters[1] -> user name
+		// entityAction.parameters[2] -> user id
+			this.addNewComment(entityAction.parameters[0], entityAction.parameters[1], entityAction.parameters[2]);
+		}
+		// entityAction.parameters[0] -> entity name
+		// entityAction.parameters[1] -> entity id
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
-            this.log.info("speech started");
-			this.video.play();
+			var url = []; // path for texture
+			var objPosition = [];
+			var geo = [];
+			
+			objPosition = [60.21,9.59,-44.35];
+			geo = [4, 4, 4];
+			var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", objPosition, geo);
+			
+			// name, id, entity name, entity id
+			setSpeechBegin(this, entityAction.parameters[0]);
         }
 		else if(entityAction.name === _MSG_SPEECH_END)
         {
-            this.log.info("speech ended");
-			this.video.pause();
+			// name, id, entity name, entity id
+			setSpeechEnd(this, entityAction.parameters[0]);
+        }
+		// find user request
+		else if(entityAction.name === _MSG_FOUND_USER)
+        {
+        }
+		else if(entityAction.name === _MSG_NOT_FOUND_USER)
+        {
+			
         }
 		// raycast tundra objects
 		else if(entityAction.name === _MSG_RAYCAST)
@@ -566,19 +586,16 @@ var WebRocketApplication = IApplication.$extend(
 
 			Tundra.events.send(_MSG_MOUSE_HOVER);
 				//console.log(this.raycastData[0].object.name);
-
 			
 		}
     },
 	
-	onMouseEvent : function(event)
-	{
+	onMouseEvent : function(event){
 		// set live coordinate of the mouse
 		var x;
 		var y;
 		this.x = event.x;
 		this.y = event.y;
-		//console.log(event);
 		
 		if(event.type === "press"){
 			Tundra.events.send(_MSG_MOUSE_PRESS, event);
@@ -588,32 +605,38 @@ var WebRocketApplication = IApplication.$extend(
 		}
 	},
 	
-	onMouseHoverObj : function()
-	{
+	onMouseHoverObj : function(){
 		var hoverObj = this.raycastData;
-		
+			
 		if(hoverObj == '' || typeof hoverObj == 'undefined'){return;}
 		else{
 			for(var i=0; i<hoverObj.length; i++){
-				if(hoverObj[i].object.name == 'button1'){
-					this.threeMeshGroup.children[1].material.emissive.setHex( 0x00ff00 );
-					this.threeMeshGroup.children[2].material.emissive.setHex(this.hex2);
-					return;
-				}else if(hoverObj[i].object.name == 'button2'){
-					this.threeMeshGroup.children[2].material.emissive.setHex( 0xff0000 );
-					this.threeMeshGroup.children[1].material.emissive.setHex(this.hex1);
-					return;
+				var obj = hoverObj[i].object; // get name of obj in which current mouse is upon 
+				// find mouse hover on voting blocks
+				if(obj.name == 'button1' | obj.name == 'button2'){
+					if(obj.name == 'button1'){
+						this.setHexValue(hoverObj[i].object, 0x00ff00, "button2", this.hexOfBtn2);
+						return;
+					}else if(obj.name == 'button2'){
+						this.setHexValue(hoverObj[i].object, 0xff0000, "button1", this.hexOfBtn1);
+						return;
+					}
+					else{ // set colour back
+					}
 				}
 				else{
-					this.threeMeshGroup.children[1].material.emissive.setHex(this.hex1);
-					this.threeMeshGroup.children[2].material.emissive.setHex(this.hex2);
+					// set back the colour 
+					this.setHexValueBack("button1", this.hexOfBtn1);
+					this.setHexValueBack("button2", this.hexOfBtn2);
+					
+					// find other obj if needed
 				}
 			}
 		}	
 	},
 	
-	onMousePress : function(event) 
-	{	
+	onMousePress : function(event){	
+	
 		var objTargetted;	
 		console.log(event.type)
 		console.log(event);
@@ -624,24 +647,40 @@ var WebRocketApplication = IApplication.$extend(
 			for(var i=0; i<objTargetted.length; i++)
 			{
 				console.log(objTargetted[i].object.name);
+				
+				// vote clicked
 				if(objTargetted[i].object.name == 'button1'){
-					//$("dashboard").toggle();
-					$("dashboard").show();
+					// vote dislike
+					this.onVote(0);
+				}else if(objTargetted[i].object.name == 'button2'){
+					// vote like
+					this.onVote(1);
 				}
 			}
 		}
-		//TODO 
+		//TODO
+		this.video.pause();			
 	},
 	
-	onMouseRelease : function(event) 
-	{
+	onVote : function(vote){
+		var vote = vote;
+		if(vote == 1){
+			
+		}else{
+			
+		}
+			
+	},
+	
+	onMouseRelease : function(event){
+		
 		console.log(event.type)
 		// TODO 
 	},
 	
 
-	rayCast : function()
-	{	
+	rayCast : function(){	
+	
 		var rayCastEnt = Tundra.renderer.raycast();
 		var threeRaycaster = Tundra.renderer.raycaster;
 		var obj = threeRaycaster.intersectObjects(this.listOfMeshObject);
@@ -653,32 +692,73 @@ var WebRocketApplication = IApplication.$extend(
 		
 		return false;
 	},
+	
+	setHexValue : function(obj, toHexValue, nearObj, toHexValueSec){
+		if(typeof nearObj == "undefined"){
+			
+			obj.material.emissive.setHex(toHexValue);	
+		}else if(typeof nearObj == "string"){
+			
+			obj.material.emissive.setHex(toHexValue);
+			var secondObj = this.threeMeshGroup.getObjectByName(nearObj);
+			secondObj.material.emissive.setHex(toHexValueSec);
+		}else{
+			obj.material.emissive.setHex(toHexValue);
+			nearObj.material.emissive.setHex(toHexValueSec);
+		}
+	},
+	
+	setHexValueBack : function(obj, toHexValue){
+		if(typeof obj == "string"){
+			var obj = this.threeMeshGroup.getObjectByName(obj);
+			obj.material.emissive.setHex(toHexValue);
+		}else{
+			obj.material.emissive.setHex(toHexValue);
+		}
+	},
+	
 
-	videoTextureUpdate : function()
-	{
+	videoTextureUpdate : function(){
+		
 		if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
 			return;
 		this.videoTexture.needsUpdate	= true;
 	},
 	
+	// init with params that sent from the server
+	userInit : function(speechState, id){
+		
+		this.isSpeechOn = speechState;
+		this.userInfo.id = id;			// current client'
+		console.log(this.isSpeechOn);
+		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
+			console.log(this.isSpeechOn +  "in the if");
+			this.video.pause();
+
+			//this.video.pause();
+			console.log(this);
+			
+			$("dashboard").hide();
+		}else if(this.isSpeechOn == 1){
+			console.log(this.isSpeechOn);
+			this.video.play();
+			console.log(this);
+			$("dashboard").show();
+		}
+	},
+	
 
 	// NOT USED
-    haejongAsset : function(asset)
-	{
+    haejongAsset : function(asset){
 
 		var entity_soapHolder = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
 		var entity_hotspot = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
-		//var entity_soapbox = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
 
 		entity_soapHolder.name = "soapbox_foothold";
 		entity_hotspot.name = "hotpot";
-		//entity_soapbox.name = "soapbox";
 
 		entity_soapHolder.mesh.meshRef = "local://soapbox_foothold.mesh";
 		entity_soapHolder.mesh.materialRefs = ["local://soapbox_foothold.material"];
-
-		//entity_soapbox.mesh.meshRef = "local://soapbox.mesh";
-		//entity_soapbox.mesh.materialRefs = ["local://soapbox.material"];
 
 		entity_hotspot.mesh.meshRef = "local://Cube.001.mesh";
 		entity_hotspot.mesh.materialRefs = [
@@ -690,9 +770,6 @@ var WebRocketApplication = IApplication.$extend(
 		entity_soapHolder.placeable.setScale(new THREE.Vector3(1, 1, 1));
 		entity_soapHolder.placeable.setRotation(new THREE.Vector3(0, 52, 0));
 
-		//entity_soapbox.placeable.setPosition(new THREE.Vector3(66.20,8.59,-44.36));
-		//entity_soapbox.placeable.setScale(new THREE.Vector3(1, 1, 1));
-		//entity_soapbox.placeable.setRotation(new THREE.Vector3(0, 52, 0));
 
 		entity_hotspot.placeable.setPosition(new THREE.Vector3(70.2041016,7.68280506,-44.3602066));
 		entity_hotspot.placeable.setScale(new THREE.Vector3(1, 1, 1));
@@ -705,8 +782,32 @@ var WebRocketApplication = IApplication.$extend(
 
 });
 
+function setSpeechBegin(context, infoData)
+{
+	var self = context;
+	self.isSpeechOn = 1;
+	self.speakerInfo = JSON.parse(infoData);
+	
+	
+	console.log("speech begins by: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+	$("dashboard").show();
+	self.video.play();
+}
 
+function setSpeechEnd(context, infoData)
+{
+	var self = context;
+	self.isSpeechOn = 0;
+	console.log("speech ends by: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+	
+	self.speakerInfo = JSON.parse(infoData);
+	console.log(self.speakerInfo);
+	$("dashboard").hide();
+	self.video.pause();	
+}
 
+// bug, disconnection of user while giving a speech, need to terminate speech by system
+// bug2, when login, if one is not giving speech, should obtain video stream from another user who's giving speech
 
 // Start the application by instantiating it
 var webRocketApplication = new WebRocketApplication();
