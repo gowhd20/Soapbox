@@ -8,9 +8,9 @@ if (Soapbox == undefined)
 Soapbox.Users = function(){
 	var isServer = server.IsRunning();
 	var userCount = 0;
-	this.userCount = userCount;
-
 	var userInfoList = [];
+	
+	this.userCount = userCount;
 	this.userInfoList = userInfoList;
 	
 	if(isServer){
@@ -25,46 +25,41 @@ Soapbox.Users = function(){
 
 Soapbox.Users.prototype = {
 	
-	storeUserData : function(userID, userConnection) 
-	{
+	storeUserData : function(userID, userConnection){
 
-		var userInfo = {"name":userConnection.Property("username"),"id":userID,"vote":0};
+		var userInfo = {"name":userConnection.Property("username"),"id":userID};
 		this.userInfoList.push(userInfo);
 		console.LogInfo(this.userInfoList[this.userCount].name);
 		console.LogInfo(this.userInfoList[this.userCount].id);
-		if(this.userInfoList[this.userCount].vote == 0)
-			console.LogInfo("no");
-		else
-			console.LogInfo("yes");
-		
+
 		this.countUser(1);
 		
 	},
 	
-	countUser : function(f)
-	{
-		if(f==true){
+	countUser : function(f){
+		if(f){
 			this.userCount = this.userCount+1;
 		}else{
 			if(this.userCount>0)
 				this.userCount = this.userCount-1;
-			this.userCount;
+			//this.userCount;
 		}
 	},
 	
-	onClientDisconnected : function(connId, connection)
-    {
+	onClientDisconnected : function(connId, connection){
+		console.LogInfo(connId);
+		this.removeUserById(connId);  // remove logout user from the cache
 		this.countUser(0);
         //user disconnect
     },
 	
-	searchUserById : function(id)
-	{
+	searchUserById : function(id){
 		var id = id;
-		var numOfUsersOnline = this.userCount;
+		var cntOnlineUsers = this.userCount;
 		var usrList = this.userInfoList;
 
-		for(var i=0;i<numOfUsersOnline;i++){
+		for(var i=0;i<cntOnlineUsers;i++){
+
 			if(usrList[i].id == id){
 				return usrList[i].name;
 			}
@@ -75,16 +70,27 @@ Soapbox.Users.prototype = {
 	//speakerName[6] = identical with id ==> example: Avatar1 
 	getUserIdByEntityName : function(entName){
 		var id;
+		console.LogInfo(entName);
 		id = entName.slice(6, entName.length);
 		return id;
 	},
 	
 	getUserInfoById : function(id){
 		var searchingId = id;
-		this.searchingId = searchingId;
-		return this.searchUserById(this.searchingId);
+		return this.searchUserById(id);
 		
 	},
+	
+	removeUserById : function(id){
+		var id = id;
+		for(var i=0; i<this.userCount; i++){
+			if(this.userInfoList[i].id == id){
+				this.userInfoList.splice(i, 1);
+
+				return;
+			}
+		}
+	}
 	
 };
 

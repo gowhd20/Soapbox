@@ -14,6 +14,7 @@ var _MSG_SEARCH_USER			= "MSG_search_request";
 var _MSG_FOUND_USER				= "MSG_found_response";
 var _MSG_NOT_FOUND_USER 		= "MSG_not_found_response";
 var _MSG_VOTE					= "MSG_user_vote";
+var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 
 
 var WebRocketApplication = IApplication.$extend(
@@ -45,7 +46,7 @@ var WebRocketApplication = IApplication.$extend(
 		
 		// user id
 		var userName = Tundra.client.loginProperties.username;
-		var userInfo = {"name" : userName, "id" : ""};
+		var userInfo = {"name" : userName, "id" : "", "avatarName" : ""};
 		this.userInfo = userInfo;
 		console.log(this.userInfo);
 
@@ -58,18 +59,14 @@ var WebRocketApplication = IApplication.$extend(
 		var raycastData;		
 		var isSpeechOn;
 		var speakerInfo;
-		var availableVote = 1;
-		var hexOfBtn1;
-		var hexOfBtn2;
+		var toVote = 1;
 		
 		// create obj for middleware
 		var soapbox = new Soapbox();
 		this.soapbox = soapbox;
 		
 		this.speakerInfo = speakerInfo;
-		this.availableVote = availableVote;
-		this.hexOfBtn1 = hexOfBtn1;
-		this.hexOfBtn2 = hexOfBtn2;
+		this.toVote = toVote;
 		console.log(this.soapbox);
 		
 
@@ -84,7 +81,7 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.height = 240;
 		
 		// because sometimes video.autoplay = false not working!
-		this.video.autoplay = true;
+		this.video.autoplay = false;
 		this.video.loop = true;
 		
 		/* THREE */
@@ -222,6 +219,14 @@ var WebRocketApplication = IApplication.$extend(
 			self.raycastData = self.rayCast();				// this => window					
 		
 		});
+		// for testing position 
+/* 		onRenderFctsWithoutParam.push(function(){
+
+			if(typeof self.speakerInfo == 'undefined'){}
+			else{
+				self.callUsers(self.speakerInfo.speakerInfo[1].entityInfo.entityId);
+			}
+		}); */
 		tex = THREE.ImageUtils.loadTexture("./localAssets/like.jpg");
 		console.log(tex);
 		///////////////////////////////////////////////////////
@@ -241,14 +246,15 @@ var WebRocketApplication = IApplication.$extend(
 		// im thinking this function title is not predetermined
 		requestAnimationFrame(function animation()
 		{
-			if(onRenderFctsWithoutParam.length !== 0)
+			var len = onRenderFctsWithoutParam.length;
+			if(len !== 0)
 			{
 				onRenderFctsWithoutParam.forEach(function(onRenderFctsWithoutParam)
 				{
 					onRenderFctsWithoutParam();
 				});
 			}
-			if(onRenderFctsWithParams.length !== 0)
+			if(len !== 0)
 			{
 				onRenderFctsWithParams.forEach(function(onRenderFctsWithParams)
 				{
@@ -262,6 +268,7 @@ var WebRocketApplication = IApplication.$extend(
 			}
 			requestAnimationFrame(animation);
 		})
+		
     },
 
 	///////////////////////////////////////////
@@ -269,39 +276,32 @@ var WebRocketApplication = IApplication.$extend(
 	///////////////////////////////////////////
 	
 
-	addNewComment : function(comment, name, id){
+	addNewComment : function(text, name, id){
 		
-		var commentInnerDiv = document.createElement("div");
-		var userIdInner = document.createElement("b");
+		var userName = name;
+		var text = text;
 		
-		this.commentInnerDiv = commentInnerDiv;
-		this.userIdInner = userIdInner;
+		var commentInnerDiv = document.createElement("div");  // comment holder div
+		var comment = document.createElement("b"); // comment text
 		
-		this.commentInnerDiv.className = "commentDiv";
+		commentInnerDiv.id = "commentInnerDiv";
+		comment.id = "comment";	
 		
-		this.commentInnerDiv.id = "commentInnerDiv";
-		this.userIdInner.id = "userIdInnerDiv";
-		
-		
-		$(this.userIdInner).css({
+		$(commentInnerDiv).css({
 			position : "relative",
-			top : "5px",
+			width : "100%",
+			height : "40px",		
+		});
+		
+		$(comment).css({
+			position : "relative",
 			width : "100%",
 			height : "30px",
 			color : "black",
 			//font-weight : "bold";				
-		});	
-		$(this.commentInnerDiv).css({
-			position : "relative",
-			top : "5px",
-			width : "100%",
-			height : "30px",
-			color : "black",
-			//font-weight : "bold"			
-		});		
+		});			
 		
-		this.userIdInner.innerHTML = name + ": ";
-		this.commentInnerDiv.innerHTML = comment;
+		comment.innerHTML = name + ": " + text;
 		
 		/* //mouse hover, not used 			
 		$(self.userIdInner).mouseover(function(){
@@ -311,10 +311,37 @@ var WebRocketApplication = IApplication.$extend(
 			$(self.userIdInner).css("background-color", "white");
 		});	 */	
 		
-				
-		this.commentDiv.appendChild(this.userIdInner);
-		this.commentDiv.appendChild(this.commentInnerDiv);
+		var parent = this.dashboard.children["commentDiv"];
+		parent.appendChild(commentInnerDiv);
+		commentInnerDiv.appendChild(comment);
 
+	},
+	
+	isSpeakerMe : function(){
+		
+		if(typeof this.userInfo == 'undefined' | typeof this.speakerInfo == 'undefined'){
+			console.log("User information or current Speaker information is not known to the system");
+			return false;
+		}
+		
+		var userId = this.userInfo.id;
+		var speakerId = this.speakerInfo.speakerInfo[0].generalInfo.id;
+		
+		if(userId == speakerId){
+			return true;
+		}else
+			return false;
+	},
+	
+	callUsers : function(entId){
+		//var ava = Tundra.scene.entityById(this.speakerInfo.speakerInfo[1].entityInfo.entityId);
+		//var ent = Tundra.scene.entityById(entId);
+		var ca = Tundra.scene.entityByName(entId);
+		console.log(Tundra.input);
+		console.log(ca);
+		ca.placeable.setPosition(66.12,8.33,-40.09);
+		ca.placeable.update();
+		//console.log(ava.placeable.position());
 	},
 	
 	createBtnObj : function(url, name, initPosition, geo){
@@ -455,23 +482,55 @@ var WebRocketApplication = IApplication.$extend(
 		this.dashboard = dashboard;
 		this.dashboard.className = "dashboard";
 		this.dashboard.id = "dashboard";
+		
         $(this.dashboard).css({
             position: "absolute",
             "background-color" : "black",
             width: "300px",
             height: "100%",
             right: "0px",
-			opacity: 0.5,
-			filter: "alpha(opacity=50)" /* For IE8 and earlier */
+			//opacity: 0.5,
+			//filter: "alpha(opacity=50)" /* For IE8 and earlier */
         });
-		this.dashboard.style.overflow = "scroll";
+		//this.dashboard.style.overflow = "scroll";
 		
 		document.body.appendChild(this.dashboard);
 		
+		// vote status panel
+		var votePanel = document.createElement("div");
+		votePanel = votePanel;
+		votePanel.id = "votePanel";
+		
+		$(votePanel).css({
+		    position: "absolute",
+            "background-color" : "white",
+            width: "100%",
+            height: "40px",
+			top : "20px"
+
+		});
+		this.dashboard.appendChild(votePanel);
+		
+		// like and dislike
+		var voteType = document.createElement("b");
+		voteType.id = "voteType";			
+		$(voteType).css({
+			position : "relative",
+			height : "50%",
+			color : "black",
+			left : "30px"
+			//font-weight : "bold"				
+		});	
+	
+		votePanel.appendChild(voteType);
+		
+		
 		// comment text input
 		var txtInput = document.createElement("input");
-		this.txtInput = txtInput;
-		$(this.txtInput).css({
+		txtInput.setAttribute("type", "text");
+		txtInput.id = "commentInput"
+		
+		$(txtInput).css({
 		    position: "absolute",
             "background-color" : "white",
             width: "100%",
@@ -479,49 +538,61 @@ var WebRocketApplication = IApplication.$extend(
 			bottom : "100px"
 
 		});
-		this.txtInput.setAttribute("type", "text");
-		this.txtInput.className = "commentInput"; // set the CSS class
-		this.txtInput.id = "commentInput"
-		this.dashboard.appendChild(this.txtInput); // put it into the DOM
+		
+		this.dashboard.appendChild(txtInput); // put it into the DOM
 		
 		// send comment button
-		var sendCommBtn = document.createElement("button");
-		var txt = document.createTextNode("send comment");
-		this.sendCommBtn = sendCommBtn;
+		var sendCommBtn = document.createElement("button");		
+		sendCommBtn.appendChild(document.createTextNode("Send comment"));
+		sendCommBtn.setAttribute("type", "button");
+		sendCommBtn.id = "commentBtn";
 		
-		this.sendCommBtn.appendChild(txt);
-		this.sendCommBtn.setAttribute("type", "button");
-		this.sendCommBtn.className = "commentBtn";
-		this.sendCommBtn.id = "commentBtn";
-		$(this.sendCommBtn).css({
+		$(sendCommBtn).css({
 			position : "absolute",
 			"background-color" : "white",
 			bottom : "55px",
 			width: "100px",
-			right : "50px"
+			left : "30px"
 			
 		});
-		this.dashboard.appendChild(this.sendCommBtn);
+		this.dashboard.appendChild(sendCommBtn);
+		
+		
+		// teleport to the speech venue
+		var teleportBtn = document.createElement("button");
+
+		teleportBtn.appendChild(document.createTextNode("Teleport to the speech"));
+		teleportBtn.setAttribute("type", "button");
+		teleportBtn.id = "teleportBtn";
+		
+		$(teleportBtn).css({
+			position : "absolute",
+			"background-color" : "white",
+			bottom : "55px",
+			width: "100px",
+			right : "20px"
+			
+		});
+		this.dashboard.appendChild(teleportBtn);
 		
 		// div for comment area
 		var commentDiv = document.createElement("div");
-		this.commentDiv = commentDiv;
-		this.commentDiv.className = "commentDiv";
-		this.commentDiv.id = "commentDiv";
-		$(this.commentDiv).css({
+		commentDiv.id = "commentDiv";
+		commentDiv.style.overflowY = "scroll";
+		
+		$(commentDiv).css({
 			position : "absolute",
 			bottom : "150px",
 			width : "100%",
 			height : "50%",
-			background : "white"			
+			background : "white",		
 		});
-		this.commentDiv.style.overflow = "scroll";
 		
-		this.dashboard.appendChild(this.commentDiv);
+		this.dashboard.appendChild(commentDiv);
 		
 		
 		// comment btn clicked
-		$(this.sendCommBtn).click(function(){
+		$(sendCommBtn).click(function(){
 			var v = document.getElementById("commentInput");
 			//addNewComment(self, v.value);
 			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, v.value);
@@ -529,9 +600,20 @@ var WebRocketApplication = IApplication.$extend(
 			v.value == "";
 		});
 		
+		// teleport btn clicked
+		$(teleportBtn).click(function(){
+			self.onClickTeleport();
+		});
+
 		$("dashboard").hide();
 		/**********************************************************/
     },
+	
+	onClickTeleport : function(){
+		
+		this.entity.exec(EntityAction.Server, _MSG_USER_TELEPORT_REQ, this.userInfo.avatarName);
+
+	},
 
     onEntityAction : function(entityAction){
 		
@@ -542,7 +624,8 @@ var WebRocketApplication = IApplication.$extend(
 			
 			// user init with init params received from the server
 			// speech state, user id determined by server
-			this.userInit(entityAction.parameters[0], entityAction.parameters[1]);
+
+			this.initParams(JSON.parse(entityAction.parameters[0]));
         }
 		else if(entityAction.name === _MSG_BROADCAST)
 		{ 
@@ -555,21 +638,14 @@ var WebRocketApplication = IApplication.$extend(
 		// entityAction.parameters[1] -> entity id
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
-			var url = []; // path for texture
-			var objPosition = [];
-			var geo = [];
-			
-			objPosition = [60.21,9.59,-44.35];
-			geo = [4, 4, 4];
-			var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", objPosition, geo);
 			
 			// name, id, entity name, entity id
-			setSpeechBegin(this, entityAction.parameters[0]);
+			this.setSpeechBegin(entityAction.parameters[0]);
         }
 		else if(entityAction.name === _MSG_SPEECH_END)
         {
 			// name, id, entity name, entity id
-			setSpeechEnd(this, entityAction.parameters[0]);
+			this.setSpeechEnd(entityAction.parameters[0]);
         }
 		// find user request
 		else if(entityAction.name === _MSG_FOUND_USER)
@@ -587,6 +663,10 @@ var WebRocketApplication = IApplication.$extend(
 			Tundra.events.send(_MSG_MOUSE_HOVER);
 				//console.log(this.raycastData[0].object.name);
 			
+		}
+		else if(entityAction.name === _MSG_VOTE)
+		{
+			this.refreshVote(entityAction.parameters[0], entityAction.parameters[1]); // like, dislike
 		}
     },
 	
@@ -608,32 +688,54 @@ var WebRocketApplication = IApplication.$extend(
 	onMouseHoverObj : function(){
 		var hoverObj = this.raycastData;
 			
-		if(hoverObj == '' || typeof hoverObj == 'undefined'){return;}
+		if(hoverObj == '' | typeof hoverObj == 'undefined'){return;}
 		else{
-			for(var i=0; i<hoverObj.length; i++){
-				var obj = hoverObj[i].object; // get name of obj in which current mouse is upon 
-				// find mouse hover on voting blocks
-				if(obj.name == 'button1' | obj.name == 'button2'){
-					if(obj.name == 'button1'){
-						this.setHexValue(hoverObj[i].object, 0x00ff00, "button2", this.hexOfBtn2);
-						return;
-					}else if(obj.name == 'button2'){
-						this.setHexValue(hoverObj[i].object, 0xff0000, "button1", this.hexOfBtn1);
-						return;
+			var objLen = hoverObj.length;
+			for(var i=0; i<objLen; i++){
+				var obj = hoverObj[i].object; // get name of obj in which current mouse is upon
+				
+				// find vote blocks
+				if(this.toVote & this.isSpeechOn){
+					if(obj.name == 'button1' | obj.name == 'button2'){
+						if(obj.name == 'button1'){
+							this.setHexValue(obj, 0x00ff00, "button2", 0); // 0 otherwise use getHexValue() to store inital hexvalue of the obj 
+							return;
+						}else if(obj.name == 'button2'){
+							this.setHexValue(obj, 0xff0000, "button1", 0);
+							return;
+						}
+					}else{
+						// set back the colour 
+						this.setHexValueBack("button1", 0);
+						this.setHexValueBack("button2", 0);
 					}
-					else{ // set colour back
-					}
-				}
-				else{
-					// set back the colour 
-					this.setHexValueBack("button1", this.hexOfBtn1);
-					this.setHexValueBack("button2", this.hexOfBtn2);
+				}else{ // find vote blocks, will be made a method in a near future
 					
-					// find other obj if needed
 				}
+				
+				// find other obj if needed
 			}
 		}	
 	},
+	//// not working yet for some reason
+/* 	onMouseHoverBtn : function(obj){
+		// find mouse hover on voting blocks
+		if(obj.name == 'button1' | obj.name == 'button2'){
+			if(obj.name == 'button1'){
+				console.log("im on button1");
+				this.setHexValue(obj, 0x00ff00, "button2", this.hexOfBtn2);
+				return;
+			}else if(obj.name == 'button2'){
+				console.log("im on button2");
+				this.setHexValue(obj, 0xff0000, "button1", this.hexOfBtn1);
+				return;
+			}
+		}else{
+			// set back the colour 
+			this.setHexValueBack("button1", this.hexOfBtn1);
+			this.setHexValueBack("button2", this.hexOfBtn2);
+		}		
+	}, */
 	
 	onMousePress : function(event){	
 	
@@ -644,30 +746,49 @@ var WebRocketApplication = IApplication.$extend(
 		
 		if(objTargetted)
 		{
-			for(var i=0; i<objTargetted.length; i++)
+			var objLen = objTargetted.length;
+			for(var i=0; i<objLen; i++)
 			{
 				console.log(objTargetted[i].object.name);
-				
-				// vote clicked
-				if(objTargetted[i].object.name == 'button1'){
-					// vote dislike
-					this.onVote(0);
-				}else if(objTargetted[i].object.name == 'button2'){
-					// vote like
-					this.onVote(1);
-				}
+				var obj = objTargetted[i].object;
+				// user votes
+				this.onMousePressBtn(obj);
 			}
 		}
-		//TODO
-		this.video.pause();			
+		//TODO		
 	},
 	
+	onMousePressBtn : function(obj){
+		
+		if(this.toVote & this.isSpeechOn){
+			if(obj.name == 'button1' | obj.name == 'button2'){
+				if(obj.name == 'button1'){
+					// vote like
+					this.onVote(1);
+					this.setHexValueBack("button1", 0);
+
+					
+				}else if(obj.name == 'button2'){
+					// vote dislike
+					this.onVote(0);
+					this.setHexValueBack("button2", 0);
+					this.setHexValueBack("button2", 0);
+				}
+			}
+		}		
+	},
+	
+	// user vote on the speaker
 	onVote : function(vote){
 		var vote = vote;
-		if(vote == 1){
+		this.toVote = 0;
+		if(vote){
+			console.log("you liked the speech");
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
 			
 		}else{
-			
+			console.log("you disliked the speech");
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
 		}
 			
 	},
@@ -676,6 +797,14 @@ var WebRocketApplication = IApplication.$extend(
 		
 		console.log(event.type)
 		// TODO 
+	},
+	
+	prompSpeechMsg : function(){
+		
+		if (confirm("A speech is about to begin! Click 'ok' to teleport to the venue") == true) {
+			this.onClickTeleport();
+		} else {}
+	
 	},
 	
 
@@ -693,12 +822,28 @@ var WebRocketApplication = IApplication.$extend(
 		return false;
 	},
 	
+	refreshVote : function(like, dislike){
+
+		if(typeof like == 'undefined'){
+			like = 0;
+		}else if(typeof dislike == 'undefined'){
+			dislike = 0;
+		}
+		
+		// refresh vote state
+		this.dashboard.children["votePanel"].children["voteType"].innerHTML = "like: " + like + "  " + "dislike: " + dislike;
+	},
+	
+	removeVotePanel : function(){
+		// empty the vote panel
+		this.dashboard.children["votePanel"].children["voteType"].innerHTML = ""; 
+	},
+	
 	setHexValue : function(obj, toHexValue, nearObj, toHexValueSec){
 		if(typeof nearObj == "undefined"){
 			
 			obj.material.emissive.setHex(toHexValue);	
 		}else if(typeof nearObj == "string"){
-			
 			obj.material.emissive.setHex(toHexValue);
 			var secondObj = this.threeMeshGroup.getObjectByName(nearObj);
 			secondObj.material.emissive.setHex(toHexValueSec);
@@ -717,97 +862,103 @@ var WebRocketApplication = IApplication.$extend(
 		}
 	},
 	
+	setSpeechBegin : function(infoData)
+	{
+		this.isSpeechOn = 1; // speech is off state
+		this.toVote = 1;	// right to vote refreshed
+		this.speakerInfo = JSON.parse(infoData);
+		
+		console.log("speech begins by: " + this.speakerInfo.speakerInfo[0].generalInfo.name);
+		
+		// speaker himself should not have a teleport button
+
+		if(this.isSpeakerMe()){
+			this.dashboard.children["teleportBtn"].hidden = true;
+		}else{
+			this.prompSpeechMsg();
+		}
+		
+		$("dashboard").show();
+		this.video.play();
+		//this.callUsers(this.speakerInfo.speakerInfo[1].entityInfo.entityId); // send id of entity
+	},
+	
+	setSpeechEnd : function(infoData)
+	{
+		this.isSpeechOn = 0; // speech is off state
+		this.toVote = 1; // right to vote refreshed
+
+		console.log("speech ends by: " + this.speakerInfo.speakerInfo[0].generalInfo.name);
+		
+		this.speakerInfo = JSON.parse(infoData);
+		this.removeVotePanel();
+		
+		$("dashboard").hide();
+		this.video.pause();	
+	},
+
 
 	videoTextureUpdate : function(){
 		
 		if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
 			return;
-		this.videoTexture.needsUpdate	= true;
+		this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;  
+		//this.videoTexture.needsUpdate	= true;
 	},
 	
 	// init with params that sent from the server
-	userInit : function(speechState, id){
+	initParams : function(initObj){
 		
-		this.isSpeechOn = speechState;
-		this.userInfo.id = id;			// current client'
-		console.log(this.isSpeechOn);
+		this.isSpeechOn = initObj.speechState;
+		this.userInfo.id = initObj.userId;			// current client'
+		this.userInfo.avatarName = "Avatar" + initObj.userId;
+		
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
-			console.log(this.isSpeechOn +  "in the if");
-			this.video.pause();
-
-			//this.video.pause();
-			console.log(this);
 			
-			$("dashboard").hide();
 		}else if(this.isSpeechOn == 1){
-			console.log(this.isSpeechOn);
-			this.video.play();
-			console.log(this);
+			this.refreshVote(initObj.like, initObj.dislike);
+			
 			$("dashboard").show();
+			this.video.play();
 		}
 	},
 	
 
-	// NOT USED
-    haejongAsset : function(asset){
-
-		var entity_soapHolder = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
-		var entity_hotspot = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
-
-		entity_soapHolder.name = "soapbox_foothold";
-		entity_hotspot.name = "hotpot";
-
-		entity_soapHolder.mesh.meshRef = "local://soapbox_foothold.mesh";
-		entity_soapHolder.mesh.materialRefs = ["local://soapbox_foothold.material"];
-
-		entity_hotspot.mesh.meshRef = "local://Cube.001.mesh";
-		entity_hotspot.mesh.materialRefs = [
-			"local://sides.material",
-			"local://front.material",
-			"local://back.material"];
-
-		entity_soapHolder.placeable.setPosition(new THREE.Vector3(66.21,9.59,-44));
-		entity_soapHolder.placeable.setScale(new THREE.Vector3(1, 1, 1));
-		entity_soapHolder.placeable.setRotation(new THREE.Vector3(0, 52, 0));
-
-
-		entity_hotspot.placeable.setPosition(new THREE.Vector3(70.2041016,7.68280506,-44.3602066));
-		entity_hotspot.placeable.setScale(new THREE.Vector3(1, 1, 1));
-		entity_hotspot.placeable.setRotation(new THREE.Vector3(0, 52, 0));
-		console.log(entity_soapHolder);
-
-	}
-
-
-
 });
 
-function setSpeechBegin(context, infoData)
-{
-	var self = context;
-	self.isSpeechOn = 1;
-	self.speakerInfo = JSON.parse(infoData);
-	
-	
-	console.log("speech begins by: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
-	$("dashboard").show();
-	self.video.play();
+// NOT USED
+function haejongAsset(asset){
+
+	var entity_soapHolder = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
+	var entity_hotspot = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
+
+	entity_soapHolder.name = "soapbox_foothold";
+	entity_hotspot.name = "hotpot";
+
+	entity_soapHolder.mesh.meshRef = "local://soapbox_foothold.mesh";
+	entity_soapHolder.mesh.materialRefs = ["local://soapbox_foothold.material"];
+
+	entity_hotspot.mesh.meshRef = "local://Cube.001.mesh";
+	entity_hotspot.mesh.materialRefs = [
+		"local://sides.material",
+		"local://front.material",
+		"local://back.material"];
+
+	entity_soapHolder.placeable.setPosition(new THREE.Vector3(66.21,9.59,-44));
+	entity_soapHolder.placeable.setScale(new THREE.Vector3(1, 1, 1));
+	entity_soapHolder.placeable.setRotation(new THREE.Vector3(0, 52, 0));
+
+
+	entity_hotspot.placeable.setPosition(new THREE.Vector3(70.2041016,7.68280506,-44.3602066));
+	entity_hotspot.placeable.setScale(new THREE.Vector3(1, 1, 1));
+	entity_hotspot.placeable.setRotation(new THREE.Vector3(0, 52, 0));
+	console.log(entity_soapHolder);
+
 }
 
-function setSpeechEnd(context, infoData)
-{
-	var self = context;
-	self.isSpeechOn = 0;
-	console.log("speech ends by: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
-	
-	self.speakerInfo = JSON.parse(infoData);
-	console.log(self.speakerInfo);
-	$("dashboard").hide();
-	self.video.pause();	
-}
 
-// bug, disconnection of user while giving a speech, need to terminate speech by system
-// bug2, when login, if one is not giving speech, should obtain video stream from another user who's giving speech
+// TODO1, text scroll only applies in y axis
+// TODO2, button to hide dashboard
 
 // Start the application by instantiating it
 var webRocketApplication = new WebRocketApplication();

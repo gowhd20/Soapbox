@@ -21,6 +21,10 @@ var _MSG_BROADCAST			= "MSG_broadcast";
 var _MSG_SPEECH_BEGIN		= "speech_started";
 var _MSG_SPEECH_END 		= "speech_ended";
 var _MSG_VOTE				= "MSG_user_vote";
+var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
+
+
+var SET_LOCATION_TO_SPEECH  = {"x":66.12, "y":10, "z":-40.09};
 
 
 // Name the logging channel.
@@ -42,19 +46,29 @@ var Server = Class.extend(
 		
 		var speakerInfo;
 		var isSpeechOn = 0;
+		var speechInfo;
+		var speechCnt;
+		var set
 		
 		this.speakerInfo = speakerInfo;
 		this.users = users;
 		this.isSpeechOn = isSpeechOn;
+		this.speechCnt = speechCnt;
+		this.speechInfo = speechInfo;
 		
 		//set soapbox volumetrigger
-		this.setSoapboxSystemTrigger();
+		var soapboxEnt = this.setSoapboxSystemTrigger();
+		soapboxEnt.entityEnter.connect(this, this.onSpeechTriggered);
+		soapboxEnt.entityLeave.connect(this, this.offSpeechTerminated);
+		
         LogInfo("Server startedfff");
 
 				
         // Client sent entity actions
         me.Action(_MSG_INITIATION).Triggered.connect(this, this.onClientIntroduction);
 		me.Action(_MSG_COMMENTS).Triggered.connect(this, CommentControl);
+		me.Action(_MSG_VOTE).Triggered.connect(this, VoteControl);
+		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);
 
         // Frame updates
         frame.Updated.connect(this, this.onUpdate);
@@ -84,11 +98,6 @@ var Server = Class.extend(
         Log("Client #" + connection.id + " disconnected");
     },
 	
-	dumpInJson : function()
-	{
-		
-	},
-	
 	// new client login
     onClientIntroduction : function()
     {
@@ -96,7 +105,13 @@ var Server = Class.extend(
         if (connection != null)
         {
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
-			connection.Exec(me, _MSG_INITIATION, this.isSpeechOn, connection.id);
+
+			if(typeof this.speechInfo == 'undefined'){
+				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0};
+			}else{
+				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike};
+			}
+			connection.Exec(me, _MSG_INITIATION, JSON.stringify(initParams));
         }
         else
             LogError("onClientIntroduction() null entity action sender!");
@@ -109,74 +124,29 @@ var Server = Class.extend(
 		var speakerId = this.users.getUserIdByEntityName(ent.name);
 		var speakerName = this.users.getUserInfoById(speakerId);
 
-		this.speechControl(ent.name, ent.id, speakerName, speakerId, 1);
-		console.LogInfo(this.isSpeechOn);
+		SpeechControl(this, ent, speakerName, speakerId, 1);
 	},
 
 	// speech terminated
 	offSpeechTerminated : function(ent)
 	{
-		/* singal to peers that speech ends */		
+		/* singal to peers that speech ends */
 		var speakerId = this.users.getUserIdByEntityName(ent.name);
 		var speakerName = this.users.getUserInfoById(speakerId);
-		
-		this.speechControl(ent.name, ent.id, speakerName, speakerId, 0);
-		console.LogInfo(this.isSpeechOn);
+		SpeechControl(this, ent, speakerName, speakerId, 0);
 	},
 	
+		
 	// set components of volumetrigger and rigitbody for soap_foot entity
 	setSoapboxSystemTrigger : function()
 	{
-		var soapFootbold = me.parentScene;
 		var soapFootbold = scene.GetEntityByName("soapbox_footbold");
 		var vol = soapFootbold.GetOrCreateComponent("VolumeTrigger");
-		vol.entityEnter.connect(this, this.onSpeechTriggered);
-		vol.entityLeave.connect(this, this.offSpeechTerminated);
 		var rigid = soapFootbold.GetOrCreateComponent("RigidBody");
 		rigid.phantom = true;
+		return vol;
 	},
-	
-	// controls speech begin and end
-	speechControl : function(eName, eId, name, id, action){
-		
-		var speakerId = id;
-		var speakerName = name;
-		var entName = eName;
-		var entId = eId;
-		
-		if(action == 1){
-			
-			if(this.isSpeechOn == 1)
-				// when speech is on, tried to start speech
-				console.LogInfo("Speech is already on by user name: ", this.speakerInfo.speakerInfo[0].generalInfo.name);
-			else{
-				this.isSpeechOn = 1; 
-				console.LogInfo("speech begins by name: " + speakerName);
-				this.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
-				me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(this.speakerInfo));
-
-			}
-		}else if(action == 0){
-			
-			if(speakerId == this.speakerInfo.speakerInfo[0].generalInfo.id){
-				// when speech is off, tried to start speech
-				this.isSpeechOn = 0;			
-				console.LogInfo("speech ends by name: " + speakerName);
-				
-				this.speakerInfo.speakerInfo[0].generalInfo.name = "";
-				this.speakerInfo.speakerInfo[0].generalInfo.id = "";
-				this.speakerInfo.speakerInfo[1].entityInfo.name = "";
-				this.speakerInfo.speakerInfo[1].entityInfo.id = "";
-				
-				me.Exec(4, _MSG_SPEECH_END, JSON.stringify(this.speakerInfo));
-				
-
-			}else{}
-		}
-		
-	}
 });
-
 
 // Script destroy/unload handler. Called automatically 
 // by the framework when the application is closed.
@@ -200,10 +170,108 @@ function CommentControl(cmt)
 		me.Exec(4, _MSG_BROADCAST, cmt, connection.Property("username"), connection.id);
 	}	
 }
-
-function VoteControl()
+// generate speech id
+function GenerateSpeechId(id)
 {
-	var connection = server.ActionSender();
+	var id = id;
+	if(typeof id == "undefined"){
+		id = 0;
+	}
+	id = id+1;
+	return id;
+}
+
+function SpeechAddInfo(context, speechId, name, id, like, dislike)
+{
+	var self = context;
+
+	if(typeof self.speechInfo == "undefined"){
+		self.speechInfo = [];
+		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike}; // name id undefiend
+		self.speechInfo.push(info);
+
+	}else{
+		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike};
+		self.speechInfo.push(info);
+
+	}
+}
+
+	// controls speech begin and end
+function SpeechControl(context, ent, name, id, action){
+	
+	var speakerId = id;
+	var speakerName = name;
+	var entName = ent.name;
+	var entId = ent.id;
+	var self = context;
+	
+	if(action == 1){
+		
+		if(self.isSpeechOn == 1){
+			// when speech is on, tried to start speech
+			console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
+		}
+		else{
+			self.speechCnt = GenerateSpeechId(self.speechCnt);
+			Log("in speechcontrol " + speakerName + " "+ speakerId);
+			SpeechAddInfo(self, self.speechCnt, speakerName, speakerId, 0, 0);   // speechId, name, id, like, dislike // add speech info
+			self.isSpeechOn = 1; 
+			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
+			me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
+			console.LogInfo(self.speakerInfo.speakerInfo[0].generalInfo.name);
+
+		}
+	}else if(action == 0){
+		
+		if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
+			// when speech is off, tried to start speech
+			self.isSpeechOn = 0;			
+			console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+
+			//self.speakerInfo.speakerInfo[0].generalInfo.name = "";
+			//self.speakerInfo.speakerInfo[0].generalInfo.id = "";
+			//self.speakerInfo.speakerInfo[1].entityInfo.name = "";
+			//self.speakerInfo.speakerInfo[1].entityInfo.id = "";
+			
+			me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
+			
+
+		}else{}
+	}
+	
+}
+
+function TeleportReq(entName)
+{
+	if(typeof entName == 'undefined'){
+		Log("ent user sent is not valid, can't teleport the user");
+	}
+	var ent = scene.GetEntityByName(entName);
+	var placeable = ent.placeable;
+    var transform = placeable.transform;
+    transform.pos.x = SET_LOCATION_TO_SPEECH.x;
+    transform.pos.y = SET_LOCATION_TO_SPEECH.y;
+    transform.pos.z = SET_LOCATION_TO_SPEECH.z;
+    placeable.transform = transform;
+}
+
+function VoteControl(vote)
+{
+	var vote = vote;
+	var id = this.speechCnt-1;
+	var conn = server.ActionSender();
+	
+	if(vote == 1){
+
+		this.speechInfo[id].like = this.speechInfo[id].like+1;
+		me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+	}else{
+		this.speechInfo[id].dislike = this.speechInfo[id].dislike+1;
+		me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+	}
+
+	Log(conn.Property("username") + "voted, vote status: " + this.speechInfo[id].like + " " + this.speechInfo[id].dislike);
 }
 
 
