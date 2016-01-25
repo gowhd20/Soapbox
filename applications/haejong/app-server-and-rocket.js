@@ -13,14 +13,14 @@ if (IsClient())
     engine.ImportExtension("qt.gui"); 
 
 // Global variables
-var _appInstance            = null;
-var _applicationName        = "soapbox_virtual";
-var _MSG_INITIATION       	= "MSG_client_initiation";
-var _MSG_COMMENTS			= "MSG_recieved";
-var _MSG_BROADCAST			= "MSG_broadcast";
-var _MSG_SPEECH_BEGIN		= "speech_started";
-var _MSG_SPEECH_END 		= "speech_ended";
-var _MSG_VOTE				= "MSG_user_vote";
+var _appInstance           		= null;
+var _applicationName        	= "soapbox_virtual";
+var _MSG_INITIATION       		= "MSG_client_initiation";
+var _MSG_COMMENTS				= "MSG_recieved";
+var _MSG_BROADCAST				= "MSG_broadcast";
+var _MSG_SPEECH_BEGIN			= "speech_started";
+var _MSG_SPEECH_END 			= "speech_ended";
+var _MSG_VOTE					= "MSG_user_vote";
 var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 
 
@@ -38,7 +38,7 @@ var Server = Class.extend(
     {
 		if (server.IsRunning()){
 			LogInfo("running");
-			var users = server.AuthenticatedUsers();	
+			var users = server.AuthenticatedUsers();	// test
 			if (users.length > 0)
 				LogInfo(users[0] + "haha");
 		}
@@ -48,7 +48,7 @@ var Server = Class.extend(
 		var isSpeechOn = 0;
 		var speechInfo;
 		var speechCnt;
-		var set
+		//var set
 		
 		this.speakerInfo = speakerInfo;
 		this.users = users;
@@ -69,6 +69,7 @@ var Server = Class.extend(
 		me.Action(_MSG_COMMENTS).Triggered.connect(this, CommentControl);
 		me.Action(_MSG_VOTE).Triggered.connect(this, VoteControl);
 		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);
+		
 
         // Frame updates
         frame.Updated.connect(this, this.onUpdate);
@@ -106,11 +107,12 @@ var Server = Class.extend(
         {
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
 
-			if(typeof this.speechInfo == 'undefined'){
+			if(typeof this.speechInfo == 'undefined'){ // if there is no speech going right now
 				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0};
-			}else{
+			}else{ // if there is a speech going right now
 				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike};
 			}
+			// message send back to client with speech info
 			connection.Exec(me, _MSG_INITIATION, JSON.stringify(initParams));
         }
         else
@@ -220,7 +222,6 @@ function SpeechControl(context, ent, name, id, action){
 			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
 			me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
 			console.LogInfo(self.speakerInfo.speakerInfo[0].generalInfo.name);
-
 		}
 	}else if(action == 0){
 		

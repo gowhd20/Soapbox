@@ -1,6 +1,6 @@
-var _MSG_SEARCH_USER	= "MSG_search_request";
-var _MSG_FOUND_USER		= "MSG_found_response";
-var _MSG_NOT_FOUND_USER = "MSG_not_found_response";
+var _MSG_USER_JOINED_VENUE		= "MSG_user_joined";
+var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
+
 
 if (Soapbox == undefined)
 	var Soapbox = {};
@@ -9,7 +9,9 @@ Soapbox.Users = function(){
 	var isServer = server.IsRunning();
 	var userCount = 0;
 	var userInfoList = [];
+	var countUserInVenue = 0;
 	
+	this.countUserInVenue = countUserInVenue;
 	this.userCount = userCount;
 	this.userInfoList = userInfoList;
 	
@@ -18,7 +20,8 @@ Soapbox.Users = function(){
 		server.UserDisconnected.connect(this, this.onClientDisconnected);
 	}
 	// find user request from client
-	//me.Action(_MSG_search_user).Triggered.connect(this, this.searchUserById);
+	me.Action(_MSG_USER_JOINED_VENUE).Triggered.connect(this, this.userJoinedTheVenue);
+	me.Action(_MSG_USER_LEFT_VENUE).Triggered.connect(this, this.userLeftTheVenue);
 	
 	console.LogInfo("users loaded");
 };
@@ -32,6 +35,7 @@ Soapbox.Users.prototype = {
 		console.LogInfo(this.userInfoList[this.userCount].name);
 		console.LogInfo(this.userInfoList[this.userCount].id);
 
+		// count user in
 		this.countUser(1);
 		
 	},
@@ -49,7 +53,9 @@ Soapbox.Users.prototype = {
 	onClientDisconnected : function(connId, connection){
 		console.LogInfo(connId);
 		this.removeUserById(connId);  // remove logout user from the cache
+		
 		this.countUser(0);
+		// user count out
         //user disconnect
     },
 	
@@ -90,7 +96,24 @@ Soapbox.Users.prototype = {
 				return;
 			}
 		}
+	},
+	
+	userJoinedTheVenue : function(userId){
+		this.countUserInVenue = this.countUserInVenue+1;
+		
+		me.Exec(4, _MSG_USER_JOINED_VENUE, this.countUserInVenue);
+		
+	},
+	
+	userLeftTheVenue : function(userId){
+		
+		if(this.countUserInVenue >= 0){
+			this.countUserInVenue = this.countUserInVenue-1;
+			me.Exec(4, _MSG_USER_LEFT_VENUE, this.countUserInVenue);
+		}			
+		
 	}
+	
 	
 };
 

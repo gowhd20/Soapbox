@@ -15,7 +15,12 @@ var _MSG_FOUND_USER				= "MSG_found_response";
 var _MSG_NOT_FOUND_USER 		= "MSG_not_found_response";
 var _MSG_VOTE					= "MSG_user_vote";
 var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
+var _MSG_USER_JOINED_VENUE		= "MSG_user_joined";
+var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
 
+
+var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
+var SET_AREA_FOR_SPEECH_TO  = {"x":60, "z":-39};
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -61,6 +66,12 @@ var WebRocketApplication = IApplication.$extend(
 		var speakerInfo;
 		var toVote = 1;
 		
+		var numOfUsersInTheVenue = 0; // except me
+		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
+		var isUserInTheVenue = 0;
+		this.isUserInTheVenue = isUserInTheVenue;
+	
+		
 		// create obj for middleware
 		var soapbox = new Soapbox();
 		this.soapbox = soapbox;
@@ -103,7 +114,7 @@ var WebRocketApplication = IApplication.$extend(
 		objPosition = [60.21,9.59,-44.35];
 		geo = [4, 4, 4];
 		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", objPosition, geo);
-
+		this.screenMesh = screenMesh;
 		objPosition = [63.20,8.00,-46.36];
 		url = './localAssets/vote.jpg'; 
 		geo = [1, 1, 1];
@@ -219,14 +230,17 @@ var WebRocketApplication = IApplication.$extend(
 			self.raycastData = self.rayCast();				// this => window					
 		
 		});
-		// for testing position 
-/* 		onRenderFctsWithoutParam.push(function(){
 
-			if(typeof self.speakerInfo == 'undefined'){}
-			else{
-				self.callUsers(self.speakerInfo.speakerInfo[1].entityInfo.entityId);
+		
+		// define whether user is near the screen 
+		onRenderFctsWithoutParam.push(function(){
+			if(self.userInfo.avatarName){
+				self.userJoinedVenue(self.userInfo.avatarName);
 			}
-		}); */
+			
+		});
+		
+		
 		tex = THREE.ImageUtils.loadTexture("./localAssets/like.jpg");
 		console.log(tex);
 		///////////////////////////////////////////////////////
@@ -270,6 +284,7 @@ var WebRocketApplication = IApplication.$extend(
 		})
 		
     },
+	
 
 	///////////////////////////////////////////
 	//*  this.methods in alphabetical order *//
@@ -317,31 +332,13 @@ var WebRocketApplication = IApplication.$extend(
 
 	},
 	
-	isSpeakerMe : function(){
-		
-		if(typeof this.userInfo == 'undefined' | typeof this.speakerInfo == 'undefined'){
-			console.log("User information or current Speaker information is not known to the system");
-			return false;
+	// change size of the screen accordingly to the number of users in the venue
+	changeScreenSize : function(numOfUsers){
+		if(numOfUsers >= 1){
+			this.screenMesh.scale.set(0.2, 4, 4); // will be pre-defined
+		}else if(numOfUsers == 0){
+			this.screenMesh.scale.set(1, 1, 1);		// will be pre-defined
 		}
-		
-		var userId = this.userInfo.id;
-		var speakerId = this.speakerInfo.speakerInfo[0].generalInfo.id;
-		
-		if(userId == speakerId){
-			return true;
-		}else
-			return false;
-	},
-	
-	callUsers : function(entId){
-		//var ava = Tundra.scene.entityById(this.speakerInfo.speakerInfo[1].entityInfo.entityId);
-		//var ent = Tundra.scene.entityById(entId);
-		var ca = Tundra.scene.entityByName(entId);
-		console.log(Tundra.input);
-		console.log(ca);
-		ca.placeable.setPosition(66.12,8.33,-40.09);
-		ca.placeable.update();
-		//console.log(ava.placeable.position());
 	},
 	
 	createBtnObj : function(url, name, initPosition, geo){
@@ -416,6 +413,22 @@ var WebRocketApplication = IApplication.$extend(
 		return cubeMesh;
 	},
 	
+	isSpeakerMe : function(){
+		
+		if(typeof this.userInfo == 'undefined' | typeof this.speakerInfo == 'undefined'){
+			console.log("User information or current Speaker information is not known to the system");
+			return false;
+		}
+		
+		var userId = this.userInfo.id;
+		var speakerId = this.speakerInfo.speakerInfo[0].generalInfo.id;
+		
+		if(userId == speakerId){
+			return true;
+		}else
+			return false;
+	},
+	
 	getHexValue : function(obj){
 		return obj.material.emissive.getHex();
 	},
@@ -454,6 +467,10 @@ var WebRocketApplication = IApplication.$extend(
 		else
 			return false;
 		
+	},
+	
+	changeNumOfUsersInVenueListener : function(){
+		//if(this.numOfUsersInTheVenue)
 	},
 
     initUi : function(self){
@@ -655,6 +672,19 @@ var WebRocketApplication = IApplication.$extend(
         {
 			
         }
+		// user enter/leave the speech area
+		else if(entityAction.name === _MSG_USER_JOINED_VENUE)
+		{
+			this.numOfUsersInTheVenue = entityAction.parameters[0];
+			this.changeScreenSize(entityAction.parameters[0]);
+			console.log("screen size change" + entityAction.parameters[0]);
+		}
+		else if(entityAction.name === _MSG_USER_LEFT_VENUE)
+		{
+			this.numOfUsersInTheVenue = entityAction.parameters[0];
+			this.changeScreenSize(entityAction.parameters[0]);
+			console.log("screen size change" + entityAction.parameters[0]);
+		}			
 		// raycast tundra objects
 		else if(entityAction.name === _MSG_RAYCAST)
 		{
@@ -839,6 +869,13 @@ var WebRocketApplication = IApplication.$extend(
 		this.dashboard.children["votePanel"].children["voteType"].innerHTML = ""; 
 	},
 	
+	setDynamicObjScale : function(obj, scale){
+		var geoX = scale.x;
+		var geoY = scale.y;
+		var geoZ = scale.z;
+		
+	},
+	
 	setHexValue : function(obj, toHexValue, nearObj, toHexValueSec){
 		if(typeof nearObj == "undefined"){
 			
@@ -871,16 +908,21 @@ var WebRocketApplication = IApplication.$extend(
 		console.log("speech begins by: " + this.speakerInfo.speakerInfo[0].generalInfo.name);
 		
 		// speaker himself should not have a teleport button
+		var obj = this.threeMeshGroup.getObjectByName("video_screen");
+		console.log(obj);
+		var ava = Tundra.scene.entityByName("Avatar1");
+		console.log(ava);
 
+		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
 		}else{
-			this.prompSpeechMsg();
+			this.dashboard.children["teleportBtn"].hidden = false;
+			//this.prompSpeechMsg();
 		}
 		
 		$("dashboard").show();
 		this.video.play();
-		//this.callUsers(this.speakerInfo.speakerInfo[1].entityInfo.entityId); // send id of entity
 	},
 	
 	setSpeechEnd : function(infoData)
@@ -896,6 +938,41 @@ var WebRocketApplication = IApplication.$extend(
 		$("dashboard").hide();
 		this.video.pause();	
 	},
+	
+	// define whether user is near the screen
+	userJoinedVenue : function(avatarName){
+		var ent;
+		
+		//ent.addEventLisener(test, this.fun);
+		ent = Tundra.scene.entityByName(avatarName);
+		//console.log(ent);
+		
+		if(ent){
+			var x = ent.placeable.transform.pos.x;
+			var y =	ent.placeable.transform.pos.y;
+			var z = ent.placeable.transform.pos.z;
+		}
+		
+		if((SET_AREA_FOR_SPEECH_FROM.x < x & x < SET_AREA_FOR_SPEECH_TO.x) & (SET_AREA_FOR_SPEECH_FROM.z < z & z < SET_AREA_FOR_SPEECH_TO.z)){
+			if(this.isUserInTheVenue == 0){
+				this.isUserInTheVenue = 1;
+				this.entity.exec(EntityAction.Server, _MSG_USER_JOINED_VENUE, this.userInfo.id);
+				console.log("you are in !!!!!");
+				//ent.dispatchEvent(test);
+			}
+		}else{
+			if(this.isUserInTheVenue == 1){
+				this.isUserInTheVenue = 0;
+				this.entity.exec(EntityAction.Server, _MSG_USER_LEFT_VENUE, this.userInfo.id);
+				console.log("you are out !!!!!");
+			}
+			
+		}
+		
+		
+		//console.log(ent.placeable.transform.pos.x + " " + ent.placeable.transform.pos.y + " " + ent.placeable.transform.pos.z);
+		
+	},
 
 
 	videoTextureUpdate : function(){
@@ -906,16 +983,18 @@ var WebRocketApplication = IApplication.$extend(
 		//this.videoTexture.needsUpdate	= true;
 	},
 	
-	// init with params that sent from the server
+	// init with params which sent from the server
 	initParams : function(initObj){
 		
-		this.isSpeechOn = initObj.speechState;
-		this.userInfo.id = initObj.userId;			// current client'
-		this.userInfo.avatarName = "Avatar" + initObj.userId;
+		this.isSpeechOn = initObj.speechState; 					// init speech state
+		this.userInfo.id = initObj.userId;						// user id issued by server
+		this.userInfo.avatarName = "Avatar" + initObj.userId;   // user avatar entity name
+		console.log(this.userInfo);
 		
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
-			
+		// if there is a speech going right now
 		}else if(this.isSpeechOn == 1){
+			// init current like/dislike state sent from server
 			this.refreshVote(initObj.like, initObj.dislike);
 			
 			$("dashboard").show();
@@ -959,6 +1038,7 @@ function haejongAsset(asset){
 
 // TODO1, text scroll only applies in y axis
 // TODO2, button to hide dashboard
+// TODO3, modify screen size in accordance with number of users around
 
 // Start the application by instantiating it
 var webRocketApplication = new WebRocketApplication();
