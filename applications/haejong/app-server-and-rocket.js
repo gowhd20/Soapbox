@@ -108,9 +108,10 @@ var Server = Class.extend(
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
 
 			if(typeof this.speechInfo == 'undefined'){ // if there is no speech going right now
-				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0};
+
+				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0, "actUserCnt" : this.users.countUserInVenue};
 			}else{ // if there is a speech going right now
-				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike};
+				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike, "actUserCnt" : this.users.countUserInVenue};
 			}
 			// message send back to client with speech info
 			connection.Exec(me, _MSG_INITIATION, JSON.stringify(initParams));
@@ -274,6 +275,7 @@ function VoteControl(vote)
 
 	Log(conn.Property("username") + "voted, vote status: " + this.speechInfo[id].like + " " + this.speechInfo[id].dislike);
 }
+
 
 
 function VideoControl()

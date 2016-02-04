@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+
+<html>
+ 
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Soapbox</title>
+	<link rel="stylesheet" type="text/css" href="css/mystyle.css">
+	<script src="js/sockjs.js"></script>
+	<script src="js/stomp.js"></script>        
+	<script src="js/adapter.js"></script>
+	<script src="js/middleware_api.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery-1.7.2.js"></script>
+</head>
+ 
+<body class="l1 equal">
+	
+<div id="container">
+	
+	<div id="appName">
+		<div class="content" style="font-size:200%">The Soapbox</div>
+	</div>
+	
+	<div id="content_zone">
+		<div id="primary">
+			<video id="video">Video stream not available.</video>
+		</div>
+		<div id="secondary">
+			<div id="comment">
+				<div class="content" style="font-size:150%">Shoutbox</div>
+			</div>
+			<div id="listofcomments">
+				<ul id="acomment"></ul>
+			</div>
+		</div>
+		<div id="tertiary">
+			<div class="content">tertiary zone</div>
+		</div>
+	</div>
+	
+	<div id="footer">
+		<div id="feedback">
+			<img src="images/like.png" height="60" width="60" />
+			<span id="like">0</span>
+			<img src="images/dislike.png" height="60" width="60" />
+			<span id="dislike">0</span>
+			<button type="button" class="endButton" onclick="endSpeech()">END SPEECH</button>
+		</div>
+		
+	</div>
+	
+</div>
+<script>
+(function() {
+  var width = 320;    // We will scale the photo width to this
+  var height = 0;     // This will be computed based on the input stream
+
+  var streaming = false;
+  var video = null;
+
+  var streamObj = null;
+  
+  function startup() {
+    video = document.getElementById('video');
+
+    navigator.getMedia = ( navigator.getUserMedia ||
+                           navigator.webkitGetUserMedia ||
+                           navigator.mozGetUserMedia ||
+                           navigator.msGetUserMedia);
+
+    navigator.getMedia(
+      {
+        video: true,
+        audio: true
+      },
+      function(stream) {
+		streamObj = stream;
+        if (navigator.mozGetUserMedia) {
+          video.mozSrcObject = stream;
+        } else {
+          var vendorURL = window.URL || window.webkitURL;
+          video.src = vendorURL.createObjectURL(stream);
+        }
+        video.play();
+		var soapbox = new Soapbox();
+		window.onbeforeunload = function(event) {
+		    soapbox.stop();
+		};
+		soapbox.connect(function(){
+		
+			//Register likes update callback
+			soapbox.onreceivelikes = function (likes) {
+			//Show the likes info
+				document.getElementById("like").innerHTML = likes;
+			};
+			
+			//Register dislikes update callback
+			soapbox.onreceivedislikes = function (dislikes) {
+				document.getElementById("dislike").innerHTML = dislikes;
+			};
+			
+			var list = document.getElementById("acomment");
+			
+			//Register comment update callback
+			soapbox.onreceivecomment = function (username, comment) {
+				var entry = document.createElement('li');
+				entry.appendChild(document.createTextNode(username + ": " + comment));
+				list.appendChild(entry);
+			};
+
+			//Start speech transmission
+			soapbox.start(streamObj);
+
+			//Mandatory, register itself
+			soapbox.register();
+			
+		});		
+      },
+      function(error) {
+        console.log("An error occured! " + error);
+      }
+    );
+
+    video.addEventListener('canplay', function(ev){
+      if (!streaming) {
+        height = video.videoHeight / (video.videoWidth/width);
+      
+        if (isNaN(height)) {
+          height = width / (4/3);
+        }
+      
+        video.setAttribute('width', width);
+        video.setAttribute('height', height);
+        streaming = true;
+      }
+    }, false);
+
+  }
+  window.addEventListener('load', startup, false);
+})();
+</script>
+
+
+</body>
+
+</html>

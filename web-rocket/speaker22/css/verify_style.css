@@ -1,0 +1,107 @@
+form{display:inline-block;}
+
+body { 
+  background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url(../images/banner2.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/** The wrapper that will contain our two forms **/
+#wrapper{
+	text-align: left;
+	padding: 0;
+    top:20%;
+	margin-top:10%;
+	width:1000px;
+	font-family: "Trebuchet MS","Myriad Pro",Arial,sans-serif;
+	position: relative;	
+	margin-left: auto; 
+	margin-right: auto;
+	font-size:120%;
+}
+
+#wrapper h1{
+	color:#ffffff;
+}
+
+/**** advanced input styling ****/
+/* placeholder */
+::-webkit-input-placeholder  { 
+	color: rgb(190, 188, 188); 
+	font-style: italic;
+}
+input:-moz-placeholder,
+textarea:-moz-placeholder{ 
+	color: rgb(190, 188, 188);
+	font-style: italic;
+} 
+
+input {
+  outline: none;
+  font-size:120%;
+}
+
+/* all the input except submit and checkbox */
+#wrapper input:not([type="checkbox"]){
+	width: 60%;
+	margin-top: 4px;
+	padding: 10px 5px 10px 3px;	
+	-webkit-appearance: textfield;
+	-webkit-box-sizing: content-box;
+	  -moz-box-sizing : content-box;
+	       box-sizing : content-box;
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	        border-radius: 3px;
+	-webkit-box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+	   -moz-box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+	        box-shadow: 0px 1px 4px 0px rgba(168, 168, 168, 0.6) inset;
+	-webkit-transition: all 0.2s linear;
+	   -moz-transition: all 0.2s linear;
+	     -o-transition: all 0.2s linear;
+	        transition: all 0.2s linear;
+}
+#wrapper input:not([type="checkbox"]):active,
+#wrapper input:not([type="checkbox"]):focus{
+	border: 1px solid rgba(91, 90, 90, 0.7);
+} 
+
+
+/*styling both submit buttons */
+#verifyBtn{
+	text-align: center;
+	margin: 5px 0;
+	cursor: pointer;	
+	background: #44c767;
+	padding: 8px 5px;
+	font-family: 'BebasNeueRegular','Arial Narrow',Arial,sans-serif;
+	color: #fff;
+	font-size: 24px;	
+	border: 1px solid #38ba5a;	
+	margin-bottom: 10px;	
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	-webkit-border-radius: 3px;
+	   -moz-border-radius: 3px;
+	        border-radius: 3px;	
+
+	-webkit-transition: all 0.2s linear;
+	   -moz-transition: all 0.2s linear;
+	     -o-transition: all 0.2s linear;
+	        transition: all 0.2s linear;
+}
+#verifyBtn:hover{
+	background: #369f52 ;
+}
+#verifyBtn:active,
+#verifyBtn:focus{
+	background: #28773d;
+	position: relative;
+	top: 1px;
+	border: 1px solid rgb(39, 130, 62);	
+	-webkit-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.2) inset;
+	   -moz-box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.2) inset;
+	        box-shadow: 0px 1px 6px 4px rgba(0, 0, 0, 0.2) inset;
+}
+

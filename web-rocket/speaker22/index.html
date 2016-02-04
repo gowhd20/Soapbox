@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>The Soapbox</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="css/main.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.scrollex.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/frontpage.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/submit.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+		<script src="js/jquery.datetimepicker.js"></script>
+			
+	</head>
+	
+	<body class="landing"> <!--style="overflow: hidden;"-->
+			
+			<section id="page-wrapper" style="height: 100vh;">
+				<div id="banner">
+					<div class="inner">
+						<select name="countries" id="countries" style="position:absolute;top:0;right:0;min-width:200px;width:12%">
+							<option disabled selected> -- Kieli/Language -- </option>
+							<option value='fi' data-title="Finland">Suomi</option>
+							<option value='us' data-title="United States">English</option>
+						</select>
+						<h2>soapbox</h2>
+						<p>You can speak well<br />
+						if your tongue can deliver <br />
+						the message of your heart.</p>
+						<ul class="actions" style="margin-top:20px;">
+							<li><a href="#one" class="button special">Start Right Now</a></li>
+							<li><a href="reserve.html" class="button special">Book my speech</a></li>
+						</ul>
+					</div>
+				</div>
+			</section>
+			
+			<section id="one" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 style="margin-top:10%; color: #EC3F8C;">Did you already book a speech?</h2>
+						<p>If no, you can start speech directly without booking;<br />
+						If yes, you can verify your speech.</p>
+					</header>
+					<ul class="actions">
+						<!--<li><a class="button special" onclick="startRightNow()">start directly</a></li>
+						<li><a class="button special" onclick="startVerify()">verify speech</a></li>-->
+						<li><input type="submit" class="submitBtn" value="START DIRECTLY" onclick="startRightNow()" style="font-size:110%;"/></li>
+						<li><input type="submit" class="submitBtn" value="VERIFY SPEECH" onclick="startVerify()" style="font-size:110%;"/></li>
+					</ul>
+				</div>
+			</section>
+			
+	</body>
+	
+	<script>
+		$('#reg_timeleft').datetimepicker({
+			minDate: 0,
+			allowTimes:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'],
+			format: "d/m/Y H:i"
+		})
+	</script>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>The Soapbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="author" content="Codrops" />
+        <link rel="stylesheet" type="text/css" href="css/submit_style.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/submit.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+		<script src="js/jquery.datetimepicker.js"></script>
+    </head>
+	
+    <body>	
+            				
+		<div id="wrapper">
+			<div id="submit">
+			   
+				<h1>Reserve a speech</h1> 
+				<p id="timer" style="color:#EC3F8C;"></p>
+				<form name="email" action="MAILTO:?Subject=[Soapbox]Speech Information" method="post" enctype="text/plain">
+					<p> 
+						<label> Your speech topic </label>
+						<input type="text" name="topic" id="topic" placeholder="Topic here" required/>
+					</p>
+					<p> 
+						<label> Your name </label>
+						<input type="text" name="speaker" id="speakername" placeholder="Name here" required/>
+					</p>
+					<p>
+						<label> Speech start time </label>
+						<input type="text" name="lefttime" id="timeleft" placeholder="Start time" required/>
+					</p>
+					<p>
+						<label id="pwlabel"> Please remember your password below </label>
+						<input type="text" name="password" id="password" style="background:#d9d9d9; color:#EC3F8C; font-size: 120%; font-weight: bold;"/>
+					</p>
+					<p class="submit button"> 
+						<input type="submit" value="SUBMIT" onclick="mysubmit()"/> 
+					</p>
+				</form>
+				
+			</div>
+
+		</div>
+           
+    </body>
+	
+	<script>
+		$('#timeleft').datetimepicker({
+			minDate: 0,
+			allowTimes:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'],
+			format: "d/m/Y H:i"
+		})
+	</script>
+	
+</html>

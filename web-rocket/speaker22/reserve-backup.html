@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>The Soapbox</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="css/reserve.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.scrollex.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/frontpage.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/submit.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+		<script src="js/jquery.datetimepicker.js"></script>
+			
+	</head>
+	
+	<body class="landing"> <!--style="overflow: hidden;"-->
+			
+			<div style="width:100%;">
+				<section id="four" class="wrapper style1 special" style="float:left;width:70%;height: 100vh;">
+					<div class="inner">
+						<header class="major">
+							
+							<h2 class="myfont">Reserve a speech</h2><br>
+							<label style="text-align: left; font-size: 120%;"> Enter your speech topic </label>
+							<input type="text" name="topic" id="reg_topic" placeholder="Topic here" style="background-color:rgba(242,242,242,0.2);"/>
+							<label style="text-align: left; font-size: 120%;margin-top:20px;"> Enter your name</label>
+							<input type="text" name="speaker" id="reg_speakername" placeholder="Name here" style="background-color:rgba(242,242,242,0.2);"/>
+							<label style="color:#ffffff;text-align: left; font-size: 120%; margin-top:20px;"> Choose your speech time </label>
+							<input type="text" name="lefttime" id="reg_timeleft" placeholder="Start time" style="background-color:rgba(242,242,242,0.2);"/>
+						</header>
+						<ul class="actions">
+							<!--<li><a class="button special" onclick="nextToPassword()">Next</a></li>-->
+							<input type="submit" class="submitBtn" value="NEXT" onclick="nextToPassword()" style="font-size:110%;"/>
+						</ul>
+					</div>
+					
+				</section>
+				<div style="float:right; width:30%;height: 100vh;background:#2b2b2b">
+					<div id="speechSchedule" style="margin-bottom:15px;">
+						<div class="content" style="padding-top:10px; padding-bottom:10px;font-size:150%">Speech Schedule</div>
+					</div>
+					<div id="listofspeech">
+						<ul id="one_speech">123:<br>haode</ul>
+					</div>
+				</div>
+			</div>
+			
+			<section id="five" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 class="myfont2">Reserve a speech</h2>
+						<p id="timer" style="color:#EC3F8C;"></p>
+					</header>		
+					<form name="email" action="MAILTO:?Subject=[Soapbox]Speech Information" method="post" enctype="text/plain">
+						<input type="text" name="topic" id="topic" />
+						<input type="text" name="speaker" id="speakername" />
+						<input type="text" name="lefttime" id="timeleft" placeholder="Start time"/>
+						<label id="pwlabel" style="color:#EC3F8C;;text-align: left; font-size: 120%;"> Please remember your password: </label>
+						<input type="text" name="password" id="password" style="background:#d9d9d9; color:#EC3F8C; font-size: 120%; font-weight: bold; margin-bottom:50px;" readonly/>
+						<input type="submit" class="submitBtn" value="Submit" onclick="mysubmit()" style="font-size:110%;"/> 
+					</form>
+					
+				</div>
+			</section>
+				
+			
+	</body>
+	
+	<script>
+		$('#reg_timeleft').datetimepicker({
+			minDate: 0,
+			allowTimes:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'],
+			format: "d/m/Y H:i"
+		})
+	</script>
+</html>

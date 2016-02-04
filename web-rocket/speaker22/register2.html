@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>The Soapbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="author" content="Codrops" />
+        <link rel="stylesheet" type="text/css" href="css/submit_style.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/submit.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+		<script src="js/jquery.datetimepicker.js"></script>
+    </head>
+	
+    <body>	
+            				
+		<div id="wrapper">
+			<div id="submit">
+			   
+				<h1>Reserve a speech</h1> 
+			
+					<p> 
+						<label> Enter your name </label>
+						<input type="text" name="speaker" id="reg_speakername" placeholder="Name here"/>
+					</p>
+
+					<p class="submit button" style="margin-top:50px;"> 
+						<input type="button" value="Back" onclick="backToTopic()" style="margin-right:30px;"/> 
+						<input type="button" value="Next" onclick="nextToTime()"/> 
+					</p>
+				
+			</div>
+
+		</div>
+           
+    </body>
+	
+</html>

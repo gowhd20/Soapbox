@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>The Soapbox</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="css/main.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.scrollex.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/frontpage.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/submit.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+		<script src="js/jquery.datetimepicker.js"></script>
+			
+	</head>
+	
+	<body class="landing"> <!--style="overflow: hidden;"-->
+			
+			<section id="page-wrapper" style="height: 100vh;">
+				<div id="banner">
+					<div class="inner">
+						<select name="countries" id="countries" style="position:absolute;top:0;right:0;min-width:200px;width:10%">
+							<option disabled selected> -- Kieli/Language -- </option>
+							<option value='fi' data-title="Finland">Suomi</option>
+							<option value='us' data-title="United States">English</option>
+						</select>
+						<h2>soapbox</h2>
+						<p>You can speak well<br />
+						if your tongue can deliver <br />
+						the message of your heart.</p>
+						<ul class="actions" style="margin-top:20px;">
+							<li><a href="#one"class="button special">Start Right Now</a></li>
+							<li><a href="#two" class="button special">Book my speech</a></li>
+						</ul>
+					</div>
+				</div>
+			</section>
+			
+			<section id="one" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 style="margin-top:10%; color: #EC3F8C;">Did you already book a speech?</h2>
+						<p>If no, you can start speech directly without booking;<br />
+						If yes, you can verify your speech.</p>
+					</header>
+					<ul class="actions">
+						<li><a class="button special" onclick="startRightNow()">start directly</a></li>
+						<li><a class="button special" onclick="startVerify()">verify speech</a></li>
+					</ul>
+				</div>
+			</section>
+			
+			<section id="two" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 class="myfont">Reserve a speech</h2>
+						<label style="text-align: left; font-size: 120%;"> Enter your speech topic </label>
+						<input type="text" name="topic" id="reg_topic" placeholder="Topic here" style="background-color:rgba(242,242,242,0.2));"/>
+					</header>
+					<ul class="actions">
+						<li><a class="button special" onclick="backToHome()">Back</a></li>
+						<li><a class="button special" onclick="nextToName()">Next</a></li>
+					</ul>
+				</div>
+			</section>
+			
+			<section id="three" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 class="myfont">Reserve a speech</h2>
+						<label style="text-align: left; font-size: 120%;"> Enter your name</label>
+						<input type="text" name="speaker" id="reg_speakername" placeholder="Name here" style="background-color:rgba(242,242,242,0.2);"/>
+					</header>
+					<ul class="actions">
+						<li><a class="button special" onclick="backToTopic()">Back</a></li>
+						<li><a class="button special" onclick="nextToTime()">Next</a></li>
+					</ul>
+				</div>
+			</section>
+		
+			<section id="four" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<header class="major">
+						<h2 class="myfont">Reserve a speech</h2>
+						<label style="color:#ffffff;text-align: left; font-size: 120%;"> Choose your speech time </label>
+						<input type="text" name="lefttime" id="reg_timeleft" placeholder="Start time" style="background-color:rgba(242,242,242,0.2);"/>
+					</header>
+					<ul class="actions">
+						<li><a class="button special" onclick="backToName()">Back</a></li>
+						<li><a class="button special" onclick="nextToPassword()">Next</a></li>
+					</ul>
+				</div>
+			</section>
+			
+			<section id="five" class="wrapper style1 special" style="height: 100vh;">
+				<div class="inner">
+					<!--<div style="text-align: left"><a href="#one"><img src="images/home.png" style="height:50px;width:50px;"></a></div> -->
+					<header class="major">
+						<h2 class="myfont2">Reserve a speech</h2>
+						<p id="timer" style="color:#EC3F8C;"></p>
+					</header>		
+					<form name="email" action="MAILTO:?Subject=[Soapbox]Speech Information" method="post" enctype="text/plain">
+						<input type="text" name="topic" id="topic" />
+						<input type="text" name="speaker" id="speakername" />
+						<input type="text" name="lefttime" id="timeleft" placeholder="Start time"/>
+						<label id="pwlabel" style="color:#EC3F8C;;text-align: left; font-size: 120%;"> Please remember your password: </label>
+						<input type="text" name="password" id="password" style="background:#d9d9d9; color:#EC3F8C; font-size: 120%; font-weight: bold; margin-bottom:50px;" readonly/>
+						<!--input type="button" class="submitBtn" value="Back" onclick="backToName()" style="background-color: #39B1C6;margin-right:30px; font-size:110%;"/-->
+						<input type="submit" class="submitBtn" value="Submit" onclick="mysubmit()" style="font-size:110%;"/> 
+					</form>
+					
+				</div>
+			</section>
+		
+	</body>
+	
+	<script>
+		$('#reg_timeleft').datetimepicker({
+			minDate: 0,
+			allowTimes:['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00'],
+			format: "d/m/Y H:i"
+		})
+	</script>
+</html>

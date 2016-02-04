@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>The Soapbox</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<meta name="author" content="Codrops" />
+	<link rel="stylesheet" type="text/css" href="css/verify_style.css" />
+	<script src="js/sockjs.js"></script>
+	<script src="js/stomp.js"></script>        
+	<script src="js/adapter.js"></script>
+	<script src="js/middleware_api.js"></script>
+	<script src="js/verify.js"></script>
+	<script src="js/jquery.js"></script>
+	<script src="js/jquery-1.7.2.js"></script>
+</head>
+
+<body>
+	
+	<div id="wrapper">
+		<h1>Verify your password</h1>
+		<input type="text" name="verification" id="verify" placeholder="Enter your password"/>
+		<form>
+			<input type="button" value="VERIFY" id="verifyBtn" onclick="verify()" style="width:120px;"/>
+		</form>	
+
+	</div>
+	
+</body>
+
+</html>

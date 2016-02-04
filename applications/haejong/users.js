@@ -10,10 +10,16 @@ Soapbox.Users = function(){
 	var userCount = 0;
 	var userInfoList = [];
 	var countUserInVenue = 0;
+
+	var audienceId = [];
+
 	
 	this.countUserInVenue = countUserInVenue;
 	this.userCount = userCount;
 	this.userInfoList = userInfoList;
+
+	this.audienceId = audienceId;
+
 	
 	if(isServer){
 		server.UserConnected.connect(this, this.storeUserData);
@@ -57,9 +63,23 @@ Soapbox.Users.prototype = {
 		this.countUser(0);
 		// user count out
         //user disconnect
+		
+		// user who logged out without leaving the speech area, need to be removed from the active users
+		if(this.isUserAudience(connId)){
+			
+			this.audienceId.splice(this.audienceId.indexOf(connId), 1);
+			this.countUserInVenue = this.countUserInVenue-1;
+			me.Exec(4, _MSG_USER_LEFT_VENUE, this.countUserInVenue);
+		}
     },
 	
 	searchUserById : function(id){
+		
+
+    },
+	
+	searchUserById : function(id){
+
 		var id = id;
 		var cntOnlineUsers = this.userCount;
 		var usrList = this.userInfoList;
@@ -87,6 +107,17 @@ Soapbox.Users.prototype = {
 		
 	},
 	
+	isUserAudience : function(userId){
+		for(var i=0; i<this.audienceId.length; i++){
+			if(userId == this.audienceId[i]){
+				return true;
+				break;
+			}else
+				return false;
+		}
+		
+	},
+
 	removeUserById : function(id){
 		var id = id;
 		for(var i=0; i<this.userCount; i++){
@@ -99,8 +130,17 @@ Soapbox.Users.prototype = {
 	},
 	
 	userJoinedTheVenue : function(userId){
-		this.countUserInVenue = this.countUserInVenue+1;
+
 		
+		// add user to active user group
+		if(typeof this.audienceId == 'undefined'){
+			this.audienceId[0] = userId;
+		}else
+			this.audienceId.push(userId);
+		
+		this.countUserInVenue = this.countUserInVenue+1;		
+		
+
 		me.Exec(4, _MSG_USER_JOINED_VENUE, this.countUserInVenue);
 		
 	},
@@ -108,6 +148,10 @@ Soapbox.Users.prototype = {
 	userLeftTheVenue : function(userId){
 		
 		if(this.countUserInVenue >= 0){
+
+			// removing user from the active user group
+			this.audienceId.splice(this.audienceId.indexOf(userId), 1);
+
 			this.countUserInVenue = this.countUserInVenue-1;
 			me.Exec(4, _MSG_USER_LEFT_VENUE, this.countUserInVenue);
 		}			

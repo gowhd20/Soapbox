@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+
+<html>
+ 
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Soapbox</title>
+	<link rel="stylesheet" type="text/css" href="css/mystyle.css">
+	<script src="js/sockjs.js"></script>
+	<script src="js/stomp.js"></script>        
+	<script src="js/adapter.js"></script>
+	<script src="js/middleware_api.js"></script>
+	<script src="js/main.js"></script>
+	<script src="js/capture.js"></script>
+	<script src="js/jquery-1.7.2.js"></script>
+	<script src="js/jquery.js"></script>
+	
+	<style type="text/css">
+
+		.custom-date-style {
+			background-color: red !important;
+		}
+
+	</style>
+	
+</head>
+ 
+<body class="l1 equal">
+	
+<div id="container">
+	
+	<div id="appName">
+		<div class="content" style="font-size:200%">The Soapbox</div>
+	</div>
+	
+	<div id="content_zone">
+		<div id="primary">
+			<video id="video">Video stream not available.</video>
+		</div>
+		<div id="secondary">
+			<div id="speech">
+				<div class="content" style="font-size:150%">SPEECH INFORMATION</div>
+			</div>
+			<div class="content">
+				<div id="speechinfo">
+					
+					<h1>Topic:</h1>
+					<p class="displaySpeech" id="show_topic"/>My topic<p>					
+					<h1>Speaker:</h1>
+					<p class="displaySpeech" id="show_speaker"/>My name<p>	
+					<h1>Speech Time:</h1>
+					<p class="displaySpeech" id="show_time"/>Time<p>	
+									
+				</div>
+			</div>
+		</div>
+		<div id="tertiary">
+			<div class="content">tertiary zone</div>
+		</div>
+	</div>
+	
+	<div id="footer">
+		<div style="text-align:center;">
+			<button type="button" class="myButton" onclick="startSpeech()">START SPEECH</button>	
+		</div>
+	</div>
+	
+</div>
+
+</body>
+
+</html>

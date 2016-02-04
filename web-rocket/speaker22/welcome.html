@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>The Soapbox</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <meta name="author" content="Codrops" />
+        <link rel="stylesheet" type="text/css" href="css/submit_style.css" />
+		<script src="js/sockjs.js"></script>
+		<script src="js/stomp.js"></script>        
+		<script src="js/adapter.js"></script>
+		<script src="js/middleware_api.js"></script>
+		<script src="js/welcome.js"></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-1.7.2.js"></script>
+    </head>
+	
+    <body>	
+            				
+		<div id="wrapper">
+			<div id="submit">
+			   
+				<h1>Your Speech Information</h1> 
+				
+					<label>Topic:</label>
+					<p class="displaySpeech" id="show_topic"/>Waiting...<p>
+
+					<label>Speaker:</label>
+					<p class="displaySpeech" id="show_speaker"/>Waiting...<p>
+
+					<label>Speech time:</label>
+					<p class="displaySpeech" id="show_time"/>Waiting...<p>
+
+					<p class="submit button"> 
+						<input type="button" value="START SPEECH" style="min-width:200px;" onclick="startSpeech()"/> 
+					</p>
+				
+			</div>
+
+		</div>
+           
+    </body>
+	
+</html>

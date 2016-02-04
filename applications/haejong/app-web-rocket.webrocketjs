@@ -21,6 +21,8 @@ var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
 
 var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
 var SET_AREA_FOR_SPEECH_TO  = {"x":60, "z":-39};
+var SOAPBOX_NAME = "http://localhost:8082/applications/haejong/soapbox.mesh_submesh_0";
+var PATH_TO_REGISTRATION = "speaker22/index.html";
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -252,6 +254,22 @@ var WebRocketApplication = IApplication.$extend(
 		
 		listOfMeshObject = this.getListOfMeshObj();
 		this.listOfMeshObject = listOfMeshObject;
+		
+		// get soapbox obj from meshmoon asset
+		// add into threejs scene 
+		function getSoapboxObj(element, index, array) {
+			
+		  while (element.name == SOAPBOX_NAME) {
+			  return element;
+		  }
+		}
+
+		var soapbox_obj = listOfMeshObject.find(getSoapboxObj);
+		this.soapbox_obj = soapbox_obj;
+		
+		console.log(soapbox_obj);
+		console.log(soapbox_obj.material.emissive);
+		
 
 /* 		listOfThreeGroup = this.getListOfObj3D();
 		this.listOfThreeGroup = listOfThreeGroup; */
@@ -330,6 +348,13 @@ var WebRocketApplication = IApplication.$extend(
 		parent.appendChild(commentInnerDiv);
 		commentInnerDiv.appendChild(comment);
 
+	},
+	
+	// open up url for speech registration when virtual user try to do so 
+	callRegistration : function(url){
+		var _url = url
+		_url.replace("watch?v=", "v/");
+		window.open(_url, "new");
 	},
 	
 	// change size of the screen accordingly to the number of users in the venue
@@ -470,7 +495,7 @@ var WebRocketApplication = IApplication.$extend(
 	},
 	
 	changeNumOfUsersInVenueListener : function(){
-		//if(this.numOfUsersInTheVenue)
+		
 	},
 
     initUi : function(self){
@@ -743,6 +768,21 @@ var WebRocketApplication = IApplication.$extend(
 					
 				}
 				
+				// find soapbox
+				if(obj.name == SOAPBOX_NAME){
+					this.setHexValue(obj, 996633);
+					return;
+				}else{  // when mouse leaves soapbox
+					if(typeof this.soapbox_obj == 'undefined'){
+						return;
+					}else{
+						// also need to be optimized
+						this.setHexValue(this.soapbox_obj, 0); // for some reason setHexValueBack() doesn't work
+						//this.setHexValueBack(this.soapbox_obj, 0);  // set back colour of soapbox to normal
+					}
+
+				}
+				
 				// find other obj if needed
 			}
 		}	
@@ -783,13 +823,14 @@ var WebRocketApplication = IApplication.$extend(
 				var obj = objTargetted[i].object;
 				// user votes
 				this.onMousePressBtn(obj);
+				this.onMousePressSoapbox(obj)
 			}
 		}
 		//TODO		
 	},
 	
 	onMousePressBtn : function(obj){
-		
+		// recognize buttons when only a speech is on 
 		if(this.toVote & this.isSpeechOn){
 			if(obj.name == 'button1' | obj.name == 'button2'){
 				if(obj.name == 'button1'){
@@ -802,10 +843,18 @@ var WebRocketApplication = IApplication.$extend(
 					// vote dislike
 					this.onVote(0);
 					this.setHexValueBack("button2", 0);
-					this.setHexValueBack("button2", 0);
 				}
 			}
 		}		
+	},
+	
+	onMousePressSoapbox : function(obj){
+		// when user press the soapbox
+		if(obj.name == SOAPBOX_NAME){  
+			console.log("soapbox clicked");
+			this.callRegistration(PATH_TO_REGISTRATION);
+		}
+		
 	},
 	
 	// user vote on the speaker
@@ -822,7 +871,7 @@ var WebRocketApplication = IApplication.$extend(
 		}
 			
 	},
-	
+		
 	onMouseRelease : function(event){
 		
 		console.log(event.type)
@@ -837,7 +886,6 @@ var WebRocketApplication = IApplication.$extend(
 	
 	},
 	
-
 	rayCast : function(){	
 	
 		var rayCastEnt = Tundra.renderer.raycast();
@@ -862,7 +910,7 @@ var WebRocketApplication = IApplication.$extend(
 		
 		// refresh vote state
 		this.dashboard.children["votePanel"].children["voteType"].innerHTML = "like: " + like + "  " + "dislike: " + dislike;
-	},
+	},	
 	
 	removeVotePanel : function(){
 		// empty the vote panel
@@ -877,9 +925,13 @@ var WebRocketApplication = IApplication.$extend(
 	},
 	
 	setHexValue : function(obj, toHexValue, nearObj, toHexValueSec){
+		
 		if(typeof nearObj == "undefined"){
-			
-			obj.material.emissive.setHex(toHexValue);	
+			try{
+				obj.material.emissive.setHex(toHexValue);	
+			}catch(err){
+				console.log("no emissive value on this object");
+			}
 		}else if(typeof nearObj == "string"){
 			obj.material.emissive.setHex(toHexValue);
 			var secondObj = this.threeMeshGroup.getObjectByName(nearObj);
@@ -889,18 +941,22 @@ var WebRocketApplication = IApplication.$extend(
 			nearObj.material.emissive.setHex(toHexValueSec);
 		}
 	},
-	
+		
 	setHexValueBack : function(obj, toHexValue){
-		if(typeof obj == "string"){
+		
+		if(typeof obj == 'undefined'){
+			return false; 
+		}else if(typeof obj == "string"){
 			var obj = this.threeMeshGroup.getObjectByName(obj);
 			obj.material.emissive.setHex(toHexValue);
 		}else{
 			obj.material.emissive.setHex(toHexValue);
 		}
 	},
-	
+		
 	setSpeechBegin : function(infoData)
 	{
+		
 		this.isSpeechOn = 1; // speech is off state
 		this.toVote = 1;	// right to vote refreshed
 		this.speakerInfo = JSON.parse(infoData);
@@ -923,7 +979,8 @@ var WebRocketApplication = IApplication.$extend(
 		
 		$("dashboard").show();
 		this.video.play();
-	},
+		this.callRegistration(PATH_TO_REGISTRATION);
+	},	
 	
 	setSpeechEnd : function(infoData)
 	{
@@ -938,6 +995,7 @@ var WebRocketApplication = IApplication.$extend(
 		$("dashboard").hide();
 		this.video.pause();	
 	},
+	
 	
 	// define whether user is near the screen
 	userJoinedVenue : function(avatarName){
@@ -968,12 +1026,10 @@ var WebRocketApplication = IApplication.$extend(
 			}
 			
 		}
-		
-		
+			
 		//console.log(ent.placeable.transform.pos.x + " " + ent.placeable.transform.pos.y + " " + ent.placeable.transform.pos.z);
 		
 	},
-
 
 	videoTextureUpdate : function(){
 		
@@ -989,7 +1045,12 @@ var WebRocketApplication = IApplication.$extend(
 		this.isSpeechOn = initObj.speechState; 					// init speech state
 		this.userInfo.id = initObj.userId;						// user id issued by server
 		this.userInfo.avatarName = "Avatar" + initObj.userId;   // user avatar entity name
+		var actUserCnt = initObj.actUserCnt;					// users count who are possibly watching the speech
+		
 		console.log(this.userInfo);
+		console.log(actUserCnt);
+		
+		this.changeScreenSize(actUserCnt);
 		
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
 		// if there is a speech going right now
