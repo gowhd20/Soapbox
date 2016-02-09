@@ -3,6 +3,55 @@
 var middleware = (function() {
 	
 	//Reusable stuff
+    
+    /*Useful for extracting date and time separately from a date_time_string
+    example string: "25/11/2015 12:00" ("%d/%m/%Y %H:%M")
+    options: {"day": true, "hour": true}
+    return: {"date": "25/11/2015", "time": "12:00"}
+    */
+    window.extract_date_time = function(date_time_string, options) {
+        var response = {};
+        
+        var res = date_time_string.split(" ");
+        
+        //First contains day, month, year. Second contains hour, minute
+        response.date = res[0];
+        response.time = res[1];
+        
+        var res_1 = res[0].split("/");
+        var day = res_1[0];
+        var month = res_1[1];
+        var year = res_1[2];
+        
+        var res_2 = res[1].split("/");
+        //res_2 hour+minute
+        var res_3 = res_2[0].split(":");
+        
+        var hour = res_3[0];
+        var minute = res_3[1];
+        
+        if(typeof options == "undefined") {
+            return response;
+        }
+        if(options.day) {
+            response.day = day;
+        }
+        if(options.month) {
+            response.month = month;
+        }
+        if(options.year) {
+            response.year = year;
+        }
+        if(options.hour) {
+            response.hour = hour;
+        }
+        if(options.minute) {
+            response.minute = minute;
+        }
+        
+        return response;
+    }
+    
     var PeerConnection_Config = {
 		iceServers: [
 		{
@@ -120,7 +169,7 @@ var middleware = (function() {
 		this.onreceivereports = onReceiveReportsUpdate;
 		this.onreceivecomment = onReceiveComment;
         this.onreceivenextspeechinfo = onReceiveNextSpeechInfo;
-        this.onreceivereservations = onReceiveReservations;
+        this.onreceiveallspeeches = onReceiveAllSpeeches;
         this.onreceivecurrentspeechinfo = onReceiveCurrentSpeechInfo;
         this.onreceiveupcomingtodayspeech = onReceiveUpcomingTodaySpeech;
         
@@ -130,6 +179,14 @@ var middleware = (function() {
         this.upcoming_speeches_today = RetrieveUpcomingSpeechesForToday;
         this.validate = ValidateIfPasswordIsForLatestSpeech;
         this.onvalidationresult = onReceiveValidationResult;
+        this.delete_speech = DeleteSpeechBasedOnPassword;
+        this.ondeletespeech = onDeleteSpeech;
+        
+        this.onreceivecurrentusers = onReceiveCurrentUsers;
+        
+		function onReceiveCurrentUsers(count) {
+            //None
+        }
         
 		//Record API
 		this.record = recordSpeechInBackground;
@@ -151,7 +208,7 @@ var middleware = (function() {
             //None
         }
         
-        function onReceiveReservations(reservations) {
+        function onReceiveAllSpeeches(speeches) {
             //None
         }
         
@@ -187,9 +244,17 @@ var middleware = (function() {
             sendMessageToMiddleware("upcoming_speeches_today", null);
         }
         
+        function DeleteSpeechBasedOnPassword(password) {
+            sendMessageToMiddleware("delete_speech", {"password": password});
+        }
+        
         function onReceiveValidationResult(result) {
             //result will be 0, 1, 2
             
+        }      
+        
+        function onDeleteSpeech(success) {
+            //success will be true or false
         }
         
 		function submitSpeechInfo(speech_info) {
@@ -268,7 +333,7 @@ var middleware = (function() {
                                 self.onreceivecomment(signal.data.comment.username, signal.data.comment.content);
                             }
                             else if(signal.type == "speech_infos" && signal.data.speech_infos) {
-                                self.onreceivereservations(signal.data.speech_infos);
+                                self.onreceiveallspeeches(signal.data.speech_infos);
                             }
                             else if(signal.type == "next_speech_info" && signal.data.next_speech_info) {
                                 self.onreceivenextspeechinfo(signal.data.next_speech_info);
@@ -281,6 +346,12 @@ var middleware = (function() {
                             }
                             else if(signal.type == "validation" && signal.data.validation) {
                                 self.onvalidationresult(signal.data.validation);
+                            }
+                            else if(signal.type == "delete_speech" && signal.data.delete_speech) {
+                                self.ondeletespeech(signal.data.delete_speech);
+                            }
+                            else if (signal.type == "current_users" && signal.data.current_users) {
+                                self.onreceivecurrentusers(signal.data.current_users);
                             }
                             
 							return typeof onReceiveMessage !== "function" ? null : onReceiveMessage(signal);
@@ -473,6 +544,12 @@ var middleware = (function() {
 		this.onreceivecomment = onReceiveComment;
         this.onreceivespeechinfo = onReceiveSpeechInfo;
         
+        this.onreceivecurrentusers = onReceiveCurrentUsers;
+        
+		function onReceiveCurrentUsers(count) {
+            //None
+        }
+        
         //Default handler
 		function onReceiveLikesUpdate(likes) {
 			//None
@@ -542,7 +619,7 @@ var middleware = (function() {
                                 hotspot_id = signal.data.hotspot_id;
                                 console.log("My hotspot id: ", hotspot_id);
                             }
-							if (signal.type == "offer" && signal.data.sdp) {				
+							else if (signal.type == "offer" && signal.data.sdp) {				
 								waitForSpeechTransmission();						
 								PeerConnection.setRemoteDescription(
                                     new RTCSessionDescription(signal.data.sdp), 
@@ -575,6 +652,9 @@ var middleware = (function() {
                             }
                             else if(signal.type == "current_speech_info" && signal.data.current_speech_info) {
                                 self.onreceivespeechinfo(signal.data.current_speech_info);
+                            }
+                            else if (signal.type == "current_users" && signal.data.current_users) {
+                                self.onreceivecurrentusers(signal.data.current_users);
                             }
                             
 							return typeof onReceiveMessage !== "function" ? null : onReceiveMessage(signal);
@@ -689,6 +769,8 @@ var middleware = (function() {
 		
         this.itself = "audience";
 		this.connect = connectMiddleware;
+        this.online = addMyselfToActiveUsers;
+        this.offline = deleteMyselfFromActiveUsers;
 		this.send = sendMessageToMiddleware;
 		this.like = addLike;
 		this.dislike = addDislike;
@@ -699,9 +781,16 @@ var middleware = (function() {
 		this.comment = addCommentToCurrentSpeech;
         this.submit = submitSpeechInfo;
         this.get_speech_info = getCurrentSpeechInfo;
+        this.delete_speech = DeleteSpeechBasedOnPassword;
+        this.ondeletespeech = onDeleteSpeech;
+        this.onreceivecurrentusers = onReceiveCurrentUsers;
         
         //Default handler
-		function onReceiveLikesUpdate(likes) {
+		function onReceiveCurrentUsers(count) {
+            //None
+        }
+        
+        function onReceiveLikesUpdate(likes) {
 			//None
 		}
 		
@@ -711,6 +800,10 @@ var middleware = (function() {
 		        
         function onReceiveSpeechInfo(speech_info) {
             //None
+        }
+        
+        function onDeleteSpeech(success) {
+            //success will be true or false
         }
         
         function sendMessageToMiddleware(type, payload) {
@@ -728,6 +821,14 @@ var middleware = (function() {
 				self.stomp.send(self.send_queue, {}, JSON.stringify(message_object));
 			}
 		}      
+        
+        function addMyselfToActiveUsers() {
+            sendMessageToMiddleware("online");
+        }
+        
+        function deleteMyselfFromActiveUsers() {
+            sendMessageToMiddleware("offline");
+        }
         
         function getCurrentSpeechInfo() {
             //This will cause middleware to send "submit" speech info to audience
@@ -753,6 +854,10 @@ var middleware = (function() {
         function addCommentToCurrentSpeech(username, comment) {
             //Comments should be just plain string
             sendMessageToMiddleware("comment", {"comment": {"username": username, "content": comment}});
+        }
+        
+        function DeleteSpeechBasedOnPassword(password) {
+            sendMessageToMiddleware("delete_speech", {"password": password});
         }
         
 		function connectMiddleware(onConnectCallback, onErrorCallback, onReceiveMessage, configuration) {
@@ -791,8 +896,14 @@ var middleware = (function() {
 							else if(signal.type == "dislikes") {
 								self.onreceivedislikes(signal.data.dislikes);
 							}	
-                            else if(signal.type == "submit") {
-                                self.onreceivespeechinfo(signal.data.speech_info);
+                            else if(signal.type == "current_speech_info") {
+                                self.onreceivespeechinfo(signal.data.current_speech_info);
+                            }
+                            else if(signal.type == "delete_speech" && signal.data.delete_speech) {
+                                self.ondeletespeech(signal.data.delete_speech);
+                            }
+                            else if (signal.type == "current_users" && signal.data.current_users) {
+                                self.onreceivecurrentusers(signal.data.current_users);
                             }
 							return typeof onReceiveMessage !== "function" ? null : onReceiveMessage(signal);
 					});                    
@@ -804,6 +915,323 @@ var middleware = (function() {
 		}
 	};
 	
+    //API for Virtual soapboax
+	window.Virtual = function() {
+        var self = this;
+		var ws, stomp, send_queue;
+		var PeerConnection, remoteVideo, remoteStream, virtual_id;
+		
+        //From soapbox related
+        var localStream, speech_info, PeerConnection_Speaker;        
+        var sdpConstraints = {
+			OfferToReceiveAudio: false,
+			OfferToReceiveVideo: false
+		};	
+        var peers = {};
+        this.peers = peers;
+        
+        
+        this.PeerConnection = PeerConnection;
+        
+        this.itself = "virtual";
+		this.setup = setupVideoDisplayObject;
+		this.connect = connectMiddleware;
+        this.register = registerInMiddleware;
+		this.send = sendMessageToMiddleware;
+		this.like = addLike;
+		this.dislike = addDislike;
+		this.report = reportInappropriateContent;
+		this.onreceivelikes = onReceiveLikesUpdate;
+		this.onreceivedislikes = onReceiveDislikesUpdate;
+		this.onreceivecomment = onReceiveComment;
+        this.onreceivespeechinfo = onReceiveSpeechInfo;
+        
+        function addLike() {
+			sendMessageToMiddleware("like");
+		}
+		
+		function addDislike() {
+			sendMessageToMiddleware("dislike");
+		}
+		
+		function reportInappropriateContent() {
+			sendMessageToMiddleware("report");
+		}
+        
+		function onReceiveCurrentUsers(count) {
+            //None
+        }
+        
+        //Default handler
+		function onReceiveLikesUpdate(likes) {
+			//None
+		}
+		
+		function onReceiveDislikesUpdate(dislikes) {
+			//None
+		}
+		        
+        function onReceiveComment(username, content) {
+            //None
+        }
+        
+        function onReceiveSpeechInfo(speech_info) {
+            //None
+            console.log(speech_info);
+        }
+        
+        //Try to tell signaling server that it is about to close
+		window.onbeforeunload = function(event) {
+            sendMessageToMiddleware("unregister", {"virtual_id": virtual_id});
+		};
+        
+        function setupVideoDisplayObject(remoteVideoObject) {
+			self.remoteVideo = remoteVideoObject;
+		}
+        
+        function registerInMiddleware(){
+            sendMessageToMiddleware("register", {"name": "virtual_user"});
+        }
+        
+		function connectMiddleware(onConnectCallback, onErrorCallback, onReceiveMessage, configuration) {
+			//Parsing config params
+			var configuration = configuration || {};
+			var server_url = configuration.server_url || 'bunny.ubioulu.fi:15674/stomp';
+			self.send_queue = configuration.send_queue || "/exchange/soapbox/middleware";
+			var receive_queue = configuration.receive_queue || "/exchange/soapbox/virtual";
+			var user_name = configuration.user_name || 'soapbox';
+			var password = configuration.password || '7rD7zL8RtckRzEXD';
+			var vhost = configuration.vhost || '/';
+			var debug = configuration.debug || true;
+			
+			//Stomp initialization
+			ws = new SockJS(server_url);
+            self.ws = ws;
+			self.stomp = Stomp.over(ws);
+			self.stomp.heartbeat.outgoing = 0;
+			self.stomp.heartbeat.incoming = 0;
+			if(!debug)
+				self.stomp.debug = null;
+			
+			self.stomp.connect(user_name, password, 
+				function(connected_frame) {                    
+					var id = self.stomp.subscribe(receive_queue, 
+						//Handling incoming messages
+						function(message) {                            
+							var signal = JSON.parse(message.body);						
+							if(signal.receiver !== 'virtual')
+							{	
+                                console.log("Messages routing error!");
+								return signal;
+							}		
+                            if (typeof virtual_id !== "undefined" && typeof signal.data !== "undefined"
+                                && typeof signal.data.virtual_id !== "undefined" 
+                                && virtual_id !== signal.data.virtual_id) {
+                                return;
+                            }
+                            if (signal.type == "register" && signal.data.virtual_id) {
+                                virtual_id = signal.data.virtual_id;
+                                console.log("My virtual id: ", virtual_id);
+                            }
+							//Assume virtual speaker will fire the offer according to middleware's request
+							else if (signal.type == "start_broadcast" && signal.data.start_broadcast) {
+                                
+							}
+                            //Act as receiver
+                            else if (signal.type == "offer" && signal.data.sdp) {				
+								waitForSpeechTransmission();						
+								PeerConnection.setRemoteDescription(
+                                    new RTCSessionDescription(signal.data.sdp), 
+                                    function () {
+                                        //Only after creating answer did peerconnection start gathering local ice
+                                        PeerConnection.createAnswer(
+                                            _gotLocalDescription, 
+                                            function (error) {
+                                                console.log('Failed to create answer: ' + error.toString());
+                                        });
+                                    },
+                                    function (error) {
+                                        console.log('Error: ' + error.toString());
+                                });
+							} 
+                            //Act as receiver
+                            else if(signal.type == "ice-candidate" && signal.data.ice && !signal.data.virtual_id) {
+								PeerConnection.addIceCandidate(new RTCIceCandidate(signal.data.ice));
+							}
+                            //Act as speaker
+                            if (signal.type == "answer" && signal.data.sdp && signal.data.virtual_id) {
+                                peers[signal.data.virtual_id].setRemoteDescription(signal.data.sdp,
+                                    function() {
+                                        sendMessageToMiddleware("ready", null);
+                                });						
+							} 
+                            //Act as speaker
+							else if(signal.type == "ice-candidate" && signal.data.ice && signal.data.virtual_id) {
+								peers[signal.data.virtual_id].addIceCandidate(signal.data.ice);
+							} 
+                            else if (signal.type == "request_offer" && signal.data.virtual_id) {
+                                createOffer(signal.data.virtual_id);
+                            }
+                            else if (signal.type == "current_users" && signal.data.current_users) {
+                                self.onreceivecurrentusers(signal.data.current_users);
+                            }
+                            else if(signal.type == "stop_broadcast" && !signal.data.virtual_id) {
+								stopSpeechTransmission();
+							}
+                            else if(signal.type == "stop_broadcast" && signal.data.virtual_id) {
+								peers[signal.data.virtual_id].stopSpeech();
+							}
+                            else if (signal.type == "unregister" && signal.data.virtual_id) {
+                                if (typeof peers[signal.data.virtual_id] !== "undefined") {
+                                    delete peers[signal.data.virtual_id];
+                                }
+                            }
+							else if(signal.type == "likes" && signal.data.likes) {
+								self.onreceivelikes(signal.data.likes);
+							}
+							else if(signal.type == "dislikes" && signal.data.dislikes) {
+								self.onreceivedislikes(signal.data.dislikes);
+							}
+							else if(signal.type == "comment" && signal.data.comment) {
+                                self.onreceivecomment(signal.data.comment.username, signal.data.comment.content);
+                            }
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+							return typeof onReceiveMessage !== "function" ? null : onReceiveMessage(signal);
+					});	
+					return typeof onConnectCallback !== "function" ? null : onConnectCallback(connected_frame);
+			}, function(error) {
+				console.log(error.toString());
+				return typeof onErrorCallback !== "function" ? null :onErrorCallback(error);
+			}, vhost);
+			
+		}
+        
+        function stopBroadcast() {
+            sendMessageToMiddleware("stop_broadcast", null);
+        }
+        
+        function createOffer(virtual_id) {
+            var options = {
+                "virtual_id": virtual_id,
+                "stream": localStream,
+                //Got local ice candidates
+                "onicecandidate": function (event) {
+                    sendMessageToMiddleware('ice-candidate', {'ice': event.candidate, 'virtual_id': virtual_id});
+                    
+                },
+                "gotLocalDescription": function (description) {      
+                    sendMessageToMiddleware("offer", {'sdp': description, 'virtual_id': virtual_id});
+                },
+                "sdpConstraints": sdpConstraints
+            };            
+            peers[virtual_id] = Offer.createOffer(options);			
+		}
+        
+		function stopSpeechTransmission(initiative) {
+            if(PeerConnection && PeerConnection.signalingState != "closed") {
+                PeerConnection.close();
+                PeerConnection = null;						
+                console.log("Speech transmission stopped");
+                return true;
+            } else {
+                console.log("Stop speech failure");
+                return false;
+            }					
+		}
+        
+        function waitForSpeechTransmission() {
+			if(!PeerConnection) {
+				PeerConnection = new RTCPeerConnection(PeerConnection_Config);
+				console.log('Created local peer connection object PeerConnection');
+                //Gathering local ice 
+				PeerConnection.onicecandidate = function _gotLocalIceCandidate(event) {
+                    if (event.candidate !== null) {
+                        sendMessageToMiddleware('ice-candidate', {'ice': event.candidate, 'virtual_id': virtual_id});
+                        console.log('Local ICE candidate gathered');                        
+                    }
+                };
+				PeerConnection.onaddstream = _gotRemoteStream;
+				return true;
+			}
+			else {
+				console.log("Transmission has already started.");
+				return false;
+			}
+		}
+        
+        //Local functions
+		function _gotLocalDescription(description) {
+			PeerConnection.setLocalDescription(
+				description,	
+				function () {
+					console.log('Answer sdp generated');
+                    sendMessageToMiddleware('answer', {'sdp': description || PeerConnection.localDescription, 'virtual_id': virtual_id});
+				}, 
+				function () { 
+					console.log("Set local description error");
+				}
+			);  
+		}
+        
+        function _gotRemoteStream(event) {			
+			console.log('Received remote stream');
+			self.remoteStream = event.stream;
+			self.remoteVideo.src = URL.createObjectURL(event.stream);
+		}
+        
+        //Only tells middleware that it wants to start broadcasting now, middleware will ask for offer
+		function startBroadcast(stream, speech_info) {
+            localStream = stream;
+            sendMessageToMiddleware("start_broadcast", typeof speech_info == "undefined" ? null : {"speech_info": speech_info});
+        }
+        
+        
+        
+        //Called when middleware sends a request_offer message. Offer will be requested only when new hotspot website is online
+        function createOffer(hotspot_id) {
+            var options = {
+                "hotspot_id": hotspot_id,
+                "stream": localStream,
+                //Got local ice candidates
+                "onicecandidate": function (event) {
+                    sendMessageToMiddleware('ice-candidate', {'ice': event.candidate, 'hotspot_id': hotspot_id});
+                    
+                },
+                "gotLocalDescription": function (description) {      
+                    sendMessageToMiddleware("offer", {'sdp': description, 'hotspot_id': hotspot_id});
+                },
+                "sdpConstraints": sdpConstraints
+            };            
+            peers[hotspot_id] = Offer.createOffer(options);			
+		}
+		
+        function sendMessageToMiddleware(type, payload) {     
+            var message_object = {
+                'sender': self.itself,
+                'receiver': "middleware",
+                'timestamp': new Date().toISOString(),
+                'type': type,
+                'data': payload || {}
+            };
+            if(self.stomp.connected !== true) {
+                console.log("Connection to middleware is not on yet. Send failure.");
+                return;
+            } 
+            else 
+            {
+                self.stomp.send(self.send_queue, {}, JSON.stringify(message_object));
+            }
+        }
+        
+		
+    };
+    
 })();
 
 

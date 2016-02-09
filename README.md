@@ -6,3 +6,6 @@ vote button works, basic dashboard
 
 ***3/2/2016
 speaker is able to register a speech
+
+***2/9/2016
+accident start/end speech is now secured by system, also speech info input is implemented 

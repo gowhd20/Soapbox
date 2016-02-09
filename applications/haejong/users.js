@@ -60,9 +60,9 @@ Soapbox.Users.prototype = {
 		console.LogInfo(connId);
 		this.removeUserById(connId);  // remove logout user from the cache
 		
+		// count user out
+        // user disconnect
 		this.countUser(0);
-		// user count out
-        //user disconnect
 		
 		// user who logged out without leaving the speech area, need to be removed from the active users
 		if(this.isUserAudience(connId)){
