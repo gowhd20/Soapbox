@@ -3,7 +3,9 @@ var _MSG_INITIATION    = "MSG_client_initiation";
 
 /* SYSTEM MESSAGES */
 var _MSG_SPEECH_BEGIN			= "speech_started";
+var _MSG_SPEECH_BEGIN_REQUEST	= "speech_begin_request";
 var _MSG_SPEECH_END 			= "speech_ended";
+var _MSG_SPEECH_END_REQUEST		= "speech_end_request";
 var _MSG_RAYCAST 				= "MSG_intersected_objects";
 var _MSG_MOUSE_PRESS			= "MSG_mouse_press";
 var _MSG_MOUSE_RELEASE			= "MSG_mouse_release";
@@ -132,9 +134,8 @@ var WebRocketApplication = IApplication.$extend(
  
 		// add objects to the three.scene
 		Tundra.renderer.scene.add(this.threeMeshGroup);
-
-
-        ////* Listeners *////
+		
+		////* Listeners *////
 		// entity event listeners
         this.entity.onEntityAction(this, this.onEntityAction);
 		this.foothold.onEntityAction(this, this.onEntityAction);
@@ -268,7 +269,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.soapbox_obj = soapbox_obj;
 		
 		console.log(soapbox_obj);
-		console.log(soapbox_obj.material.emissive);
 		
 
 /* 		listOfThreeGroup = this.getListOfObj3D();
@@ -494,10 +494,6 @@ var WebRocketApplication = IApplication.$extend(
 		
 	},
 	
-	changeNumOfUsersInVenueListener : function(){
-		
-	},
-
     initUi : function(self){
         this.ui = {};
         this.ui.baseCSS = {
@@ -684,6 +680,16 @@ var WebRocketApplication = IApplication.$extend(
 			// name, id, entity name, entity id
 			this.setSpeechBegin(entityAction.parameters[0]);
         }
+		else if(entityAction.name === _MSG_SPEECH_BEGIN_REQUEST)
+		{
+			// send request to the speaker to fill the speech info
+			var speechTitle = this.setSpeechInfo();
+			console.log("i recieved! ");
+			if(speechTitle != false){
+				this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST); // param = user info who attempted to start the speech
+			}	
+			
+		}
 		else if(entityAction.name === _MSG_SPEECH_END)
         {
 			// name, id, entity name, entity id
@@ -787,7 +793,7 @@ var WebRocketApplication = IApplication.$extend(
 			}
 		}	
 	},
-	//// not working yet for some reason
+	//// not working for some reason
 /* 	onMouseHoverBtn : function(obj){
 		// find mouse hover on voting blocks
 		if(obj.name == 'button1' | obj.name == 'button2'){
@@ -954,8 +960,7 @@ var WebRocketApplication = IApplication.$extend(
 		}
 	},
 		
-	setSpeechBegin : function(infoData)
-	{
+	setSpeechBegin : function(infoData){
 		
 		this.isSpeechOn = 1; // speech is off state
 		this.toVote = 1;	// right to vote refreshed
@@ -966,15 +971,16 @@ var WebRocketApplication = IApplication.$extend(
 		// speaker himself should not have a teleport button
 		var obj = this.threeMeshGroup.getObjectByName("video_screen");
 		console.log(obj);
-		var ava = Tundra.scene.entityByName("Avatar1");
-		console.log(ava);
+		//var ava = Tundra.scene.entityByName("Avatar1");
+		//console.log(ava);
 
 		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
 		}else{
+			// this user is not the speaker 
 			this.dashboard.children["teleportBtn"].hidden = false;
-			//this.prompSpeechMsg();
+			this.prompSpeechMsg();
 		}
 		
 		$("dashboard").show();
@@ -982,8 +988,7 @@ var WebRocketApplication = IApplication.$extend(
 		this.callRegistration(PATH_TO_REGISTRATION);
 	},	
 	
-	setSpeechEnd : function(infoData)
-	{
+	setSpeechEnd : function(infoData){
 		this.isSpeechOn = 0; // speech is off state
 		this.toVote = 1; // right to vote refreshed
 
@@ -994,6 +999,17 @@ var WebRocketApplication = IApplication.$extend(
 		
 		$("dashboard").hide();
 		this.video.pause();	
+	},
+	
+	setSpeechInfo : function(){	
+		var title = prompt("Enter a title for speech");
+    
+		if (title != null) {
+			return title;
+		}else{
+			confirm("Enter a title to begin the speech");
+			return false;
+		}
 	},
 	
 	
@@ -1049,6 +1065,14 @@ var WebRocketApplication = IApplication.$extend(
 		
 		console.log(this.userInfo);
 		console.log(actUserCnt);
+		
+		// register this avatar entity to the listeners
+		try{
+			var avatarEnt = Tundra.scene.entityByName(this.userInfo.avatarName);
+			avatarEnt.onEntityAction(this, this.onEntityAction);
+		}catch(e){
+			console.log("Warning!!!, your avatar may not be able to trigger the speech");
+		}
 		
 		this.changeScreenSize(actUserCnt);
 		

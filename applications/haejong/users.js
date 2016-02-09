@@ -74,6 +74,11 @@ Soapbox.Users.prototype = {
     },
 	
 	searchUserById : function(id){
+		
+
+    },
+	
+	searchUserById : function(id){
 
 		var id = id;
 		var cntOnlineUsers = this.userCount;

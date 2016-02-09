@@ -19,7 +19,9 @@ var _MSG_INITIATION       		= "MSG_client_initiation";
 var _MSG_COMMENTS				= "MSG_recieved";
 var _MSG_BROADCAST				= "MSG_broadcast";
 var _MSG_SPEECH_BEGIN			= "speech_started";
+var _MSG_SPEECH_BEGIN_REQUEST	= "speech_begin_request";
 var _MSG_SPEECH_END 			= "speech_ended";
+var _MSG_SPEECH_END_REQUEST		= "speech_end_request";
 var _MSG_VOTE					= "MSG_user_vote";
 var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 
@@ -48,7 +50,8 @@ var Server = Class.extend(
 		var isSpeechOn = 0;
 		var speechInfo;
 		var speechCnt;
-		//var set
+		var tempUserInfoIn;		// user who attempted to begin the speech
+		var tempUserInfoOut;	// user who attempted to end the speech
 		
 		this.speakerInfo = speakerInfo;
 		this.users = users;
@@ -57,9 +60,9 @@ var Server = Class.extend(
 		this.speechInfo = speechInfo;
 		
 		//set soapbox volumetrigger
-		var soapboxEnt = this.setSoapboxSystemTrigger();
-		soapboxEnt.entityEnter.connect(this, this.onSpeechTriggered);
-		soapboxEnt.entityLeave.connect(this, this.offSpeechTerminated);
+		var soapBoxVolumeTrigger = this.setSoapboxSystemTrigger();
+		soapBoxVolumeTrigger.entityEnter.connect(this, this.onSpeechRequested);
+		soapBoxVolumeTrigger.entityLeave.connect(this, this.offSpeechTerminated);
 		
         LogInfo("Server startedfff");
 
@@ -69,6 +72,9 @@ var Server = Class.extend(
 		me.Action(_MSG_COMMENTS).Triggered.connect(this, CommentControl);
 		me.Action(_MSG_VOTE).Triggered.connect(this, VoteControl);
 		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);
+		
+		// Speech confirmed to begin by speaker
+		me.Action(_MSG_SPEECH_BEGIN_REQUEST).Triggered.connect(this, this.onSpeechTriggered);
 		
 
         // Frame updates
@@ -103,6 +109,7 @@ var Server = Class.extend(
     onClientIntroduction : function()
     {
         var connection = server.ActionSender();
+
         if (connection != null)
         {
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
@@ -121,21 +128,34 @@ var Server = Class.extend(
     },
 
 	// speech triggered
-	onSpeechTriggered : function(ent)
+	// params = speech info
+	onSpeechTriggered : function(params)
 	{
-		/* singal to peers that speech begins*/
+		/* server prepare the speech */
+		
+		SpeechControl(this, tempUserInfo, 1);
+	},
+	
+	onSpeechRequested : function(ent)
+	{
 		var speakerId = this.users.getUserIdByEntityName(ent.name);
 		var speakerName = this.users.getUserInfoById(speakerId);
+		
+		tempUserInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
+		
+		// send confirmation to the requestor whether to begin the speech
+		ent.Exec(4, _MSG_SPEECH_BEGIN_REQUEST);
 
-		SpeechControl(this, ent, speakerName, speakerId, 1);
+		//this.onSpeechTriggered(ent);
 	},
 
 	// speech terminated
 	offSpeechTerminated : function(ent)
 	{
-		/* singal to peers that speech ends */
+		/* singal to peers that speech ended */
 		var speakerId = this.users.getUserIdByEntityName(ent.name);
 		var speakerName = this.users.getUserInfoById(speakerId);
+		
 		SpeechControl(this, ent, speakerName, speakerId, 0);
 	},
 	
@@ -148,7 +168,8 @@ var Server = Class.extend(
 		var rigid = soapFootbold.GetOrCreateComponent("RigidBody");
 		rigid.phantom = true;
 		return vol;
-	},
+	}
+	
 });
 
 // Script destroy/unload handler. Called automatically 
@@ -201,13 +222,20 @@ function SpeechAddInfo(context, speechId, name, id, like, dislike)
 }
 
 	// controls speech begin and end
-function SpeechControl(context, ent, name, id, action){
-	
-	var speakerId = id;
+	// action =1 > attempt to start speech
+	// action =2 > attempt to end speech
+function SpeechControl(context, tempInfo, action){//(context, ent, name, id, action){
+	var speakerId = tempInfo.speakerInfo[0].generalInfo.id;
+	var speakerName = tempInfo.speakerInfo[0].generalInfo.name;
+	var entName = tempInfo.speakerInfo[1].entityInfo.entityName;
+	var entId = tempInfo.speakerInfo[1].entityInfo.entityId;
+	var self = context;
+
+/*	var speakerId = id;
 	var speakerName = name;
 	var entName = ent.name;
 	var entId = ent.id;
-	var self = context;
+	var self = context;*/
 	
 	if(action == 1){
 		
@@ -217,7 +245,7 @@ function SpeechControl(context, ent, name, id, action){
 		}
 		else{
 			self.speechCnt = GenerateSpeechId(self.speechCnt);
-			Log("in speechcontrol " + speakerName + " "+ speakerId);
+			LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
 			SpeechAddInfo(self, self.speechCnt, speakerName, speakerId, 0, 0);   // speechId, name, id, like, dislike // add speech info
 			self.isSpeechOn = 1; 
 			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
@@ -225,21 +253,24 @@ function SpeechControl(context, ent, name, id, action){
 			console.LogInfo(self.speakerInfo.speakerInfo[0].generalInfo.name);
 		}
 	}else if(action == 0){
-		
-		if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
-			// when speech is off, tried to start speech
-			self.isSpeechOn = 0;			
-			console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+		try{
+			if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
+				// when speech is off, tried to start speech
+				self.isSpeechOn = 0;			
+				console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
 
-			//self.speakerInfo.speakerInfo[0].generalInfo.name = "";
-			//self.speakerInfo.speakerInfo[0].generalInfo.id = "";
-			//self.speakerInfo.speakerInfo[1].entityInfo.name = "";
-			//self.speakerInfo.speakerInfo[1].entityInfo.id = "";
-			
-			me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
-			
+				//self.speakerInfo.speakerInfo[0].generalInfo.name = "";
+				//self.speakerInfo.speakerInfo[0].generalInfo.id = "";
+				//self.speakerInfo.speakerInfo[1].entityInfo.name = "";
+				//self.speakerInfo.speakerInfo[1].entityInfo.id = "";
+				
+				me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
+				
 
-		}else{}
+			}else{}
+		}catch(e){
+			console.LogInfo("exception, undefined speaker attempted to end speech");
+		}
 	}
 	
 }
@@ -276,12 +307,6 @@ function VoteControl(vote)
 	Log(conn.Property("username") + "voted, vote status: " + this.speechInfo[id].like + " " + this.speechInfo[id].dislike);
 }
 
-
-
-function VideoControl()
-{
-
-}
 
 
 
