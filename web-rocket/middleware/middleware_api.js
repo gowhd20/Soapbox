@@ -9,6 +9,16 @@ var middleware = (function() {
     options: {"day": true, "hour": true}
     return: {"date": "25/11/2015", "time": "12:00"}
     */
+    window.current_time_string = function() {
+        var now = new Date();
+        var year = "" + now.getFullYear();
+        var month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+        var day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+        var hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+        var minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+        return day + "/" + month + "/" + year + " " + hour + ":" + minute;
+    };
+    
     window.extract_date_time = function(date_time_string, options) {
         var response = {};
         
@@ -50,7 +60,7 @@ var middleware = (function() {
         }
         
         return response;
-    }
+    };
     
     var PeerConnection_Config = {
 		iceServers: [
@@ -937,6 +947,8 @@ var middleware = (function() {
 		this.setup = setupVideoDisplayObject;
 		this.connect = connectMiddleware;
         this.register = registerInMiddleware;
+        this.start = startBroadcast;
+        this.stop = stopBroadcast;
 		this.send = sendMessageToMiddleware;
 		this.like = addLike;
 		this.dislike = addDislike;
@@ -947,15 +959,15 @@ var middleware = (function() {
         this.onreceivespeechinfo = onReceiveSpeechInfo;
         
         function addLike() {
-			sendMessageToMiddleware("like");
+			sendMessageToMiddleware("like", {"virtual_id": virtual_id});
 		}
 		
 		function addDislike() {
-			sendMessageToMiddleware("dislike");
+			sendMessageToMiddleware("dislike", {"virtual_id": virtual_id});
 		}
 		
 		function reportInappropriateContent() {
-			sendMessageToMiddleware("report");
+			sendMessageToMiddleware("report", {"virtual_id": virtual_id});
 		}
         
 		function onReceiveCurrentUsers(count) {
@@ -1062,7 +1074,7 @@ var middleware = (function() {
                             if (signal.type == "answer" && signal.data.sdp && signal.data.virtual_id) {
                                 peers[signal.data.virtual_id].setRemoteDescription(signal.data.sdp,
                                     function() {
-                                        sendMessageToMiddleware("ready", null);
+                                        sendMessageToMiddleware("ready", {"virtual_id": virtual_id});
                                 });						
 							} 
                             //Act as speaker
@@ -1113,7 +1125,7 @@ var middleware = (function() {
 		}
         
         function stopBroadcast() {
-            sendMessageToMiddleware("stop_broadcast", null);
+            sendMessageToMiddleware("stop_broadcast", {"virtual_id": virtual_id});
         }
         
         function createOffer(virtual_id) {
@@ -1188,7 +1200,7 @@ var middleware = (function() {
         //Only tells middleware that it wants to start broadcasting now, middleware will ask for offer
 		function startBroadcast(stream, speech_info) {
             localStream = stream;
-            sendMessageToMiddleware("start_broadcast", typeof speech_info == "undefined" ? null : {"speech_info": speech_info});
+            sendMessageToMiddleware("start_broadcast", typeof speech_info == "undefined" ? {"virtual_id": virtual_id} : {"speech_info": speech_info, "virtual_id": virtual_id});
         }
         
         
@@ -1200,11 +1212,11 @@ var middleware = (function() {
                 "stream": localStream,
                 //Got local ice candidates
                 "onicecandidate": function (event) {
-                    sendMessageToMiddleware('ice-candidate', {'ice': event.candidate, 'hotspot_id': hotspot_id});
+                    sendMessageToMiddleware('ice-candidate', {'ice': event.candidate, 'virtual_id': virtual_id});
                     
                 },
                 "gotLocalDescription": function (description) {      
-                    sendMessageToMiddleware("offer", {'sdp': description, 'hotspot_id': hotspot_id});
+                    sendMessageToMiddleware("offer", {'sdp': description, 'virtual_id': virtual_id});
                 },
                 "sdpConstraints": sdpConstraints
             };            

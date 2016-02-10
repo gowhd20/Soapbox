@@ -164,7 +164,7 @@ var Server = Class.extend(
 	
 	onSpeechRequested : function(ent)
 	{
-		if(this.isSpeechInfoGiven == 0){
+		if(this.isSpeechInfoGiven == 0 && this.isSpeechOn == 0){
 			// if speech info is not given
 			// ask user to enter speech info
 			LogInfo("Speech info is not given, server will send msg to ask that");
@@ -207,19 +207,23 @@ var Server = Class.extend(
 	// attempt to terminate the speech
 	offSpeechEndRequested : function(ent)
 	{
-		// if speech info was given and the speaker attempt to end the speech
-		// ask speaker for a confirmation
-		LogInfo("Speaker attempted to end the speech");
-		if(this.isSpeechInfoGiven == 1){
-			var speakerId = this.users.getUserIdByEntityName(ent.name);
-			var speakerName = this.users.getUserInfoById(speakerId);
-			
-			// save user info who try to leave the speech in the middle way
-			this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
-			
-			// send confirmation to the requestor whether it should end the speech
-			ent.Exec(4, _MSG_SPEECH_END_REQUEST);
-		}
+		// if user attempted leaving the soapbox was the speaker, otherwise do not act anything
+		if(ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
+		
+			// if speech info was given and the speaker attempt to end the speech
+			// ask speaker for a confirmation
+			LogInfo("Speaker attempted to end the speech");
+			if(this.isSpeechInfoGiven == 1){
+				var speakerId = this.users.getUserIdByEntityName(ent.name);
+				var speakerName = this.users.getUserInfoById(speakerId);
+				
+				// save user info who try to leave the speech in the middle way
+				this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
+				
+				// send confirmation to the requestor whether it should end the speech
+				ent.Exec(4, _MSG_SPEECH_END_REQUEST);
+			}
+		}else {}
 	},
 	
 		
