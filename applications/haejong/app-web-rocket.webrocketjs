@@ -73,10 +73,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
 		var isUserInTheVenue = 0;
 		this.isUserInTheVenue = isUserInTheVenue;
-	
-		// create obj for middleware
-		//var soapbox = new Soapbox();
-		//this.soapbox = soapbox;
 		
 		this.speakerInfo = speakerInfo;
 		this.toVote = toVote;
@@ -93,7 +89,7 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.height = 240;
 		
 		// because sometimes video.autoplay = false not working!
-		this.video.autoplay = false;
+		this.video.autoplay = true;
 		this.video.loop = true;
 		
 		/* THREE */
@@ -102,7 +98,8 @@ var WebRocketApplication = IApplication.$extend(
 
 		var threeMeshGroup = new THREE.Object3D();
 		this.threeMeshGroup = threeMeshGroup;
-
+		
+		
 		
 		////////////////////////////////////
 		//* create objects for the scene *//
@@ -142,18 +139,9 @@ var WebRocketApplication = IApplication.$extend(
 		Tundra.events.subscribe(_MSG_MOUSE_PRESS, this, this.onMousePress); 
 		Tundra.events.subscribe(_MSG_MOUSE_RELEASE, this, this.onMouseRelease);
 		Tundra.events.subscribe(_MSG_MOUSE_HOVER, this, this.onMouseHoverObj);
-		
-		// user search event listeners
-		//this.entity.onEntityAction(_MSG_found_user, this, sendActionRequest);
 
         // introduce this user to the server
         this.entity.exec(EntityAction.Server, _MSG_INITIATION);
-
-		console.log(Tundra.client);
-
-		// connect to middleware
-		//this.connToMiddleware(this);
-		
 		
 		/**************get video stream*******************/
 		//https://github.com/jeromeetienne/threex.videotexture/blob/master/examples/videotexture.html
@@ -163,29 +151,16 @@ var WebRocketApplication = IApplication.$extend(
 		
 		
 		/***********connect to middleware******************/
-/* 		stomp = soapbox.connect(function()
-		{
-			soapbox.submit({"lefttime": "17/10/2015 12:00", "name": "Jilin",
-                        "topic": "Today is hot!", "password": 1234});
-			soapbox.start(videoStreamToSend);
-
-			soapbox.register();
-		}, function(error)
-		{
-			console.log("attempt to connect to middleware has failed");
-		});	 */	
-		
-		//API object
 		
 		
 		var virtual = new Virtual();
 		this.virtual = virtual;
 		
-
 		//Setup the video object for displaying remote stream
 		this.virtual.setup(this.video);
 		this.virtual.connect(function(){self.virtual.register();});
-		//First it needs to register
+		//handled by middleware when user is logging out
+		window.onbeforeunload = function(){virtual.unregister();};
 		
 		
 		
@@ -515,6 +490,7 @@ var WebRocketApplication = IApplication.$extend(
 			top : "20px"
 
 		});
+		
 		this.dashboard.appendChild(votePanel);
 		
 		// like and dislike
@@ -601,6 +577,7 @@ var WebRocketApplication = IApplication.$extend(
 		$(sendCommBtn).click(function(){
 			var v = document.getElementById("commentInput");
 			//addNewComment(self, v.value);
+			self.virtual.comment(self.userInfo.name, v.value);
 			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, v.value);
 
 			v.value == "";
@@ -644,6 +621,11 @@ var WebRocketApplication = IApplication.$extend(
 		// entityAction.parameters[1] -> entity id
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
+			// temp
+			this.speakerInfo = JSON.parse(entityAction.parameters[0]);
+			if(this.isSpeakerMe()){
+				this.setVideoMedia(this, this.video);
+			}
 			
 			// name, id, entity name, entity id
 			this.setSpeechBegin(entityAction.parameters[0]);
@@ -813,12 +795,14 @@ var WebRocketApplication = IApplication.$extend(
 				if(obj.name == 'button1'){
 					// vote like
 					this.onVote(1);
+					this.virtual.like();		// temp 
 					this.setHexValueBack("button1", 0);
 
 					
 				}else if(obj.name == 'button2'){
 					// vote dislike
 					this.onVote(0);
+					this.virtual.dislike();		// temp
 					this.setHexValueBack("button2", 0);
 				}
 			}
@@ -960,20 +944,18 @@ var WebRocketApplication = IApplication.$extend(
 		var obj = this.threeMeshGroup.getObjectByName("video_screen");
 		console.log(obj);
 		//var ava = Tundra.scene.entityByName("Avatar1");
-		//console.log(ava);
-		this.setVideoMedia(this, this.video);
-		console.log(window.videoStreamToSend);
-		
-		
-		var lefttime = current_time_string(); //Example: "21/02/2016 12:05"
-		var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
-		//If it wants to start a speech right now
-		this.virtual.start(window.videoStreamToSend, speech_info); 
-
 
 		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
+			// speech started
+			var lefttime = current_time_string(); //Example: "21/02/2016 12:05"
+			var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
+			//If it wants to start a speech right now
+			console.log(window.videoStreamToSend);
+			console.log(this.video);
+			this.virtual.start(window.videoStreamToSend, speech_info); 
+			
 		}else{
 			// this user is not the speaker 
 			this.dashboard.children["teleportBtn"].hidden = false;
@@ -994,10 +976,9 @@ var WebRocketApplication = IApplication.$extend(
 		this.removeVotePanel();
 		
 		// stop soapbox 
-		window.onbeforeunload = function(event) {
-			this.virtual.stop();
-        };
-		
+
+		this.virtual.stop();
+        		
 		$("dashboard").hide();
 		this.video.pause();	
 	},
@@ -1026,7 +1007,6 @@ var WebRocketApplication = IApplication.$extend(
 			},
 			function(stream)
 			{
-				console.log("when?");
 				//context.virtual.start(stream, submit_info);	// trial
 				window.videoStreamToSend = stream;
 				video.src = URL.createObjectURL(stream);	
@@ -1044,7 +1024,7 @@ var WebRocketApplication = IApplication.$extend(
 			},
 			function(stream)
 			{
-				videoStreamToSend = stream;
+				window.videoStreamToSend = stream;
 				video.src = URL.createObjectURL(stream);
 			},
 			function(error)
@@ -1053,8 +1033,6 @@ var WebRocketApplication = IApplication.$extend(
 			});
 		}else
 			console.assert(false)
-		
-		console.log(videoStreamToSend);
 		
 	},
 	
@@ -1098,7 +1076,6 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
 			return;
 		this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;  
-		//this.videoTexture.needsUpdate	= true;
 	},
 	
 	// init with params which sent from the server
@@ -1111,6 +1088,16 @@ var WebRocketApplication = IApplication.$extend(
 		
 		console.log(this.userInfo);
 		console.log(actUserCnt);
+	
+		
+		//Register callbacks
+		this.virtual.onreceivespeechinfo = function(speech_info) {};
+		this.virtual.onreceivecomment = function(username, comment) {};
+		this.virtual.onreceivelikes = function(likes){};
+		this.virtual.onreceivedislikes = function(dislikes){};
+		this.virtual.onreceivereports = function(reports){};
+		this.virtual.onreceivecurrentusers = function(users){};  //TODO - using online and offline in virtual to handle this inf
+		
 		
 		// register this avatar entity to the listeners
 		try{
@@ -1168,9 +1155,7 @@ function haejongAsset(asset){
 }
 
 
-// BUG1: speech end method should be called only by speaker himself not everyone, popup menu as well
-// BUG2: speech begin when many guys try to trigger when speech is already on
-// I think when any attempts happen, should check id to avoid above two situations
+// TODO: handling keyboard press when starting speech
 
 // Start the application by instantiating it
 var webRocketApplication = new WebRocketApplication();
