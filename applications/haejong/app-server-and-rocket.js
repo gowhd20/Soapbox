@@ -44,9 +44,9 @@ var Server = Class.extend(
     {
 		if (server.IsRunning()){
 			LogInfo("running");
-			var users = server.AuthenticatedUsers();	// test
-			if (users.length > 0)
-				LogInfo(users[0] + "haha");
+			var users = server.AuthenticatedUsers();
+			if (users.length == 0){}
+				
 		}
 		var users = new Soapbox.Users();
 		
@@ -67,32 +67,27 @@ var Server = Class.extend(
 		this.tempUserInfoIn = tempUserInfoIn;
 		this.tempUserInfoOut = tempUserInfoOut;
 		
-		var TEST = 1;
-		var TEST2 = 2;
 		//set soapbox volumetrigger
 		var soapBoxVolumeTrigger = this.setSoapboxSystemTrigger();
 		soapBoxVolumeTrigger.entityEnter.connect(this, this.onSpeechRequested);
 		soapBoxVolumeTrigger.entityLeave.connect(this, this.offSpeechEndRequested);
+        LogInfo("Server started");		
 		
-        LogInfo("Server startedfff");
-
-				
         // Client sent entity actions
         me.Action(_MSG_INITIATION).Triggered.connect(this, this.onClientIntroduction);
 		me.Action(_MSG_COMMENTS).Triggered.connect(this, CommentControl);
 		me.Action(_MSG_VOTE).Triggered.connect(this, VoteControl);
-		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);
+		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);		
 		
 		// Speech confirmed to begin by speaker
 		me.Action(_MSG_SPEECH_BEGIN_REQUEST).Triggered.connect(this, this.onSpeechTriggered);
-		// Speech confirmed to be ended by speaker
-		me.Action(_MSG_SPEECH_END_REQUEST).Triggered.connect(this, this.offSpeechTerminated);
-
 		
-
+		// Speech confirmed to be ended by speaker
+		me.Action(_MSG_SPEECH_END_REQUEST).Triggered.connect(this, this.offSpeechTerminated);	
+		
         // Frame updates
         frame.Updated.connect(this, this.onUpdate);
-
+		
         // Connect to new clients logging in/out
         server.UserConnected.connect(this, this.onClientConnected);
         server.UserDisconnected.connect(this, this.onClientDisconnected);
@@ -106,6 +101,7 @@ var Server = Class.extend(
 
     onUpdate: function(frametime)
     {
+		//LogInfo("server frame updated");
     },
 
     onClientConnected : function(connId, connection)
@@ -120,7 +116,12 @@ var Server = Class.extend(
 		// Handled by server to terminate the speech automatically 
 		if(typeof this.speakerInfo == 'undefiend'){}
 		else if(this.isSpeechOn == 1){
+			if(typeof this.speakerInfo.speakerInfo == 'undefined'){
+				LogInfo("speaker was not defined");
+			}
 			if(this.speakerInfo.speakerInfo[0].generalInfo.id == connection.id){
+				LogInfo("speaker logged out during the speech, speaker id: "+this.speakerInfo.speakerInfo[0].generalInfo.id+
+				" "+connection.id+" logged out");
 				this.offSpeechTerminated(1);
 			}
 		}
@@ -131,16 +132,21 @@ var Server = Class.extend(
     onClientIntroduction : function()
     {
         var connection = server.ActionSender();
-
         if (connection != null)
         {
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
-
-			if(typeof this.speechInfo == 'undefined'){ // if there is no speech going right now
-
+			LogInfo("if speech is?: "+this.isSpeechOn);
+			if(typeof this.speechInfo == 'undefined'){ 
+				// if there is no speech going on right now
 				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0, "actUserCnt" : this.users.countUserInVenue};
-			}else{ // if there is a speech going right now
-				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike, "actUserCnt" : this.users.countUserInVenue};
+			}else{ 
+				// if there is a speech going on right now
+				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
+				, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
+				, "actUserCnt":this.users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
+				, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
+				, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
+				, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName};
 			}
 			// message send back to client with speech info
 			connection.Exec(me, _MSG_INITIATION, JSON.stringify(initParams));
@@ -151,6 +157,7 @@ var Server = Class.extend(
 
 	// speech triggered
 	// params = speech info
+
 	onSpeechTriggered : function(params)
 	{
 		// speech info is given
@@ -170,12 +177,11 @@ var Server = Class.extend(
 			LogInfo("Speech info is not given, server will send msg to ask that");
 			var speakerId = this.users.getUserIdByEntityName(ent.name);
 			var speakerName = this.users.getUserInfoById(speakerId);
-			
-			this.tempUserInfoIn = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
+			this.tempUserInfoIn = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
+			,{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
 			
 			// send confirmation to the requstor whether to begin the speech
 			ent.Exec(4, _MSG_SPEECH_BEGIN_REQUEST);
-
 		}else {}
 	},
 
@@ -186,16 +192,17 @@ var Server = Class.extend(
 			/* singal to peers that speech ended */
 			LogInfo("Speech end request has been approved by speech. System terminates the speech ");
 			this.isSpeechInfoGiven = 0;
-			try{
-				TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
-			}catch(e){
-				LogInfo("Speaker appeared to has terminated speech irregular fashion");
-			}
 			if(typeof this.tempUserInfoOut == 'undefined'){
 				SpeechControl(this, this.tempUserInfoIn, 0);
 			}else{
 				// either the speaker tried to leave the speech once or more, or it takes regular steps to finish the speech
 				SpeechControl(this, this.tempUserInfoOut, 0);
+			}
+			// warning, this try sometimes succeed without speaker in the virtual world
+			try{
+				TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+			}catch(e){
+				LogInfo("Speaker appeared terminated speech irregular fashion");
 			}
 		}else if(reply == 0){
 			// end attempt was by mistake
@@ -208,17 +215,17 @@ var Server = Class.extend(
 	offSpeechEndRequested : function(ent)
 	{
 		// if user attempted leaving the soapbox was the speaker, otherwise do not act anything
-		if(ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
-		
+		if(typeof this.speakerInfo.speakerInfo != 'undefined' && ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
 			// if speech info was given and the speaker attempt to end the speech
 			// ask speaker for a confirmation
-			LogInfo("Speaker attempted to end the speech");
+			LogInfo("Speaker attempted to end the speech, speech state: "+this.isSpeechOn);
 			if(this.isSpeechInfoGiven == 1){
 				var speakerId = this.users.getUserIdByEntityName(ent.name);
 				var speakerName = this.users.getUserInfoById(speakerId);
 				
 				// save user info who try to leave the speech in the middle way
-				this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
+				this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
+				,{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
 				
 				// send confirmation to the requestor whether it should end the speech
 				ent.Exec(4, _MSG_SPEECH_END_REQUEST);
@@ -275,16 +282,13 @@ function GenerateSpeechId(id)
 function SpeechAddInfo(context, speechId, name, id, like, dislike)
 {
 	var self = context;
-
 	if(typeof self.speechInfo == "undefined"){
 		self.speechInfo = [];
 		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike}; // name id undefiend
 		self.speechInfo.push(info);
-
 	}else{
 		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike};
 		self.speechInfo.push(info);
-
 	}
 }
 
@@ -297,15 +301,9 @@ function SpeechControl(context, tempInfo, action){//(context, ent, name, id, act
 	var entName = tempInfo.speakerInfo[1].entityInfo.entityName;
 	var entId = tempInfo.speakerInfo[1].entityInfo.entityId;
 	var self = context;
-
-/*	var speakerId = id;
-	var speakerName = name;
-	var entName = ent.name;
-	var entId = ent.id;
-	var self = context;*/
-	
-	if(action == 1){
-		
+	LogInfo("speaker ID: "+speakerId+" speaker name: "+speakerName);	
+	// action to begin the speech
+	if(action == 1){	
 		if(self.isSpeechOn == 1){
 			// when speech is on, tried to start speech
 			console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
@@ -315,10 +313,11 @@ function SpeechControl(context, tempInfo, action){//(context, ent, name, id, act
 			LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
 			SpeechAddInfo(self, self.speechCnt, speakerName, speakerId, 0, 0);   // speechId, name, id, like, dislike // add speech info
 			self.isSpeechOn = 1; 
-			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}},{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
+			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
+			,{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
 			me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
-			console.LogInfo(self.speakerInfo.speakerInfo[0].generalInfo.name);
 		}
+	// action to end the speech
 	}else if(action == 0){
 		try{
 			if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
@@ -334,7 +333,9 @@ function SpeechControl(context, tempInfo, action){//(context, ent, name, id, act
 				me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
 				
 
-			}else{}
+			}else{
+				LogInfo("speaker name doesn't match with end attempt entity");
+			}
 		}catch(e){
 			console.LogInfo("exception, undefined speaker attempted to end speech");
 		}
@@ -381,7 +382,6 @@ function VoteControl(vote)
 	var conn = server.ActionSender();
 	
 	if(vote == 1){
-
 		this.speechInfo[id].like = this.speechInfo[id].like+1;
 		me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
 	}else{

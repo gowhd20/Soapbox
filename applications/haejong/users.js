@@ -29,7 +29,7 @@ Soapbox.Users = function(){
 	me.Action(_MSG_USER_JOINED_VENUE).Triggered.connect(this, this.userJoinedTheVenue);
 	me.Action(_MSG_USER_LEFT_VENUE).Triggered.connect(this, this.userLeftTheVenue);
 	
-	console.LogInfo("users loaded");
+	console.LogInfo("Users loaded");
 };
 
 Soapbox.Users.prototype = {
@@ -38,8 +38,8 @@ Soapbox.Users.prototype = {
 
 		var userInfo = {"name":userConnection.Property("username"),"id":userID};
 		this.userInfoList.push(userInfo);
-		console.LogInfo(this.userInfoList[this.userCount].name);
-		console.LogInfo(this.userInfoList[this.userCount].id);
+		console.LogInfo("user name: "+this.userInfoList[this.userCount].name);
+		console.LogInfo("user id: "+this.userInfoList[this.userCount].id);
 
 		// count user in
 		this.countUser(1);
@@ -57,19 +57,24 @@ Soapbox.Users.prototype = {
 	},
 	
 	onClientDisconnected : function(connId, connection){
-		console.LogInfo(connId);
+		console.LogInfo("removing user id: "+connId);
 		this.removeUserById(connId);  // remove logout user from the cache
 		
 		// count user out
         // user disconnect
 		this.countUser(0);
-		
-		// user who logged out without leaving the speech area, need to be removed from the active users
+		LogInfo(connId + " disconnected");
+		// user who logged out without leaving the venue, need to be removed from the active users
 		if(this.isUserAudience(connId)){
-			
+			LogInfo("user was in the venue until leaving");
 			this.audienceId.splice(this.audienceId.indexOf(connId), 1);
 			this.countUserInVenue = this.countUserInVenue-1;
 			me.Exec(4, _MSG_USER_LEFT_VENUE, this.countUserInVenue);
+		}else{
+			LogInfo("remaining users in the venue:");
+			for(var i=0; i<this.audienceId.length; i++){
+				LogInfo(this.audienceId[i]);
+			}
 		}
     },
 	
@@ -96,7 +101,6 @@ Soapbox.Users.prototype = {
 	//speakerName[6] = identical with id ==> example: Avatar1 
 	getUserIdByEntityName : function(entName){
 		var id;
-		console.LogInfo(entName);
 		id = entName.slice(6, entName.length);
 		return id;
 	},
@@ -110,11 +114,15 @@ Soapbox.Users.prototype = {
 	isUserAudience : function(userId){
 		for(var i=0; i<this.audienceId.length; i++){
 			if(userId == this.audienceId[i]){
+				LogInfo("userId: "+userId+" audience: "+this.audienceId[i]);
 				return true;
-				break;
-			}else
-				return false;
+			}
 		}
+		
+		for(var i=0; i<this.audienceId.length; i++){
+			LogInfo(this.audienceId[i]+" is not audience");
+		}
+		return false;
 		
 	},
 
@@ -139,7 +147,7 @@ Soapbox.Users.prototype = {
 			this.audienceId.push(userId);
 		
 		this.countUserInVenue = this.countUserInVenue+1;		
-		
+		LogInfo("id: "+userId + " joined the venue");
 
 		me.Exec(4, _MSG_USER_JOINED_VENUE, this.countUserInVenue);
 		
@@ -151,7 +159,7 @@ Soapbox.Users.prototype = {
 
 			// removing user from the active user group
 			this.audienceId.splice(this.audienceId.indexOf(userId), 1);
-
+			LogInfo("id: "+userId + " left the venue");
 			this.countUserInVenue = this.countUserInVenue-1;
 			me.Exec(4, _MSG_USER_LEFT_VENUE, this.countUserInVenue);
 		}			
