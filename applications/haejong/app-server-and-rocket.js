@@ -279,15 +279,15 @@ function GenerateSpeechId(id)
 	return id;
 }
 
-function SpeechAddInfo(context, speechId, name, id, like, dislike)
+function SpeechAddInfo(context, speechId, name, id, like, dislike, report)
 {
 	var self = context;
 	if(typeof self.speechInfo == "undefined"){
 		self.speechInfo = [];
-		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike}; // name id undefiend
+		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike, "report":report}; // name id undefiend
 		self.speechInfo.push(info);
 	}else{
-		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike};
+		var info = {"speechId":speechId, "userName":name, "userId":id, "like":like, "dislike":dislike, "report":report};
 		self.speechInfo.push(info);
 	}
 }
@@ -311,7 +311,7 @@ function SpeechControl(context, tempInfo, action){//(context, ent, name, id, act
 		else{
 			self.speechCnt = GenerateSpeechId(self.speechCnt);
 			LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
-			SpeechAddInfo(self, self.speechCnt, speakerName, speakerId, 0, 0);   // speechId, name, id, like, dislike // add speech info
+			SpeechAddInfo(self, self.speechCnt, speakerName, speakerId, 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
 			self.isSpeechOn = 1; 
 			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
 			,{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
@@ -384,12 +384,17 @@ function VoteControl(vote)
 	if(vote == 1){
 		this.speechInfo[id].like = this.speechInfo[id].like+1;
 		me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
-	}else{
+	}else if(vote == 0){
 		this.speechInfo[id].dislike = this.speechInfo[id].dislike+1;
 		me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+	}else if(vote < 0){
+		this.speechInfo[id].report = this.speechInfo[id].report+1;
 	}
 
-	Log(conn.Property("username") + "voted, vote status: " + this.speechInfo[id].like + " " + this.speechInfo[id].dislike);
+	Log(conn.Property("username") + "voted, vote status: " + 
+	this.speechInfo[id].like + " " + 
+	this.speechInfo[id].dislike + " "+
+	this.speechInfo[id].report);
 }
 
 

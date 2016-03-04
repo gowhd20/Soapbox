@@ -1,6 +1,6 @@
 var _MSG_INITIATION    = "MSG_client_initiation";
 
-
+// BUGCASE: when speech kicked off while no virtual user is online, virtual server won't have way to latest info ready for virtual user who login later
 /* SYSTEM MESSAGES */
 var _MSG_SPEECH_BEGIN			= "speech_started";
 var _MSG_SPEECH_BEGIN_REQUEST	= "speech_begin_request";
@@ -19,13 +19,13 @@ var _MSG_VOTE					= "MSG_user_vote";
 var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 var _MSG_USER_JOINED_VENUE		= "MSG_user_joined";
 var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
+var _MSG_SELECT_COORDINATOR		= "MSG_select_coordinator";
 
 // the area for speech venue 
 //var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
 //var SET_AREA_FOR_SPEECH_TO  = {"x":60, "z":-39};
 var SET_AREA_FOR_SPEECH_FROM  = {"x":52, "z":-55};	// covers larger area as the venue
 var SET_AREA_FOR_SPEECH_TO  = {"x":70, "z":-34};
-var POSITION_SCREEN_DEFAULT  = {"x":60.21, "y":9.50, "z":-44.35};
 
 var AREA_FOR_SPEAKER_ONLY_FROM = {"x":66.5, "y":9, "z":-43.9};
 var AREA_FOR_SPEAKER_ONLY_TO = {"x":67.7, "y":20, "z":-42.8};
@@ -34,10 +34,11 @@ var SOAPBOX_NAME = "http://localhost:8082/applications/haejong/soapbox.mesh_subm
 var PATH_TO_REGISTRATION = "speaker22/index.html";
 var GEO_SCREEN_DEFAULT = {"v1":0.01, "v2":2, "v3":2};
 var GEO_BUTTON_DEFAULT = {"v1":1, "v2":1, "v3":1};
-var POSITION_REPORT_DEFAULT = {"x":63.20, "y":8.10, "z":-37.36};
+var POSITION_REPORT_DEFAULT = {"x":63.20, "y":8.10, "z":-39.36};
 var POSITION_LIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-46.36}
 var POSITION_DISLIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-42.36};
-var POSITION_DEFAULT = {"x":50.20, "y":9.59, "z":-33.36};
+var POSITION_DEFAULT = {"x":66.20, "y":10, "z":-49.35};
+var POSITION_SCREEN_DEFAULT  = {"x":60.21, "y":9.50, "z":-44.35};
 var HEX_LIKE = 0x00ff00;
 var HEX_DISLIKE = 0x6600ff;
 var HEX_REPORT = 0xff0000;
@@ -90,34 +91,47 @@ var WebRocketApplication = IApplication.$extend(
 		this.isUserInTheVenue = isUserInTheVenue;	
 		this.speakerInfo = speakerInfo;
 		this.toVote = toVote;
-
+		var coordinatorInfo = {"name" : "", "id" : ""};
+		this.coordinatorInfo = coordinatorInfo;
+	
+		// middleware instance
+		var virtual = new Virtual();
+		this.virtual = virtual;
+		
 		/* Tundra entities */
 		var foothold = Tundra.scene.entityByName("soapbox_footbold");
 		this.foothold = foothold;
-		var video;
+		
+		// video element
+		var video= document.createElement('video');
+		this.video = video;
+		this.video = video;
+		this.video.width = 320;
+		this.video.height = 240;
+		this.video.autoplay = true;
+		this.video.loop = true;
+		
+		/***********configure with middleware******************/
+		virtual.connect(function(){virtual.register();});
+		virtual.setup(video);
+		//handled by middleware when user is logging out
+		onbeforeunload = function(){virtual.unregister();};
+			
+		/**************************************************/
+		
 		
 		/* THREE */
 		var videoTexture = new THREE.Texture(video);
 		this.videoTexture = videoTexture;
 		var threeMeshGroup = new THREE.Object3D();
 		this.threeMeshGroup = threeMeshGroup;
-		
+
 		// textures
 		tex = THREE.ImageUtils.loadTexture("./localAssets/like.jpg");
 		texture_waiting = THREE.ImageUtils.loadTexture("./localAssets/waiting.jpg", function(error){
 			console.log(this,"image not loaded, error");
 		});
 		this.texture_waiting = texture_waiting;
-		
-		// create the plane mesh
-		/*var material = new THREE.MeshBasicMaterial({ wireframe: true });
-		var geometry = new THREE.PlaneGeometry();
-		var planeMesh= new THREE.Mesh( geometry, material );
-		// add it to the WebGL scene
-		this.threeMeshGroup.add(planeMesh);
-		planeMesh.position.x = 55;
-		planeMesh.position.y = 9;
-		planeMesh.position.z = -44;*/
 		
 		////////////////////////////////////
 		//* create objects for the scene *//
@@ -126,21 +140,22 @@ var WebRocketApplication = IApplication.$extend(
 		var url = []; 
 		var objPosition = [];
 		var geo = [];
-		
-		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", POSITION_SCREEN_DEFAULT, geo);
+		// create screen object
+		// texture init with waiting mode 
+		var screenMesh = this.createCubeObj(this.texture_waiting, "video_screen", POSITION_SCREEN_DEFAULT, geo);
 		this.screenMesh = screenMesh;
-		url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 
-
+		// create like button object
+		url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 		
 		var btnMesh = this.createBtnObj(url, "likeBtn", POSITION_LIKE_DEFAULT, GEO_BUTTON_DEFAULT); // create likeBtn
-		
+		// create dislike button object
 		url = './localAssets/ic_sentiment_dissatisfied_black_24dp/web/ic_sentiment_dissatisfied_black_24dp_2x.jpg'; 	
 		var btnMesh2 = this.createBtnObj(url, "disLikeBtn", POSITION_DISLIKE_DEFAULT, GEO_BUTTON_DEFAULT); // disLikeBtn
-		
+		// create report button object
 		url = './localAssets/ic_sentiment_very_dissatisfied_black_24dp/web/ic_sentiment_very_dissatisfied_black_24dp_2x.jpg';
 		var reportBtn = this.createBtnObj(url, "reportBtn", POSITION_REPORT_DEFAULT,GEO_BUTTON_DEFAULT)
 		// to change texture's emissive attribute
-		hexOfBtn1 = this.getHexValue(btnMesh);
-		hexOfBtn2 = this.getHexValue(btnMesh2);
+		//var hexOfBtn1 = this.getHexValue(btnMesh);
+		//var hexOfBtn2 = this.getHexValue(btnMesh2);
  
 		// add objects to the three.scene
 		Tundra.renderer.scene.add(this.threeMeshGroup);
@@ -162,33 +177,21 @@ var WebRocketApplication = IApplication.$extend(
 		
 		/**************get video stream*******************/
 		//https://github.com/jeromeetienne/threex.videotexture/blob/master/examples/videotexture.html
-				
-		
-		/*******************************************/
-		
-		
-		/***********connect to middleware******************/
-		
-		var virtual = new Virtual();
-		this.virtual = virtual;
-		
-		//handled by middleware when user is logging out
-		window.onbeforeunload = function(){virtual.unregister();};	
-		
-		/**************************************************/
 
 		/* functions to be rendered in a loop */		
-		onRenderFctsWithoutParam.push(function()
-		{
-			self.videoTextureUpdate(); 	// this => window
+		onRenderFctsWithoutParam.push(function(){
+			self.videoTextureUpdate(); 	
 		});
-		
-		onRenderFctsWithoutParam.push(function()
-		{
-			self.raycastData = self.rayCast();				// this => window					
-		
+		onRenderFctsWithoutParam.push(function(){
+			self.raycastData = self.rayCast();							
 		});
-
+		onRenderFctsWithoutParam.push(function(){
+			// if user is first in the scene, send request to choose coordinator
+			if(self.coordinatorInfo.id == ""){
+				self.entity.exec(EntityAction.Server, _MSG_SELECT_COORDINATOR);
+				self.coordinator.id = "temp";
+			}
+		});
 		
 		// define whether user is near the screen 
 		onRenderFctsWithoutParam.push(function(){
@@ -204,7 +207,6 @@ var WebRocketApplication = IApplication.$extend(
 /* 		var newScene = Tundra.renderer.scene.clone(new Physijs.Scene);
 		Tundra.renderer.scene = newScene;
 		console.log(Tundra.renderer); */
-
 		
 		listOfMeshObject = this.getListOfMeshObj();
 		this.listOfMeshObject = listOfMeshObject;
@@ -332,17 +334,13 @@ var WebRocketApplication = IApplication.$extend(
 	//*  this.methods in alphabetical order *//
 	///////////////////////////////////////////
 	
-	addNewComment : function(text, name, id){
-		
+	addNewComment : function(text, name, id){		
 		var userName = name;
-		var text = text;
-		
+		var text = text;		
 		var commentInnerDiv = document.createElement("div");  // comment holder div
-		var comment = document.createElement("b"); // comment text
-		
+		var comment = document.createElement("b"); // comment text		
 		commentInnerDiv.id = "commentInnerDiv";
-		comment.id = "comment";	
-		
+		comment.id = "comment";			
 		$(commentInnerDiv).css({
 			position : "relative",
 			width : "100%",
@@ -703,8 +701,9 @@ var WebRocketApplication = IApplication.$extend(
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
 			this.speakerInfo = JSON.parse(entityAction.parameters[0]);
-			this.initVideo(this);
-			this.setVideoMedia(this, this.video);
+			if(this.isSpeakerMe()){
+				this.setVideoFeed(this, this.video);
+			}
 			// name, id, entity name, entity id
 			this.setSpeechBegin(entityAction.parameters[0]);
         }
@@ -757,6 +756,11 @@ var WebRocketApplication = IApplication.$extend(
 		else if(entityAction.name === _MSG_VOTE)
 		{
 			this.refreshVote(entityAction.parameters[0], entityAction.parameters[1]); // like, dislike
+		}
+		else if(entityAction.name === _MSG_SELECT_COORDINATOR)
+		{
+			console.log("coordinator info: "+entityAction.parameters[0]);
+			this.coordinatorInfo = JSON.parse(entityAction.parameters[0]);
 		}
     },
 	
@@ -869,19 +873,21 @@ var WebRocketApplication = IApplication.$extend(
 	onMousePressBtn : function(obj){
 		// recognize buttons when only a speech is on 
 		if(this.toVote & this.isSpeechOn){
-			if(obj.name == 'likeBtn' | obj.name == 'disLikeBtn'){
+			if(obj.name == 'likeBtn' | obj.name == 'disLikeBtn' | obj.name == 'reportBtn'){
 				if(obj.name == 'likeBtn'){
 					// vote like
 					this.onVote(1);
-					this.virtual.like();		// temp 
-					this.setHexValueBack("likeBtn", 0);
-
-					
+					this.virtual.like();		
+					this.setHexValueBack("likeBtn", 0);					
 				}else if(obj.name == 'disLikeBtn'){
 					// vote dislike
 					this.onVote(0);
-					this.virtual.dislike();		// temp
+					this.virtual.dislike();		
 					this.setHexValueBack("disLikeBtn", 0);
+				}else if(obj.name == 'reportBtn'){
+					this.onVote(-1);
+					this.virtual.report();		
+					this.setHexValueBack("reportBtn", 0);
 				}
 			}
 		}		
@@ -900,10 +906,14 @@ var WebRocketApplication = IApplication.$extend(
 	onVote : function(vote){
 		var vote = vote;
 		this.toVote = 0;
-		if(vote){
+
+		if(vote==1){
 			console.log("you liked the speech");
 			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
 			
+		}else if(vote<0){
+			console.log("you reported this speech as containing inappropriate contents");
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
 		}else{
 			console.log("you disliked the speech");
 			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
@@ -1017,7 +1027,9 @@ var WebRocketApplication = IApplication.$extend(
 		// speaker himself should not have a teleport button
 		var obj = this.threeMeshGroup.getObjectByName("video_screen");
 		console.log(obj);
-
+		// set video texture 
+		this.screenMesh.material.map = this.videoTexture;
+		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
 			//If it wants to start a speech right now
@@ -1037,8 +1049,10 @@ var WebRocketApplication = IApplication.$extend(
 		console.log("speech ends by: " + this.speakerInfo.speakerInfo[0].generalInfo.name);
 		this.removeVotePanel();
 		
-		// stop soapbox 
-		this.virtual.stop();
+		// stop soapbox
+		if(this.isSpeakerMe()){
+			this.virtual.stop();
+		}
 		$("dashboard").hide();
 		this.video.pause();
 		this.screenMesh.material.map = this.texture_waiting;		
@@ -1055,7 +1069,7 @@ var WebRocketApplication = IApplication.$extend(
 		}
 	},
 	
-	setVideoMedia : function(context, video){
+	setVideoFeed : function(context, video){
 		//chrome
 		if(navigator.webkitGetUserMedia){
 			console.log("passing navigator");
@@ -1067,20 +1081,12 @@ var WebRocketApplication = IApplication.$extend(
 			function(blob)
 			{
 				console.log("passing blob");
-				//context.virtual.start(blob, submit_info);	// trial
-				if(context.isSpeakerMe()){
-					video.src = window.URL.createObjectURL(blob);
-					// speech started
-					var lefttime = current_time_string(); 		//Example: "21/02/2016 12:05"
-					var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
-					context.virtual.start(blob, speech_info); 
-					console.log("i am a speaker");
-					console.log(blob);
-				}else{
-					console.log("i am an audience");
-					video.src = blob;
-					console.log(blob);
-				}
+				video.src = window.URL.createObjectURL(blob);
+				// speech started
+				var lefttime = current_time_string(); 					//Example: "21/02/2016 12:05"
+				var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
+				//context.virtual.start(blob, speech_info);
+				console.log("i am the speaker");
 				console.log(video);
 				video.play();
 			},
@@ -1097,20 +1103,12 @@ var WebRocketApplication = IApplication.$extend(
 			},
 			function(blob)
 			{
-				//context.virtual.start(blob, submit_info);	// trial
-				if(context.isSpeakerMe()){
-					video.src = window.URL.createObjectURL(blob);
-					// speech started
-					var lefttime = current_time_string(); 		//Example: "21/02/2016 12:05"
-					var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
-					context.virtual.start(blob, speech_info); 
-					console.log("i am a speaker");
-					console.log(blob);
-				}else{
-					console.log("i am an audience");
-					video.src = blob;
-					console.log(blob);
-				}
+				video.src = window.URL.createObjectURL(blob);
+				// speech started
+				var lefttime = current_time_string(); 		//Example: "21/02/2016 12:05"
+				var speech_info = {"name": "Jilin", "topic": "New speech", "lefttime": lefttime, "password": "abcdefg123"};
+				context.virtual.start(blob, speech_info); 
+				console.log("i am the speaker");
 				console.log(video);
 				video.play();
 			},
@@ -1162,13 +1160,13 @@ var WebRocketApplication = IApplication.$extend(
 		//console.log(this.videoTexture);
 	},
 	
-	initMiddlewareCallbacks : function(){
+	initMiddlewareCallbacks : function(context){
 		//Register callbacks
 		this.virtual.onreceivespeechinfo = function(speech_info) {};
 		this.virtual.onreceivecomment = function(username, comment) {"middleware sent: "+console.log(username, comment)};
-		this.virtual.onreceivelikes = function(likes){"middleware sent: "+console.log(likes)};
-		this.virtual.onreceivedislikes = function(dislikes){"middleware sent: "+console.log(dislikes)};
-		this.virtual.onreceivereports = function(reports){};
+		this.virtual.onreceivelikes = function(likes){context.entity.exec(EntityAction.Server, _MSG_VOTE, 1);};			// count on 'like' has been updated by physical world
+		this.virtual.onreceivedislikes = function(dislikes){context.entity.exec(EntityAction.Server, _MSG_VOTE, 0);};	// count on 'dislike' has been updated by physical world
+		this.virtual.onreceivereports = function(reports){context.entity.exec(EntityAction.Server, _MSG_VOTE, -1);};		// count on 'report' has been updated by physical world
 		this.virtual.onreceivecurrentusers = function(users){};  //TODO - using online and offline in virtual to handle this inf	
 	},
 	
@@ -1183,7 +1181,7 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(this.userInfo);
 		console.log("active user count: "+ actUserCnt);
 		
-		this.initMiddlewareCallbacks(); // init callbacks in middleware
+		//this.initMiddlewareCallbacks(this); // init callbacks in middleware
 		// register this avatar entity to the listeners
 		try{
 			var avatarEnt = Tundra.scene.entityByName(this.userInfo.avatarName);
@@ -1195,41 +1193,20 @@ var WebRocketApplication = IApplication.$extend(
 		// change the screen size according to the count of active users
 		this.changeScreenSize(actUserCnt);		
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
+			// user init with waiting mode
 			this.screenMesh.material.map = this.texture_waiting;
 		// if there is a speech going right now
 		}else if(this.isSpeechOn == 1){
 			// init speaker info if exist
 			this.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : initObj.speakerName, "id" : initObj.speakerId}}
 			,{"entityInfo":{"entityName" : initObj.speakerEntityName, "entityId" : initObj.speakerEntityId}}]};
+			// set video texture 
+			this.screenMesh.material.map = this.videoTexture;
 			// init current like/dislike state sent from server
 			this.refreshVote(initObj.like, initObj.dislike);
-			// init video stream
-			this.initVideo(this);
-			this.setVideoMedia(this, this.video);
 			$("dashboard").show();
 		}
-	},
-	
-	initVideo : function(context){
-		var video= document.createElement('video');
-		this.video = video;
-		this.video = video;
-		this.video.width = 320;
-		this.video.height = 240;
-		this.video.autoplay = true;
-		this.video.loop = true;
-		
-		console.log(this.screenMesh);
-		//Setup the video object for displaying remote stream
-		this.virtual.setup(video);
-		this.virtual.connect(function(){context.virtual.register();});
-		
-		var videoTexture = new THREE.Texture(video);
-		context.videoTexture = videoTexture;
-		this.screenMesh.material.map = videoTexture;
 	}
-	
-
 });
 
 // NOT USED
