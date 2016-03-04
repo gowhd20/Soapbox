@@ -20,6 +20,7 @@ var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 var _MSG_USER_JOINED_VENUE		= "MSG_user_joined";
 var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
 var _MSG_SELECT_COORDINATOR		= "MSG_select_coordinator";
+var _MSG_VIDEO_CONFIGURE_FAILED = "MSG_video_failed";
 
 // the area for speech venue 
 //var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
@@ -37,7 +38,7 @@ var GEO_BUTTON_DEFAULT = {"v1":1, "v2":1, "v3":1};
 var POSITION_REPORT_DEFAULT = {"x":63.20, "y":8.10, "z":-39.36};
 var POSITION_LIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-46.36}
 var POSITION_DISLIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-42.36};
-var POSITION_DEFAULT = {"x":66.20, "y":10, "z":-49.35};
+var POSITION_DEFAULT = {"x":62.50, "y":10, "z":-53.35};
 var POSITION_SCREEN_DEFAULT  = {"x":60.21, "y":9.50, "z":-44.35};
 var HEX_LIKE = 0x00ff00;
 var HEX_DISLIKE = 0x6600ff;
@@ -142,7 +143,7 @@ var WebRocketApplication = IApplication.$extend(
 		var geo = [];
 		// create screen object
 		// texture init with waiting mode 
-		var screenMesh = this.createCubeObj(this.texture_waiting, "video_screen", POSITION_SCREEN_DEFAULT, geo);
+		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", POSITION_SCREEN_DEFAULT, geo);
 		this.screenMesh = screenMesh;
 		// create like button object
 		url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 		
@@ -189,7 +190,7 @@ var WebRocketApplication = IApplication.$extend(
 			// if user is first in the scene, send request to choose coordinator
 			if(self.coordinatorInfo.id == ""){
 				self.entity.exec(EntityAction.Server, _MSG_SELECT_COORDINATOR);
-				self.coordinator.id = "temp";
+				self.coordinatorInfo.id = "temp";
 			}
 		});
 		
@@ -225,16 +226,16 @@ var WebRocketApplication = IApplication.$extend(
 /* 		listOfThreeGroup = this.getListOfObj3D();
 		this.listOfThreeGroup = listOfThreeGroup; */
 		
-		function createCssRenderer() {
+		/*function createCssRenderer() {
 			var cssRenderer = new THREE.CSS3DRenderer();
 			cssRenderer.setSize(window.innerWidth, window.innerHeight);
 			cssRenderer.domElement.style.position = 'absolute';
 			cssRenderer.domElement.style.top = 0;
 			console.log(cssRenderer);
 			return cssRenderer;
-		}
+		}*/
 	
-		function createPlane(w, h, position) {
+		function createPlane(w, h, position, rotation) {
 			var material = new THREE.MeshBasicMaterial({
 			  color: 0x000000,
 			  opacity: 0.0,
@@ -245,10 +246,14 @@ var WebRocketApplication = IApplication.$extend(
 			mesh.position.x = position.x;
 			mesh.position.y = position.y;
 			mesh.position.z = position.z;
+			mesh.rotation.x = rotation.x;
+			mesh.rotation.y = rotation.y;
+			mesh.rotation.z = rotation.z;
 			console.log(mesh);
 			return mesh;
 		}
-		function createCssObject(w, h, position, url) {
+		function createCssObject(w, h, position,rotation, url) {
+
 			var html = [
 			  '<div style="width:' + w + 'px; height:' + h + 'px;">',
 			  '<iframe src="' + url + '" width="' + w + '" height="' + h + '">',
@@ -261,44 +266,40 @@ var WebRocketApplication = IApplication.$extend(
 			cssObject.position.x = position.x;
 			cssObject.position.y = position.y;
 			cssObject.position.z = position.z;
+			cssObject.rotation.x = rotation.x;
+			cssObject.rotation.y = rotation.y;
+			cssObject.rotation.z = rotation.z;
+			console.log(cssObject);
 			return cssObject;
 		}
-		function create3dPage(w, h, position, url) {
-			var plane = createPlane(w, h, position);
+		function create3dPage(w, h, position, rotation, url) {
+			var plane = createPlane(w, h, position, rotation);
 			console.log(plane);
 			threeMeshGroup.add(plane);
-			var cssObject = createCssObject(w, h, position, url);
+			var cssObject = createCssObject(w, h, position,rotation, url);
 			console.log(cssObject);
-			//threeMeshGroup.add(cssObject);
-			cssScene.add(cssObject);
+			Tundra.renderer.addCssObject(cssObject);
 		}
 		
-		
-		
+		console.log(Tundra.client);
+		console.log(Tundra);
+		var cssRenderer = Tundra.renderer.getCssRenderer();
+		var cssScene = Tundra.renderer.getCssRendererScene();
+		console.log(Tundra.client);
+		console.log(Tundra);
+		console.log(cssScene);
+		console.log(cssRenderer);
 		// important
-		var cssRenderer = createCssRenderer();
-		/*var webb = document.createElement('webb');
-		this.webb = webb;
-		this.webb.className = "webb";
-		this.webb.id = "webb";
-		
-        $(this.webb).css({
-            position: "absolute",
-            width: "300px",
-            height: "100%",
-            right: "0px",
-
-        });*/
+		//var cssRenderer = createCssRenderer();
 		//document.body.appendChild(glRenderer.domElement);
 		//document.body.appendChild(cssRenderer.domElement);
 		//cssRenderer.domElement.appendChild(glRenderer.domElement);
 		//initPolymer(cssRenderer);
-		cssScene = new THREE.Scene();
-		create3dPage(10, 10, POSITION_DEFAULT, 'http://www.oulu.fi/english/');
-		Tundra.renderer.cssRenderer = cssRenderer;
-		Tundra.renderer.cssRendererScene = cssScene;
-		console.log(Tundra.renderer);
-		console.log(TundraSDK.framework.client);
+		//cssScene = new THREE.Scene();
+		create3dPage(10, 10, POSITION_DEFAULT,new THREE.Vector3(0, 45 * Math.PI / 180, 0),  'http://www.oulu.fi/english/');
+		//Tundra.renderer.cssRenderer = cssRenderer;
+		//Tundra.renderer.cssRendererScene = cssScene;
+
 
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
@@ -328,8 +329,6 @@ var WebRocketApplication = IApplication.$extend(
 		})
 		
     },
-	
-
 	///////////////////////////////////////////
 	//*  this.methods in alphabetical order *//
 	///////////////////////////////////////////
@@ -702,18 +701,21 @@ var WebRocketApplication = IApplication.$extend(
         {
 			this.speakerInfo = JSON.parse(entityAction.parameters[0]);
 			if(this.isSpeakerMe()){
-				this.setVideoFeed(this, this.video);
+				this.setVideoFeed(this, this.video)
 			}
-			// name, id, entity name, entity id
 			this.setSpeechBegin(entityAction.parameters[0]);
         }
 		else if(entityAction.name === _MSG_SPEECH_BEGIN_REQUEST)
 		{
-			// send request to the speaker to fill the speech info
-			var speechTitle = this.setSpeechInfo();
-			if(speechTitle != false){
-				this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle); // param : speech title 
-			}	
+			//if(this.isCameraReady()){
+				// send request to the speaker to fill the speech info
+				var speechTitle = this.setSpeechInfo();
+				if(speechTitle != false){
+					this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle); // param : speech title 
+				}	
+			//}else{
+			//	this.prompMsg("you have no camera equipped or it's not working");
+			//}
 			
 		}
 		else if(entityAction.name === _MSG_SPEECH_END)
@@ -750,7 +752,7 @@ var WebRocketApplication = IApplication.$extend(
 			//TODO
 
 			Tundra.events.send(_MSG_MOUSE_HOVER);
-				//console.log(this.raycastData[0].object.name);
+			//console.log(this.raycastData[0].object.name);
 			
 		}
 		else if(entityAction.name === _MSG_VOTE)
@@ -934,7 +936,7 @@ var WebRocketApplication = IApplication.$extend(
 			// action = 2 -> speech trigger and end related action
 		}else if(action == 2){
 			console.log("server noticed speaker tries to leave the soapbox");
-			var ans = this.prompMsg();
+			var ans = this.prompMsg("Would you like to end the speech?");
 			if (ans == true) {
 				// speaker agrees to end the speech
 				this.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, 1);
@@ -947,8 +949,8 @@ var WebRocketApplication = IApplication.$extend(
 	
 	},
 	
-	prompMsg : function(){
-		return confirm("Would you like to end the speech?");
+	prompMsg : function(text){
+		return confirm(text);
 	},
 	
 	rayCast : function(){	
@@ -1023,7 +1025,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.speakerInfo = JSON.parse(infoData);
 		
 		console.log("speech begins by: " + this.speakerInfo.speakerInfo[0].generalInfo.name);
-		
 		// speaker himself should not have a teleport button
 		var obj = this.threeMeshGroup.getObjectByName("video_screen");
 		console.log(obj);
@@ -1116,9 +1117,9 @@ var WebRocketApplication = IApplication.$extend(
 			{
 				alert('you have got no WebRTC webcam');
 			});
-		}else
+		}else{
 			console.log("video streaming failed");
-		
+		}	
 	},
 		
 	// define whether user is near the screen
@@ -1158,6 +1159,24 @@ var WebRocketApplication = IApplication.$extend(
 			//console.log("video is not ready");
 		}
 		//console.log(this.videoTexture);
+	},
+	
+	isCameraReady : function(){
+		var returnVal = true;
+		navigator.getMedia = ( navigator.getUserMedia || // use the proper vendor prefix
+							   navigator.webkitGetUserMedia ||
+							   navigator.mozGetUserMedia ||
+							   navigator.msGetUserMedia);
+
+		navigator.getMedia({video: true}, function() {
+			console.log("true");
+		  returnVal = true;
+		}, function() {
+			console.log("false");
+		  returnVal = false;
+		});
+		console.log(returnVal);
+		return returnVal;
 	},
 	
 	initMiddlewareCallbacks : function(context){

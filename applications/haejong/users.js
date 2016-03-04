@@ -102,7 +102,7 @@ Soapbox.Users.prototype = {
 		LogInfo("select coordinator request has been received");
 		if(this.userInfoList.length != 0){
 			// remember who's coordinator
-			this.coordinatorInfo = this.userInfoList;
+			this.coordinatorInfo = this.userInfoList[INDEX_OF_COORDINATOR];
 			me.Exec(4, _MSG_SELECT_COORDINATOR, JSON.stringify(this.userInfoList[INDEX_OF_COORDINATOR]));
 			LogInfo("name: "+this.coordinatorInfo.name+" id: "+this.coordinatorInfo.id+" has been selected as coordinator");
 		}else{
