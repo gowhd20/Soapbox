@@ -44,7 +44,6 @@ Soapbox.Users.prototype = {
 
 		// count user in
 		this.countUser(1);
-		LogInfo(this.coordinatorInfo.name+ " coordinator");
 	},
 	
 	countUser : function(f){

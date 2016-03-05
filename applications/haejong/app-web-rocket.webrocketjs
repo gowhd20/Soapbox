@@ -21,6 +21,7 @@ var _MSG_USER_JOINED_VENUE		= "MSG_user_joined";
 var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
 var _MSG_SELECT_COORDINATOR		= "MSG_select_coordinator";
 var _MSG_VIDEO_CONFIGURE_FAILED = "MSG_video_failed";
+var _MSG_ABORT_SPEECH			= "MSG_abort_speech";
 
 // the area for speech venue 
 //var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
@@ -28,8 +29,8 @@ var _MSG_VIDEO_CONFIGURE_FAILED = "MSG_video_failed";
 var SET_AREA_FOR_SPEECH_FROM  = {"x":52, "z":-55};	// covers larger area as the venue
 var SET_AREA_FOR_SPEECH_TO  = {"x":70, "z":-34};
 
-var AREA_FOR_SPEAKER_ONLY_FROM = {"x":66.5, "y":9, "z":-43.9};
-var AREA_FOR_SPEAKER_ONLY_TO = {"x":67.7, "y":20, "z":-42.8};
+var AREA_FOR_SPEAKER_ONLY_FROM = {"x":66, "y":9, "z":-44.2};
+var AREA_FOR_SPEAKER_ONLY_TO = {"x":64.8, "y":20, "z":-42.9};
 
 var SOAPBOX_NAME = "http://localhost:8082/applications/haejong/soapbox.mesh_submesh_0";
 var PATH_TO_REGISTRATION = "speaker22/index.html";
@@ -94,6 +95,8 @@ var WebRocketApplication = IApplication.$extend(
 		this.toVote = toVote;
 		var coordinatorInfo = {"name" : "", "id" : ""};
 		this.coordinatorInfo = coordinatorInfo;
+		var avatarEntity;
+		this.avatarEntity = avatarEntity;
 	
 		// middleware instance
 		var virtual = new Virtual();
@@ -119,7 +122,6 @@ var WebRocketApplication = IApplication.$extend(
 		onbeforeunload = function(){virtual.unregister();};
 			
 		/**************************************************/
-		
 		
 		/* THREE */
 		var videoTexture = new THREE.Texture(video);
@@ -186,19 +188,14 @@ var WebRocketApplication = IApplication.$extend(
 		onRenderFctsWithoutParam.push(function(){
 			self.raycastData = self.rayCast();							
 		});
-	/*	onRenderFctsWithoutParam.push(function(){
-			// if user is first in the scene, send request to choose coordinator
-			if(self.coordinatorInfo.id == ""){
-				self.entity.exec(EntityAction.Server, _MSG_SELECT_COORDINATOR);
-				self.coordinatorInfo.id = "temp";
-			}
-		});*/
 		
 		// define whether user is near the screen 
 		onRenderFctsWithoutParam.push(function(){
-			if(self.userInfo.avatarName){
+			try{
 				//console.log(Tundra.scene.entityByName("Avatar1").placeable.transform.pos)
-				self.userJoinedVenue(self.userInfo.avatarName);
+				self.userJoinedVenue(self.avatarEntity);
+			}catch(e){
+				console.log("userInfo is not initiated yet or not given at all");
 			}
 			
 		});
@@ -461,6 +458,16 @@ var WebRocketApplication = IApplication.$extend(
 		return cubeMesh;
 	},
 	
+	isCoordinatorMe : function(){
+		if(typeof this.coordinatorInfo === 'undefined' | this.coordinatorInfo.id === "")
+			return false;
+		
+		if(this.userInfo.id === this.coordinatorInfo.id){
+			return true;
+		}
+		return false;
+	},
+	
 	isSpeakerMe : function(){
 		if(typeof this.userInfo == 'undefined' | typeof this.speakerInfo == 'undefined'){
 			console.log("User information or current Speaker information is not known to the system");
@@ -477,6 +484,10 @@ var WebRocketApplication = IApplication.$extend(
 			console.log("this user is not the speaker");
 			return false;
 		}
+	},
+	
+	getCurrentPosition(){
+		
 	},
 	
 	getHexValue : function(obj){
@@ -498,8 +509,6 @@ var WebRocketApplication = IApplication.$extend(
 			return arr;
 		else
 			return false;
-
-		
 	},
 	
 	getListOfObj3D : function(){
@@ -671,10 +680,8 @@ var WebRocketApplication = IApplication.$extend(
 		/**********************************************************/
     },
 	
-	onClickTeleport : function(){
-		
+	onClickTeleport : function(){		
 		this.entity.exec(EntityAction.Server, _MSG_USER_TELEPORT_REQ, this.userInfo.avatarName);
-
 	},
 
     onEntityAction : function(entityAction){
@@ -707,16 +714,12 @@ var WebRocketApplication = IApplication.$extend(
         }
 		else if(entityAction.name === _MSG_SPEECH_BEGIN_REQUEST)
 		{
-			//if(this.isCameraReady()){
-				// send request to the speaker to fill the speech info
-				var speechTitle = this.setSpeechInfo();
-				if(speechTitle != false){
-					this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle); // param : speech title 
-				}	
-			//}else{
-			//	this.prompMsg("you have no camera equipped or it's not working");
-			//}
-			
+			// send request to the speaker to fill the speech info
+			var speechTitle = this.setSpeechInfo();
+			if(speechTitle != false){
+				// param : speech title or in the future, this could be a json format of data set
+				this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle);  
+			}			
 		}
 		else if(entityAction.name === _MSG_SPEECH_END)
         {
@@ -763,6 +766,11 @@ var WebRocketApplication = IApplication.$extend(
 		{
 			console.log("coordinator info: "+entityAction.parameters[0]);
 			this.coordinatorInfo = JSON.parse(entityAction.parameters[0]);
+			// important!!
+			// init callbacks of middleware to sync all the data
+			if(this.isCoordinatorMe()){
+				this.initMiddlewareCallbacks(this);
+			}
 		}
     },
 	
@@ -906,19 +914,19 @@ var WebRocketApplication = IApplication.$extend(
 	
 	// user vote on the speaker
 	onVote : function(vote){
-		var vote = vote;
+		var voteInfo = {"vote":vote, "origin":"virtual"};
 		this.toVote = 0;
 
 		if(vote==1){
 			console.log("you liked the speech");
-			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);
 			
 		}else if(vote<0){
 			console.log("you reported this speech as containing inappropriate contents");
-			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);
 		}else{
 			console.log("you disliked the speech");
-			this.entity.exec(EntityAction.Server, _MSG_VOTE, vote);
+			this.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);
 		}
 			
 	},
@@ -1041,7 +1049,7 @@ var WebRocketApplication = IApplication.$extend(
 			//this.prompSpeechMsg(1);	// notify users that speech will soon begin
 		}	
 		$("dashboard").show();
-	},	
+	},
 	
 	setSpeechEnd : function(infoData){
 		this.isSpeechOn = 0; // speech is off state
@@ -1093,6 +1101,8 @@ var WebRocketApplication = IApplication.$extend(
 			},
 			function(error)
 			{
+				// this user has no camera working, request abortion of the speech
+				context.entity.exec(EntityAction.Server, _MSG_ABORT_SPEECH, 1);
 				alert('you have got no WebRTC webcam');
 			});
 			
@@ -1119,19 +1129,18 @@ var WebRocketApplication = IApplication.$extend(
 			});
 		}else{
 			console.log("video streaming failed");
-		}	
+		}
 	},
 		
 	// define whether user is near the screen
-	userJoinedVenue : function(avatarName){
-		var ent;	
-		//ent.addEventLisener(test, this.fun);
-		ent = Tundra.scene.entityByName(avatarName);
-		if(ent){
-			var x = ent.placeable.transform.pos.x;
-			var y =	ent.placeable.transform.pos.y;
-			var z = ent.placeable.transform.pos.z;
-		}		
+	userJoinedVenue : function(ent){
+		if(typeof ent === 'undefined')
+			return false;
+
+		var x = ent.placeable.transform.pos.x;
+		var y =	ent.placeable.transform.pos.y;
+		var z = ent.placeable.transform.pos.z;
+
 		if((SET_AREA_FOR_SPEECH_FROM.x < x&x < SET_AREA_FOR_SPEECH_TO.x)&(SET_AREA_FOR_SPEECH_FROM.z < z&z < SET_AREA_FOR_SPEECH_TO.z)){
 			if(this.isUserInTheVenue == 0){
 				this.isUserInTheVenue = 1;
@@ -1161,41 +1170,33 @@ var WebRocketApplication = IApplication.$extend(
 		//console.log(this.videoTexture);
 	},
 	
-	isCameraReady : function(){
-		var returnVal = true;
-		navigator.getMedia = ( navigator.getUserMedia || // use the proper vendor prefix
-							   navigator.webkitGetUserMedia ||
-							   navigator.mozGetUserMedia ||
-							   navigator.msGetUserMedia);
-
-		navigator.getMedia({video: true}, function() {
-			console.log("true");
-		  returnVal = true;
-		}, function() {
-			console.log("false");
-		  returnVal = false;
-		});
-		console.log(returnVal);
-		return returnVal;
-	},
-	
 	initMiddlewareCallbacks : function(context){
+		console.log("callbacks for middleware registered");
+		var voteInfo = {"vote":"", "origin":"physical"};
 		//Register callbacks
 		this.virtual.onreceivespeechinfo = function(speech_info) {};
-		this.virtual.onreceivecomment = function(username, comment) {"middleware sent: "+console.log(username, comment)};
-		this.virtual.onreceivelikes = function(likes){context.entity.exec(EntityAction.Server, _MSG_VOTE, 1);};			// count on 'like' has been updated by physical world
-		this.virtual.onreceivedislikes = function(dislikes){context.entity.exec(EntityAction.Server, _MSG_VOTE, 0);};	// count on 'dislike' has been updated by physical world
-		this.virtual.onreceivereports = function(reports){context.entity.exec(EntityAction.Server, _MSG_VOTE, -1);};		// count on 'report' has been updated by physical world
-		this.virtual.onreceivecurrentusers = function(users){};  //TODO - using online and offline in virtual to handle this inf	
+		this.virtual.onreceivecomment = function(username, comment) {
+			"middleware sent: "+console.log(username, comment)};
+		this.virtual.onreceivelikes = function(likes){
+			voteInfo.vote = 1;
+			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'like' has been updated by physical world
+		this.virtual.onreceivedislikes = function(dislikes){
+			voteInfo.vote = 0;
+			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'dislike' has been updated by physical world
+		this.virtual.onreceivereports = function(reports){
+			voteInfo.vote = -1;
+			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'report' has been updated by physical world
+		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf	
 	},
 	
-	// init with params which sent from the server
+	// init new user with params which sent from the server
 	initParams : function(initObj){
 		console.log("current speech state: "+initObj.speechState);
 		this.isSpeechOn = initObj.speechState; 					// init speech state
 		this.userInfo.id = initObj.userId;						// user id issued by server
 		this.userInfo.avatarName = "Avatar" + initObj.userId;   // user avatar entity name
 		var actUserCnt = initObj.actUserCnt;					// users count who are possibly watching the speech
+		
 		if(initObj.coordinatorId){
 			this.coordinatorInfo.id = initObj.coordinatorId;
 			this.coordinatorInfo.name = initObj.coordinatorName;
@@ -1204,12 +1205,17 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(this.userInfo);
 		console.log("active user count: "+ actUserCnt);
 		
-		//this.initMiddlewareCallbacks(this); // init callbacks in middleware
+		// important!!
+		// init callbacks of middleware to sync all the data
+		if(this.isCoordinatorMe()){
+			this.initMiddlewareCallbacks(this);
+		}
+		
 		// register this avatar entity to the listeners
 		try{
-			var avatarEnt = Tundra.scene.entityByName(this.userInfo.avatarName);
-			avatarEnt.onEntityAction(this, this.onEntityAction);
-			console.log(avatarEnt);
+			this.avatarEntity = Tundra.scene.entityByName(this.userInfo.avatarName);
+			this.avatarEntity.onEntityAction(this, this.onEntityAction);
+			console.log(this.avatarEntity);
 		}catch(e){
 			console.log("Warning!!!, your avatar may not be able to trigger the speech");
 		}
@@ -1232,7 +1238,7 @@ var WebRocketApplication = IApplication.$extend(
 	}
 });
 
-// NOT USED
+// UBI HOTSPOT ASSET, not relevant to this system
 function haejongAsset(asset){
 
 	var entity_soapHolder = Tundra.scene.createLocalEntity(["Name", "Mesh", "Placeable"]);
