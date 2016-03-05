@@ -1,6 +1,6 @@
 var _MSG_INITIATION    = "MSG_client_initiation";
 
-// BUGCASE: when speech kicked off while no virtual user is online, virtual server won't have way to latest info ready for virtual user who login later
+//BUGCASE: when speech kicked off while no virtual user is online, virtual server won't have way to latest info ready for virtual user who login later
 /* SYSTEM MESSAGES */
 var _MSG_SPEECH_BEGIN			= "speech_started";
 var _MSG_SPEECH_BEGIN_REQUEST	= "speech_begin_request";
@@ -186,13 +186,13 @@ var WebRocketApplication = IApplication.$extend(
 		onRenderFctsWithoutParam.push(function(){
 			self.raycastData = self.rayCast();							
 		});
-		onRenderFctsWithoutParam.push(function(){
+	/*	onRenderFctsWithoutParam.push(function(){
 			// if user is first in the scene, send request to choose coordinator
 			if(self.coordinatorInfo.id == ""){
 				self.entity.exec(EntityAction.Server, _MSG_SELECT_COORDINATOR);
 				self.coordinatorInfo.id = "temp";
 			}
-		});
+		});*/
 		
 		// define whether user is near the screen 
 		onRenderFctsWithoutParam.push(function(){
@@ -234,7 +234,7 @@ var WebRocketApplication = IApplication.$extend(
 			console.log(cssRenderer);
 			return cssRenderer;
 		}*/
-	
+	/*
 		function createPlane(w, h, position, rotation) {
 			var material = new THREE.MeshBasicMaterial({
 			  color: 0x000000,
@@ -270,6 +270,7 @@ var WebRocketApplication = IApplication.$extend(
 			cssObject.rotation.y = rotation.y;
 			cssObject.rotation.z = rotation.z;
 			console.log(cssObject);
+			// add it to the css scene
 			return cssObject;
 		}
 		function create3dPage(w, h, position, rotation, url) {
@@ -284,10 +285,10 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(Tundra.client);
 		console.log(Tundra);
 		var cssRenderer = Tundra.renderer.getCssRenderer();
-		var cssScene = Tundra.renderer.getCssRendererScene();
+		//var cssScene = Tundra.renderer.getCssRendererScene();
 		console.log(Tundra.client);
 		console.log(Tundra);
-		console.log(cssScene);
+		//console.log(cssScene);
 		console.log(cssRenderer);
 		// important
 		//var cssRenderer = createCssRenderer();
@@ -299,7 +300,7 @@ var WebRocketApplication = IApplication.$extend(
 		create3dPage(10, 10, POSITION_DEFAULT,new THREE.Vector3(0, 45 * Math.PI / 180, 0),  'http://www.oulu.fi/english/');
 		//Tundra.renderer.cssRenderer = cssRenderer;
 		//Tundra.renderer.cssRendererScene = cssScene;
-
+*/
 
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
@@ -685,7 +686,6 @@ var WebRocketApplication = IApplication.$extend(
 			
 			// user init with init params received from the server
 			// speech state, user id determined by server
-
 			this.initParams(JSON.parse(entityAction.parameters[0]));
         }
 		else if(entityAction.name === _MSG_BROADCAST)
@@ -1196,7 +1196,11 @@ var WebRocketApplication = IApplication.$extend(
 		this.userInfo.id = initObj.userId;						// user id issued by server
 		this.userInfo.avatarName = "Avatar" + initObj.userId;   // user avatar entity name
 		var actUserCnt = initObj.actUserCnt;					// users count who are possibly watching the speech
-		
+		if(initObj.coordinatorId){
+			this.coordinatorInfo.id = initObj.coordinatorId;
+			this.coordinatorInfo.name = initObj.coordinatorName;
+			console.log(this.coordinatorInfo);
+		}
 		console.log(this.userInfo);
 		console.log("active user count: "+ actUserCnt);
 		

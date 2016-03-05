@@ -13,9 +13,9 @@ Soapbox.Users = function(){
 	var userInfoList = [];
 	var countUserInVenue = 0;
 	var audienceId = [];
-	var coordinatorInfo = {};
-
+	var coordinatorInfo = {"name" : "", "id" : ""};
 	
+	this.coordinatorInfo = coordinatorInfo;
 	this.countUserInVenue = countUserInVenue;
 	this.userCount = userCount;
 	this.userInfoList = userInfoList;
@@ -29,7 +29,7 @@ Soapbox.Users = function(){
 	// find user request from client
 	me.Action(_MSG_USER_JOINED_VENUE).Triggered.connect(this, this.userJoinedTheVenue);
 	me.Action(_MSG_USER_LEFT_VENUE).Triggered.connect(this, this.userLeftTheVenue);
-	me.Action(_MSG_SELECT_COORDINATOR).Triggered.connect(this, this.selectCoordinator);
+	//me.Action(_MSG_SELECT_COORDINATOR).Triggered.connect(this, this.selectCoordinator);
 	
 	console.LogInfo("Users loaded");
 };
@@ -44,7 +44,7 @@ Soapbox.Users.prototype = {
 
 		// count user in
 		this.countUser(1);
-		
+		LogInfo(this.coordinatorInfo.name+ " coordinator");
 	},
 	
 	countUser : function(f){
@@ -60,11 +60,6 @@ Soapbox.Users.prototype = {
 	onClientDisconnected : function(connId, connection){
 		console.LogInfo("removing user id: "+connId);
 		
-		// if disconnected user was coordinator, select another user
-		// and broadcast to all users
-		if(this.isUserCoordinator(connId)){
-			this.selectCoordinator();
-		}
 		// user who logged out without leaving the venue, need to be removed from the active users
 		if(this.isUserAudience(connId)){
 			LogInfo("user was in the venue until leaving");
@@ -77,10 +72,21 @@ Soapbox.Users.prototype = {
 				LogInfo(this.audienceId[i]);
 			}
 		}
-		this.removeUserById(connId);  // remove logout user from the cache
-		// count user out
-        // user disconnect
-		this.countUser(0);
+		// if disconnected user was coordinator, select another user
+		// and broadcast to all users
+		if(this.isUserCoordinator(connId)){
+			LogInfo("coordinator logged out, need a new selection");
+			this.removeUserById(connId);  // remove logout user from the cache
+			// count user out
+			// user disconnect
+			this.countUser(0);
+			this.selectCoordinator();
+		}else{
+			this.removeUserById(connId);  // remove logout user from the cache
+			// count user out
+			// user disconnect
+			this.countUser(0);
+		}
 		LogInfo(connId + " disconnected");
 		
     },
@@ -106,6 +112,8 @@ Soapbox.Users.prototype = {
 			me.Exec(4, _MSG_SELECT_COORDINATOR, JSON.stringify(this.userInfoList[INDEX_OF_COORDINATOR]));
 			LogInfo("name: "+this.coordinatorInfo.name+" id: "+this.coordinatorInfo.id+" has been selected as coordinator");
 		}else{
+			this.coordinatorInfo.id = "";
+			this.coordinatorInfo.name = "";
 			LogInfo("There are no one in the virtual world to be the coordinator");
 		}
 	},
@@ -136,14 +144,15 @@ Soapbox.Users.prototype = {
 		}
 		return false;
 	},
-	
+	// this doesn't workkkkkkkkkkkkkkkkkk!!!!!!!!!!!!!!!
 	isUserCoordinator : function(userId){
-		for(var i=0; i<this.userInfoList.length; i++){
-			if(userId == this.userInfoList[i].id){
-				return true;
-			}
+		if(this.coordinatorInfo.id === undefined)
+			return false;
+		if(this.coordinatorInfo.id === userId){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	},
 
 	removeUserById : function(id){

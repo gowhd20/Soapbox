@@ -5,7 +5,7 @@
 // Include dependency scripts.
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/class.js");
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/admino-utils-common-deploy.js");
-engine.IncludeFile("users.js");
+engine.IncludeFile("Users.js");
 
 // Import QtCore for both server and client. Import QtGui only on client.
 engine.ImportExtension("qt.core"); 
@@ -44,11 +44,11 @@ var Server = Class.extend(
     {
 		if (server.IsRunning()){
 			LogInfo("running");
-			var users = server.AuthenticatedUsers();
-			if (users.length == 0){}
+			var Users = server.AuthenticatedUsers();
+			if (Users.length == 0){}
 				
 		}
-		var users = new Soapbox.Users();
+		var Users = new Soapbox.Users();
 		
 		var speakerInfo;
 		var isSpeechOn = 0;
@@ -59,7 +59,7 @@ var Server = Class.extend(
 		var isSpeechInfoGiven = 0;	// flag for checking if speech info is given before trigger the speech
 		
 		this.speakerInfo = speakerInfo;
-		this.users = users;
+		this.Users = Users;
 		this.isSpeechOn = isSpeechOn;
 		this.speechCnt = speechCnt;
 		this.speechInfo = speechInfo;
@@ -132,21 +132,45 @@ var Server = Class.extend(
     onClientIntroduction : function()
     {
         var connection = server.ActionSender();
+		var coordinatorInfo;
         if (connection != null)
         {
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
 			LogInfo("if speech is?: "+this.isSpeechOn);
-			if(typeof this.speechInfo == 'undefined'){ 
-				// if there is no speech going on right now
-				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0, "actUserCnt" : this.users.countUserInVenue};
-			}else{ 
-				// if there is a speech going on right now
-				var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
-				, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
-				, "actUserCnt":this.users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
-				, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
-				, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
-				, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName};
+			
+			// assign coordinator if not exist
+			if(this.Users.coordinatorInfo.id == ""){
+				this.Users.selectCoordinator();
+				if(typeof this.speechInfo == 'undefined'){ 
+					// if there is no speech going on right now
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0, "actUserCnt" : this.Users.countUserInVenue};
+				}else{ 
+					// if there is a speech going on right now
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
+					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
+					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
+					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
+					, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
+					, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName};
+				}
+			}else{
+				if(typeof this.speechInfo == 'undefined'){ 
+					// if there is no speech going on right now
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0
+					, "actUserCnt" : this.Users.countUserInVenue
+					, "coordinatorId":this.Users.coordinatorInfo.id
+					, "coordinatorName":this.Users.coordinatorInfo.name};
+				}else{ 
+					// if there is a speech going on right now
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
+					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
+					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
+					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
+					, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
+					, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName
+					, "coordinatorId":this.Users.coordinatorInfo.id
+					, "coordinatorName":this.Users.coordinatorInfo.name};
+				}
 			}
 			// message send back to client with speech info
 			connection.Exec(me, _MSG_INITIATION, JSON.stringify(initParams));
@@ -175,8 +199,8 @@ var Server = Class.extend(
 			// if speech info is not given
 			// ask user to enter speech info
 			LogInfo("Speech info is not given, server will send msg to ask that");
-			var speakerId = this.users.getUserIdByEntityName(ent.name);
-			var speakerName = this.users.getUserInfoById(speakerId);
+			var speakerId = this.Users.getUserIdByEntityName(ent.name);
+			var speakerName = this.Users.getUserInfoById(speakerId);
 			this.tempUserInfoIn = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
 			,{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
 			
@@ -215,13 +239,13 @@ var Server = Class.extend(
 	offSpeechEndRequested : function(ent)
 	{
 		// if user attempted leaving the soapbox was the speaker, otherwise do not act anything
-		if(typeof this.speakerInfo.speakerInfo != 'undefined' && ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
+		if(typeof this.speakerInfo !== 'undefined' && ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
 			// if speech info was given and the speaker attempt to end the speech
 			// ask speaker for a confirmation
 			LogInfo("Speaker attempted to end the speech, speech state: "+this.isSpeechOn);
 			if(this.isSpeechInfoGiven == 1){
-				var speakerId = this.users.getUserIdByEntityName(ent.name);
-				var speakerName = this.users.getUserInfoById(speakerId);
+				var speakerId = this.Users.getUserIdByEntityName(ent.name);
+				var speakerName = this.Users.getUserInfoById(speakerId);
 				
 				// save user info who try to leave the speech in the middle way
 				this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
