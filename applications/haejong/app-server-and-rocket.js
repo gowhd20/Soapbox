@@ -25,6 +25,7 @@ var _MSG_SPEECH_END_REQUEST		= "speech_end_request";
 var _MSG_VOTE					= "MSG_user_vote";
 var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 var _MSG_ABORT_SPEECH			= "MSG_abort_speech";
+var _MSG_RELEASE_PENDING 		= "MSG_release_pending";
 
 
 var SET_LOCATION_TO_SPEECH  = {"x":66.12, "y":10, "z":-40.09};
@@ -56,6 +57,7 @@ var Server = Class.extend({
 		var tempUserInfoIn;		// user who attempted to begin the speech
 		var tempUserInfoOut;	// user who attempted to end the speech
 		var isSpeechInfoGiven = 0;	// flag for checking if speech info is given before trigger the speech
+		var speechSystemPending = {"signal":0, "userId":""};
 		
 		this.speakerInfo = speakerInfo;
 		this.Users = Users;
@@ -65,6 +67,7 @@ var Server = Class.extend({
 		this.isSpeechInfoGiven = isSpeechInfoGiven;
 		this.tempUserInfoIn = tempUserInfoIn;
 		this.tempUserInfoOut = tempUserInfoOut;
+		this.speechSystemPending = speechSystemPending;
 		
 		//set soapbox volumetrigger
 		var soapBoxVolumeTrigger = this.setSoapboxSystemTrigger();
@@ -76,7 +79,8 @@ var Server = Class.extend({
         me.Action(_MSG_INITIATION).Triggered.connect(this, this.onClientIntroduction);
 		me.Action(_MSG_COMMENTS).Triggered.connect(this, CommentControl);
 		me.Action(_MSG_VOTE).Triggered.connect(this, VoteControl);
-		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);		
+		me.Action(_MSG_USER_TELEPORT_REQ).Triggered.connect(this, TeleportReq);
+		me.Action(_MSG_RELEASE_PENDING).Triggered.connect(this, this.releasePending);
 		
 		// Speech confirmed to begin by speaker
 		me.Action(_MSG_SPEECH_BEGIN_REQUEST).Triggered.connect(this, this.onSpeechBegun);
@@ -108,9 +112,13 @@ var Server = Class.extend({
     },
 
     onClientDisconnected : function(connId, connection){
+		if(this.speechSystemPending.userId == connId){
+			LogInfo("User logged out while system is pending, release the system");
+			this.releasePending();
+		}
 		// This will secure a speaker log off without completing the speech
 		// Handled by server to terminate the speech automatically 
-		if(typeof this.speakerInfo == 'undefiend'){}
+		if(typeof this.speakerInfo == 'undefiend'){Log("Client #" + connection.id + " disconnected");return;}
 		else if(this.isSpeechOn == 1){
 			if(typeof this.speakerInfo.speakerInfo == 'undefined'){
 				LogInfo("speaker was not defined");
@@ -128,8 +136,7 @@ var Server = Class.extend({
     onClientIntroduction : function(){
         var connection = server.ActionSender();
 		var coordinatorInfo;
-        if (connection != null)
-        {
+        if (connection != null){
             Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
 			LogInfo("if speech is?: "+this.isSpeechOn);
 			
@@ -180,11 +187,14 @@ var Server = Class.extend({
 	onSpeechBegun : function(params){
 		// speech info is given
 		/* server prepare the speech */
+		var speechData = JSON.parse(params);
+		this.speechSystemPending.signal = 0;	// pending removed
+		LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);
 		LogInfo("Speaker provided speech info and the system now triggers the speech");
 		this.isSpeechInfoGiven = 1;
 		TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
-		LogInfo("speech title: "+params);
-		SpeechControl(this, this.tempUserInfoIn, params, 1);
+		LogInfo("speech title: "+speechData.title);
+		SpeechControl(this, this.tempUserInfoIn, speechData, 1);
 	},
 	
 	onSpeechRequested : function(ent){
@@ -200,7 +210,7 @@ var Server = Class.extend({
 				return false;
 			}
 		}else{
-			if(this.isSpeechInfoGiven == 0 && this.isSpeechOn == 0){
+			if(this.isSpeechInfoGiven == 0 & this.isSpeechOn == 0){
 				// if speech info is not given
 				// ask user to enter speech info
 				LogInfo("Received a request to begin the speech, server will ask speech info");
@@ -208,15 +218,25 @@ var Server = Class.extend({
 				this.Users.getUserIdByEntityName(ent.name);
 				this.tempUserInfoIn.speakerInfo[0].generalInfo.name = 
 				this.Users.getUserInfoById(this.tempUserInfoIn.speakerInfo[0].generalInfo.id);
-				// send confirmation to the requstor whether to begin the speech
+				// system is waiting for speech information to be filled
+				this.speechSystemPending.signal = 1;
+				this.speechSystemPending.userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id;
+				LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);				
+				// send confirmation to the requester whether to begin the speech
 				ent.Exec(4, _MSG_SPEECH_BEGIN_REQUEST);
 			}else {}
 		}
+		LogInfo("_______ system status ______");
+		LogInfo("Speech? "+this.isSpeechOn);
+		LogInfo("Pending? "+this.speechSystemPending.signal+" by "+this.speechSystemPending.userId);
+		LogInfo("Speech Info? "+this.isSpeechInfoGiven);
+		LogInfo("System triggered by? "+this.tempUserInfoIn.speakerInfo.generalInfo.name+" id? "+
+		this.tempUserInfoIn.speakerInfo.generalInfo.id);		
 	},
 
 	// speech terminated
 	offSpeechTerminated : function(reply){
-		if(this.isSpeechInfoGiven == 1 && reply == 1){
+		if(this.isSpeechInfoGiven == 1 & reply == 1){
 			/* singal to peers that speech ended */
 			LogInfo("Speech end request has been approved by speech. System terminates the speech ");
 			this.isSpeechInfoGiven = 0;
@@ -247,8 +267,13 @@ var Server = Class.extend({
 	
 	// attempt to terminate the speech
 	offSpeechEndRequested : function(ent){
+		// undefined -- if(this.speechSystemPending == 1 & ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId)
+		//	this.speechSystemPending = 0;
 		// if user attempted leaving the soapbox was the speaker, otherwise do not act anything
-		if(typeof this.speakerInfo !== 'undefined' && ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
+		if(typeof this.speakerInfo === 'undefined'){
+			return;
+		}
+		if(ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
 			// if speech info was given and the speaker attempt to end the speech
 			// ask speaker for a confirmation
 			LogInfo("Speaker attempted to end the speech, speech state: "+this.isSpeechOn);
@@ -266,6 +291,11 @@ var Server = Class.extend({
 		}else {}
 	},
 	
+	releasePending : function(){
+		if(this.speechSystemPending.signal == 1){
+			this.speechSystemPending.signal = 0;
+		}
+	},
 		
 	// set components of volumetrigger and rigitbody for soap_foot entity
 	setSoapboxSystemTrigger : function(){
@@ -308,15 +338,17 @@ function GenerateSpeechId(id){
 	return id;
 }
 
-function SpeechAddInfo(context, speechId, title, name, id, like, dislike, report){
+function SpeechAddInfo(context, speechId, speechData, name, id, like, dislike, report){
 	var self = context;
 	if(typeof self.speechInfo == "undefined"){
 		self.speechInfo = [];
-		var info = {"speechId":speechId, "speechTitle":title, "userName":name, "userId":id, "like":like, 
+		var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+		"userName":name, "userId":id, "like":like, 
 		"dislike":dislike, "report":report}; // name id undefiend
 		self.speechInfo.push(info);
 	}else{
-		var info = {"speechId":speechId, "speechTitle":title, "userName":name, "userId":id, "like":like, 
+		var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+		"userName":name, "userId":id, "like":like, 
 		"dislike":dislike, "report":report};
 		self.speechInfo.push(info);
 	}

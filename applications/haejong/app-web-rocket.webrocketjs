@@ -22,6 +22,7 @@ var _MSG_USER_LEFT_VENUE		= "MSG_user_left";
 var _MSG_SELECT_COORDINATOR		= "MSG_select_coordinator";
 var _MSG_VIDEO_CONFIGURE_FAILED = "MSG_video_failed";
 var _MSG_ABORT_SPEECH			= "MSG_abort_speech";
+var _MSG_RELEASE_PENDING 		= "MSG_release_pending";
 
 // the area for speech venue 
 //var SET_AREA_FOR_SPEECH_FROM  = {"x":55, "z":-50};
@@ -44,6 +45,7 @@ var POSITION_SCREEN_DEFAULT  = {"x":60.21, "y":9.50, "z":-44.35};
 var HEX_LIKE = 0x00ff00;
 var HEX_DISLIKE = 0x6600ff;
 var HEX_REPORT = 0xff0000;
+var TIME_LIMIT = 5;
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -86,8 +88,10 @@ var WebRocketApplication = IApplication.$extend(
 		var isSpeechOn;
 		var speakerInfo;
 		var toVote = 1;
+		var timerHandler;
+		var ifSentSpeechInfo = false;
 		
-		var numOfUsersInTheVenue = 0; // except me
+		var numOfUsersInTheVenue = 0; 	// except me
 		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
 		var isUserInTheVenue = 0;
 		this.isUserInTheVenue = isUserInTheVenue;	
@@ -97,6 +101,9 @@ var WebRocketApplication = IApplication.$extend(
 		this.coordinatorInfo = coordinatorInfo;
 		var avatarEntity;
 		this.avatarEntity = avatarEntity;
+		this.timerHandler = timerHandler;
+		this.ifSentSpeechInfo = ifSentSpeechInfo;
+		
 	
 		// middleware instance
 		var virtual = new Virtual();
@@ -201,10 +208,6 @@ var WebRocketApplication = IApplication.$extend(
 		});
 	
 		///////////////////////////////////////////////////////
-
-/* 		var newScene = Tundra.renderer.scene.clone(new Physijs.Scene);
-		Tundra.renderer.scene = newScene;
-		console.log(Tundra.renderer); */
 		
 		listOfMeshObject = this.getListOfMeshObj();
 		this.listOfMeshObject = listOfMeshObject;
@@ -327,9 +330,9 @@ var WebRocketApplication = IApplication.$extend(
 		})
 		
     },
-	///////////////////////////////////////////
-	//*  this.methods in alphabetical order *//
-	///////////////////////////////////////////
+	////////////////////////////////////////////
+	//*  this.methods in alphabetical order */// 
+	////////////////////////////////////////////
 	
 	addNewComment : function(text, name, id){		
 		var userName = name;
@@ -485,11 +488,7 @@ var WebRocketApplication = IApplication.$extend(
 			return false;
 		}
 	},
-	
-	getCurrentPosition(){
-		
-	},
-	
+
 	getHexValue : function(obj){
 		return obj.material.emissive.getHex();
 	},
@@ -546,8 +545,102 @@ var WebRocketApplication = IApplication.$extend(
 
         this.framework.ui.addWidgetToScene(this.ui.welcome);
         this.ui.welcome.fadeIn(2000);
+
+		/*************dashboard UI********************************/	
 		
-		/*************dashboard UI********************************/
+		// speech info
+	    var infoDash = document.createElement('infoDash');
+		this.infoDash = infoDash;
+		this.infoDash.className = "infoDash";
+		this.infoDash.id = "infoDash";
+		
+        $(this.infoDash).css({
+            position: "absolute",
+            "background-color" : "black",
+            width: "300px",
+            height: "100%",
+            right: "0px",
+        });
+		document.body.appendChild(this.infoDash);
+		//$("infoDash").hide();
+		
+		var counter = document.createElement("b");
+		this.counter = counter;
+		counter.id = "counter";
+		$(counter).css({
+		    position: "absolute",
+            "background-color" : "white",
+            width: "50%",
+            height: "30px",
+			top : "10px",
+			left: "25%"
+
+		});
+		infoDash.appendChild(counter);
+		
+		var infoDashHead = document.createElement("b");
+		infoDashHead.id = "infoDashHead";			
+		$(infoDashHead).css({
+			position : "absolute",
+			color : "white",
+			top: "10%",
+			left: "25%",
+			fontSize: "20px"				
+		});	
+		
+		infoDashHead.innerHTML = "Speech info";
+		infoDash.appendChild(infoDashHead);
+		
+		var titleInput = document.createElement("input");
+		titleInput.id = "titleInput";			
+		$(titleInput).css({
+		    position: "relative",
+            "background-color" : "white",
+            width: "100%",
+            height: "30px",
+			top: "14%"			
+		});	
+		titleInput.value = "Title";
+		infoDash.appendChild(titleInput);
+		
+		var descriptionInput = document.createElement("textArea");
+		descriptionInput.id = "descriptionInput";
+		descriptionInput.rows = "14";
+		
+		$(descriptionInput).css({
+		    position: "relative",
+            "background-color" : "white",
+            width: "100%",
+			top: "16%"			
+		});	
+		descriptionInput.value = "Speech description";
+		infoDash.appendChild(descriptionInput);
+		
+		// submit speech info button
+		var submitSpeechInfoBtn = document.createElement("button");		
+		submitSpeechInfoBtn.appendChild(document.createTextNode("Submit"));
+		submitSpeechInfoBtn.setAttribute("type", "button");
+		submitSpeechInfoBtn.id = "submitSpeechInfoBtn";
+		
+		$(submitSpeechInfoBtn).css({
+			position : "absolute",
+			"background-color" : "white",
+			top : "60%",
+			width: "100px",
+			left : "30px"
+			
+		});
+		infoDash.appendChild(submitSpeechInfoBtn);
+		
+		$(submitSpeechInfoBtn).click(function(){
+			var speechInfoValues = {"title":document.getElementById("titleInput").value, 
+			"description":document.getElementById("descriptionInput").value};
+			self.ifSentSpeechInfo = true;
+			//self.virtual.comment(self.userInfo.name, v.value);
+			self.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechInfoValues);
+			document.getElementById("titleInput").value = "";
+			document.getElementById("descriptionInput").value = "";
+		});
 		
 		// dashboard
 	    var dashboard = document.createElement('dashboard');
@@ -668,7 +761,7 @@ var WebRocketApplication = IApplication.$extend(
 			self.virtual.comment(self.userInfo.name, v.value);
 			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, v.value);
 
-			v.value == "";
+			v.value = "";
 		});
 		
 		// teleport btn clicked
@@ -715,11 +808,15 @@ var WebRocketApplication = IApplication.$extend(
 		else if(entityAction.name === _MSG_SPEECH_BEGIN_REQUEST)
 		{
 			// send request to the speaker to fill the speech info
-			var speechTitle = this.setSpeechInfo();
-			if(speechTitle != false){
+			//var speechTitle = this.setSpeechInfo();
+			TIME_LIMIT = 5;
+			//var myVar = setTimeout(this.setTimer, 3000);
+			this.setTimer(this);
+			//$("infoDash").show();
+			//if(speechTitle != false){
 				// param : speech title or in the future, this could be a json format of data set
-				this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle);  
-			}			
+			//	this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle);  
+			//}			
 		}
 		else if(entityAction.name === _MSG_SPEECH_END)
         {
@@ -1047,7 +1144,7 @@ var WebRocketApplication = IApplication.$extend(
 			// this user is not the speaker 
 			this.dashboard.children["teleportBtn"].hidden = false;
 			//this.prompSpeechMsg(1);	// notify users that speech will soon begin
-		}	
+		}
 		$("dashboard").show();
 	},
 	
@@ -1075,6 +1172,23 @@ var WebRocketApplication = IApplication.$extend(
 		}else{
 			confirm("Enter a title to begin the speech");
 			return false;
+		}
+	},
+	
+	setTimer : function(context){		
+		this.counter.innerHTML="Time remaining: "+TIME_LIMIT--;
+		if(TIME_LIMIT >= 0){
+			setTimeout(function(){ context.setTimer(context) }, 1000);
+		}else if(this.ifSentSpeechInfo){
+			this.entity.exec(EntityAction.Server, _MSG_RELEASE_PENDING, this.userInfo.avatarName);
+			this.ifSentSpeechInfo = false;	
+			TIME_LIMIT = 5;
+			this.counter.innerHTML="";
+		}else{
+			TIME_LIMIT = 5;
+			this.counter.innerHTML="";
+			this.entity.exec(EntityAction.Server, _MSG_USER_TELEPORT_REQ, this.userInfo.avatarName);
+			this.entity.exec(EntityAction.Server, _MSG_RELEASE_PENDING, this.userInfo.avatarName);
 		}
 	},
 	
@@ -1237,6 +1351,7 @@ var WebRocketApplication = IApplication.$extend(
 		}
 	}
 });
+
 
 // UBI HOTSPOT ASSET, not relevant to this system
 function haejongAsset(asset){
