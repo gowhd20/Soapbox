@@ -45,8 +45,7 @@ var Server = Class.extend({
 		if (server.IsRunning()){
 			LogInfo("running");
 			var Users = server.AuthenticatedUsers();
-			if (Users.length == 0){}
-				
+			if (Users.length == 0){}			
 		}
 		var Users = new Soapbox.Users();
 		
@@ -57,7 +56,7 @@ var Server = Class.extend({
 		var tempUserInfoIn;		// user who attempted to begin the speech
 		var tempUserInfoOut;	// user who attempted to end the speech
 		var isSpeechInfoGiven = 0;	// flag for checking if speech info is given before trigger the speech
-		var speechSystemPending = {"signal":0, "userId":""};
+		var speechSystemPending = {"signal":0, "userId":"", "entityId":""};
 		
 		this.speakerInfo = speakerInfo;
 		this.Users = Users;
@@ -97,6 +96,40 @@ var Server = Class.extend({
         server.UserDisconnected.connect(this, this.onClientDisconnected);
 		
     },
+	
+	callSystemStatus : function(){
+		LogInfo("_______ system status ______");
+		LogInfo("Speech? "+this.isSpeechOn);
+		LogInfo("Pending? "+this.speechSystemPending.signal+" by "+this.speechSystemPending.userId);
+		LogInfo("Speech Info? "+this.isSpeechInfoGiven);
+		try{
+			var userId;
+			var userName;
+			if(typeof this.tempUserInfoIn === 'undefined'){
+				LogInfo("user in info is not set");
+			}else{
+				userName = this.tempUserInfoIn.speakerInfo[0].generalInfo.name?this.tempUserInfoIn.speakerInfo[0].generalInfo.name:"null";
+				userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id?this.tempUserInfoIn.speakerInfo[0].generalInfo.id:"null";
+				LogInfo("System triggered by? "+userName+" id? "+userId);
+			}
+			if(typeof this.tempUserInfoOut === 'undefined'){
+				LogInfo("user out info is not set");
+			}else{
+				userName = this.tempUserInfoOut.speakerInfo[0].generalInfo.name?this.tempUserInfoOut.speakerInfo[0].generalInfo.name:"null";
+				userId = this.tempUserInfoOut.speakerInfo[0].generalInfo.id?this.tempUserInfoOut.speakerInfo[0].generalInfo.id:"null";
+				LogInfo("System ended by? "+userName+" id? "+userId);
+			}
+			if(typeof this.speakerInfo === 'undefined'){
+				LogInfo("speaker is not defined");
+			}else{
+				userName = this.speakerInfo.speakerInfo[0].generalInfo.name?this.speakerInfo.speakerInfo[0].generalInfo.name:"null";
+				userId = this.speakerInfo.speakerInfo[0].generalInfo.id?this.speakerInfo.speakerInfo[0].generalInfo.id:"null";
+				LogInfo("Speaker is? "+userName+" id? "+userId);
+			}
+		}catch(e){
+			Log("Error, one or more system info not exist");
+		}
+	},
 
     shutDown : function(){
         Log("Shutting down");
@@ -188,13 +221,22 @@ var Server = Class.extend({
 		// speech info is given
 		/* server prepare the speech */
 		var speechData = JSON.parse(params);
-		this.speechSystemPending.signal = 0;	// pending removed
-		LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);
-		LogInfo("Speaker provided speech info and the system now triggers the speech");
-		this.isSpeechInfoGiven = 1;
-		TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
-		LogInfo("speech title: "+speechData.title);
-		SpeechControl(this, this.tempUserInfoIn, speechData, 1);
+		if(speechData.origin === 'virtual'){	// virtual user 
+			this.releasePending();				// pending removed
+			LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);
+			LogInfo("Speaker provides speech info and the system now triggers the speech");
+			this.isSpeechInfoGiven = 1;
+			TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
+			LogInfo("speech title: "+speechData.title);
+			SpeechControl(this, this.tempUserInfoIn, speechData, 1);
+			this.callSystemStatus();
+		}else{		// physical user
+			LogInfo("speaker in physical world provides speech info and the system now triggers the speech");
+			this.isSpeechInfoGiven = 1;
+			LogInfo("speech title: "+speechData.title);
+			SpeechControl(this, "", speechData, 1);
+			this.callSystemStatus();
+		}
 	},
 	
 	onSpeechRequested : function(ent){
@@ -211,6 +253,10 @@ var Server = Class.extend({
 			}
 		}else{
 			if(this.isSpeechInfoGiven == 0 & this.isSpeechOn == 0){
+				// if user who prompted pending tries it over again, this will sort out  
+				if(this.speechSystemPending.entityId === ent.id){
+					return;
+				}
 				// if speech info is not given
 				// ask user to enter speech info
 				LogInfo("Received a request to begin the speech, server will ask speech info");
@@ -221,17 +267,13 @@ var Server = Class.extend({
 				// system is waiting for speech information to be filled
 				this.speechSystemPending.signal = 1;
 				this.speechSystemPending.userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id;
+				this.speechSystemPending.entityId = this.tempUserInfoIn.speakerInfo[1].entityInfo.entityId;
 				LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);				
 				// send confirmation to the requester whether to begin the speech
 				ent.Exec(4, _MSG_SPEECH_BEGIN_REQUEST);
 			}else {}
 		}
-		LogInfo("_______ system status ______");
-		LogInfo("Speech? "+this.isSpeechOn);
-		LogInfo("Pending? "+this.speechSystemPending.signal+" by "+this.speechSystemPending.userId);
-		LogInfo("Speech Info? "+this.isSpeechInfoGiven);
-		LogInfo("System triggered by? "+this.tempUserInfoIn.speakerInfo.generalInfo.name+" id? "+
-		this.tempUserInfoIn.speakerInfo.generalInfo.id);		
+		this.callSystemStatus();
 	},
 
 	// speech terminated
@@ -263,6 +305,7 @@ var Server = Class.extend({
 			// keep the speech running and return the speaker to the right position
 			TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
 		}
+		this.callSystemStatus();
 	},
 	
 	// attempt to terminate the speech
@@ -289,11 +332,14 @@ var Server = Class.extend({
 				ent.Exec(4, _MSG_SPEECH_END_REQUEST);
 			}
 		}else {}
+		this.callSystemStatus();
 	},
 	
 	releasePending : function(){
 		if(this.speechSystemPending.signal == 1){
 			this.speechSystemPending.signal = 0;
+			this.speechSystemPending.userId = null;
+			this.speechSystemPending.entityId = null;
 		}
 	},
 		
@@ -312,8 +358,7 @@ var Server = Class.extend({
 // by the framework when the application is closed.
 
 function OnScriptDestroyed(){
-    if (_appInstance != null)
-    {
+    if (_appInstance != null){
         if (typeof _appInstance.shutDown === "function")
             _appInstance.shutDown();
         _appInstance = null;
@@ -322,10 +367,15 @@ function OnScriptDestroyed(){
 
 function CommentControl(cmt){
 	var connection = server.ActionSender();
-	if (connection != null)
-	{
-		Log("Client '" + connection.Property("username") + "' with id #" + connection.id +" said-> "+cmt);
-		me.Exec(4, _MSG_BROADCAST, cmt, connection.Property("username"), connection.id);
+	var cmt = JSON.parse(cmt);
+	if (connection != null){
+		if(cmt.origin == 'virtual'){
+			Log("Client '" + connection.Property("username") + "' with id #" + connection.id +" said-> "+cmt.comment);
+			me.Exec(4, _MSG_BROADCAST, cmt.comment, connection.Property("username"), connection.id);
+		}else{
+			Log("Person In physical world '" + cmt.userName+ " said-> "+cmt.comment);
+			me.Exec(4, _MSG_BROADCAST, cmt.comment, cmt.userName);
+		}
 	}	
 }
 // generate speech id
@@ -340,17 +390,32 @@ function GenerateSpeechId(id){
 
 function SpeechAddInfo(context, speechId, speechData, name, id, like, dislike, report){
 	var self = context;
-	if(typeof self.speechInfo == "undefined"){
-		self.speechInfo = [];
-		var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-		"userName":name, "userId":id, "like":like, 
-		"dislike":dislike, "report":report}; // name id undefiend
-		self.speechInfo.push(info);
+	if(speechData.origin === 'virtual'){
+		if(typeof self.speechInfo == "undefined"){
+			self.speechInfo = [];
+			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+			"userName":name, "userId":id, "like":like, 
+			"dislike":dislike, "report":report}; // name id undefiend
+			self.speechInfo.push(info);
+		}else{
+			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+			"userName":name, "userId":id, "like":like, 
+			"dislike":dislike, "report":report};
+			self.speechInfo.push(info);
+		}
 	}else{
-		var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-		"userName":name, "userId":id, "like":like, 
-		"dislike":dislike, "report":report};
-		self.speechInfo.push(info);
+		if(typeof self.speechInfo == "undefined"){
+			self.speechInfo = [];
+			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+			"userName":speechData.name, "userId":"", "like":like, 
+			"dislike":dislike, "report":report}; // name id undefiend
+			self.speechInfo.push(info);
+		}else{
+			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
+			"userName":speechData.name, "userId":id, "like":like, 
+			"dislike":dislike, "report":report};
+			self.speechInfo.push(info);
+		}
 	}
 	// check list of speeches
 	for(var i=0; i<self.speechInfo.length; i++){
@@ -358,56 +423,81 @@ function SpeechAddInfo(context, speechId, speechData, name, id, like, dislike, r
 		self.speechInfo[i].speechTitle+" speaker:"+self.speechInfo[i].userName);
 	}
 }
-
 	// controls speech begin and end
 	// action =1 > attempt to start speech
 	// action =2 > attempt to end speech
-function SpeechControl(context, tempInfo, speechGivenInfo, action){//(context, ent, name, id, action){
-	var speakerId = tempInfo.speakerInfo[0].generalInfo.id;
-	var speakerName = tempInfo.speakerInfo[0].generalInfo.name;
-	var entName = tempInfo.speakerInfo[1].entityInfo.entityName;
-	var entId = tempInfo.speakerInfo[1].entityInfo.entityId;
-	var self = context;
-	LogInfo("speaker ID: "+speakerId+" speaker name: "+speakerName);	
-	// action to begin the speech
-	if(action == 1){	
-		if(self.isSpeechOn == 1){
-			// when speech is on, tried to start speech
-			console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
-		}
-		else{
-			self.speechCnt = GenerateSpeechId(self.speechCnt);
-			LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
-			SpeechAddInfo(self, self.speechCnt, speechGivenInfo, speakerName, speakerId, 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
-			self.isSpeechOn = 1; 	// set speech is now on
-			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}		// set speaker info
-			,{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
-			me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
-		}
-	// action to end the speech
-	}else if(action == 0){
-		try{
-			if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
-				// when speech is off, tried to start speech
-				self.isSpeechOn = 0;			
-				console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
-
-				//self.speakerInfo.speakerInfo[0].generalInfo.name = "";
-				//self.speakerInfo.speakerInfo[0].generalInfo.id = "";
-				//self.speakerInfo.speakerInfo[1].entityInfo.name = "";
-				//self.speakerInfo.speakerInfo[1].entityInfo.id = "";
-				
-				me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
-				
-
-			}else{
-				LogInfo("speaker name doesn't match with end attempt entity");
+function SpeechControl(context, tempInfo, speechGivenInfo, action){
+	if(speechGivenInfo.origin === "physical"){	// physical soapbox user
+		var speakerName = speechGivenInfo.name;
+		var self = context;
+		LogInfo("speaker name: "+speakerName);
+		if(action == 1){	
+			if(self.isSpeechOn == 1){
+				// when speech is on, tried to start speech
+				console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
 			}
-		}catch(e){
-			console.LogInfo("exception, undefined speaker attempted to end speech");
+			else{
+				self.speechCnt = GenerateSpeechId(self.speechCnt);
+				LogInfo("speech begins by " + speakerName);
+				SpeechAddInfo(self, self.speechCnt, speechGivenInfo, "", "", 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
+				self.isSpeechOn = 1; 		// set speech is now on by physical soapbox
+				self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name":speakerName, "id":""}}		// set speaker info
+				,{"entityInfo":{"entityName":"", "entityId":""}}]};
+				me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
+			}
+		// action to end the speech
+		}
+		
+	}else{		// virtual soapbox user
+		var speakerId = tempInfo.speakerInfo[0].generalInfo.id;
+		var speakerName = tempInfo.speakerInfo[0].generalInfo.name;
+		var entName = tempInfo.speakerInfo[1].entityInfo.entityName;
+		var entId = tempInfo.speakerInfo[1].entityInfo.entityId;
+		var self = context;
+		LogInfo("speaker ID: "+speakerId+" speaker name: "+speakerName);	
+		// action to begin the speech
+		if(action == 1){	
+			if(self.isSpeechOn == 1){
+				// when speech is on, tried to start speech
+				console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
+			}
+			else{
+				self.speechCnt = GenerateSpeechId(self.speechCnt);
+				LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
+				SpeechAddInfo(self, self.speechCnt, speechGivenInfo, speakerName, speakerId, 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
+				self.isSpeechOn = 1; 	// set speech is now on
+				self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}		// set speaker info
+				,{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
+				me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
+			}
+		// action to end the speech
+		}else if(action == 0){
+			try{
+				if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
+					// when speech is off, tried to start speech
+					self.isSpeechOn = 0;			
+					console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+
+					self.speakerInfo.speakerInfo[0].generalInfo.name = "";
+					self.speakerInfo.speakerInfo[0].generalInfo.id = "";
+					self.speakerInfo.speakerInfo[1].entityInfo.name = "";
+					self.speakerInfo.speakerInfo[1].entityInfo.id = "";
+					
+					me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
+					
+
+				}else{
+					LogInfo("speaker name doesn't match with end attempt entity");
+				}
+			}catch(e){
+				console.LogInfo("exception, undefined speaker attempted to end speech");
+			}
 		}
 	}
-	
+}
+
+function SpeechInfoUpdate(){
+	// TODO:
 }
 
 function TeleportReq(entName, setLocation){
