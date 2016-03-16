@@ -39,6 +39,8 @@ var AREA_FOR_SPEAKER_ONLY_TO = {"x":64.8, "y":20, "z":-42.9};
 var VOLUME_CHANGE_VALUE = 3;
 
 var SOAPBOX_NAME = "http://localhost:8082/applications/haejong/soapbox.mesh_submesh_0";
+var THUMB_UP_NAME = "http://localhost:8082/applications/haejong/Cube_up.mesh_submesh_0";
+var THUMB_DOWN_NAME = "http://localhost:8082/applications/haejong/Cube_down.mesh_submesh_0";
 var PATH_TO_REGISTRATION = "speaker22/index.html";
 var GEO_SCREEN_DEFAULT = {"v1":0.01, "v2":2, "v3":2};
 var GEO_BUTTON_DEFAULT = {"v1":1, "v2":1, "v3":1};
@@ -100,8 +102,8 @@ var WebRocketApplication = IApplication.$extend(
 		var toVote = 1;
 		var timerHandler;
 		var ifSentSpeechInfo = false;
-		var speechInfo = {"name": "", "topic": "", 
-				"startTime":"", "password": "", "origin":""};
+		var speechInfo = {"speaker": "", "topic": "", 
+				"starttime":"", "password": "", "origin":""};
 		
 		var numOfUsersInTheVenue = 0; 	// except me
 		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
@@ -139,20 +141,25 @@ var WebRocketApplication = IApplication.$extend(
 		var audience = new Audience();
 		this.audience = audience;
 		
-		virtual.connect(function(){virtual.register();});
+		virtual.connect(function(){
+			virtual.register();
+			// callback, when speech started in physical world
+			virtual.onreceivespeechinfo = function (speech_info) {
+				// behaviour for the coordinator - notify the meshmoon server about speech info from physical soapbox
+				if(self.isCoordinatorMe()){
+					console.log(speech_info);
+					var speechInfoValues = {"name":speech_info.speaker, "title":speech_info.topic, 
+					"description":"", "startTime":speech_info.starttime, "origin":"physical"};	// lefttime == startTime
+					self.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechInfoValues);
+				}
+				
+				//self.promptSpeechMsg(1);	// call at last
+			} 
+		});
 		virtual.setup(video);
 		
 		//handled by middleware when user is logging out
 		onbeforeunload = function(){virtual.unregister();};
-		// callback, when speech started in physical world
-		virtual.onreceivespeechinfo = function (speech_info) {
-			console.log(speech_info);
-			var speechInfoValues = {"name":speech_info.name, "title":speech_info.title, 
-			"description":"", "startTime":speech_info.lefttime, "origin":"physical"};	// lefttime == startTime
-			self.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechInfoValues);
-			
-			self.promptSpeechMsg(1);	// call at last
-		} 
 			
 		/**************************************************/
 		
@@ -181,11 +188,11 @@ var WebRocketApplication = IApplication.$extend(
 		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", POSITION_SCREEN_DEFAULT, geo);
 		this.screenMesh = screenMesh;
 		// create like button object
-		url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 		
-		var btnMesh = this.createBtnObj(url, "likeBtn", POSITION_LIKE_DEFAULT, GEO_BUTTON_DEFAULT); // create likeBtn
+		//url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 		
+		//var btnMesh = this.createBtnObj(url, "likeBtn", POSITION_LIKE_DEFAULT, GEO_BUTTON_DEFAULT); // create likeBtn
 		// create dislike button object
-		url = './localAssets/ic_sentiment_dissatisfied_black_24dp/web/ic_sentiment_dissatisfied_black_24dp_2x.jpg'; 	
-		var btnMesh2 = this.createBtnObj(url, "disLikeBtn", POSITION_DISLIKE_DEFAULT, GEO_BUTTON_DEFAULT); // disLikeBtn
+		//url = './localAssets/ic_sentiment_dissatisfied_black_24dp/web/ic_sentiment_dissatisfied_black_24dp_2x.jpg'; 	
+		//var btnMesh2 = this.createBtnObj(url, "disLikeBtn", POSITION_DISLIKE_DEFAULT, GEO_BUTTON_DEFAULT); // disLikeBtn
 		// create report button object
 		url = './localAssets/ic_sentiment_very_dissatisfied_black_24dp/web/ic_sentiment_very_dissatisfied_black_24dp_2x.jpg';
 		var reportBtn = this.createBtnObj(url, "reportBtn", POSITION_REPORT_DEFAULT,GEO_BUTTON_DEFAULT)
@@ -249,7 +256,41 @@ var WebRocketApplication = IApplication.$extend(
 
 		var soapboxObj = listOfMeshObject.find(getSoapboxObj);
 		this.soapboxObj = soapboxObj;
-		
+		console.log(soapboxObj);
+
+		function getThumbUpObj(element, index, array) {		
+		  while (element.name == THUMB_UP_NAME) {
+			  return element;
+		  }
+		}
+
+		var thumbUpObj = listOfMeshObject.find(getThumbUpObj);
+		this.thumbUpObj = thumbUpObj;
+		this.thumbUpObj.name = 'thumb_up';
+		THUMB_UP_NAME = 'thumb_up';
+		console.log(thumbUpObj);
+
+
+		function getThumbDownObj(element, index, array) {		
+		  while (element.name == THUMB_DOWN_NAME) {
+			  return element;
+		  }
+		}
+
+		var thumbDownObj = listOfMeshObject.find(getThumbDownObj);
+		this.thumbDownObj = thumbDownObj;
+		this.thumbDownObj.name = 'thumb_down';
+		THUMB_DOWN_NAME = 'thumb_down';
+		console.log(thumbDownObj);
+
+		// handle irregular fashion in shutdown of the application
+		window.onbeforeunload = function(event) {
+			if(self.isSpeakerMe()){
+				event.returnValue = "Write something clever here..";
+				self.virtual.stop();
+			}
+		};
+
 /* 		listOfThreeGroup = this.getListOfObj3D();
 		this.listOfThreeGroup = listOfThreeGroup; */
 		
@@ -497,7 +538,7 @@ var WebRocketApplication = IApplication.$extend(
 			return;			
 		}	// this can be any float ex) 9.x
 		var zoneVal = Math.floor(val/VOLUME_CHANGE_VALUE);
-		console.log("changer: "+ zoneVal);
+		//console.log("changer: "+ zoneVal);
 		switch(parseInt(zoneVal)){
 			case 9:
 				if(USER_VOLUME_ZONE===1)
@@ -752,12 +793,16 @@ var WebRocketApplication = IApplication.$extend(
 		// entityAction.parameters[1] -> entity id
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
+        	this.ifSentSpeechInfo = true;			// speech info is submitted and accepted
 			this.speakerInfo = JSON.parse(entityAction.parameters[0]);
 			if(this.isSpeakerMe()){
 				//Example: "21/02/2016 12:05"
-				this.speechInfo.name = this.userInfo.name;
-				this.speechInfo.startTime = current_time_string();
+				// set speech info to send to the middleware
+				this.speechInfo.speaker = this.userInfo.name;
+				this.speechInfo.topic = document.getElementById("titleInput").value;
+				this.speechInfo.starttime = current_time_string();
 				this.speechInfo.password = "null";
+				console.log(this.speechInfo);
 				this.setVideoFeed(this, this.video);
 			}
 			this.setSpeechBegin(entityAction.parameters[0]);
@@ -772,6 +817,7 @@ var WebRocketApplication = IApplication.$extend(
 			//$("titleInput").value = "Title";
 			$("infoDash").show();
 
+			this.ifSentSpeechInfo = false;
 			TIME_LIMIT = TIME_LIMIT_VALUE;
 			this.setTimer(this);		// timer is working wrong 8/3/2016
 			//if(speechTitle != false){
@@ -858,22 +904,24 @@ var WebRocketApplication = IApplication.$extend(
 				
 				// find vote blocks
 				if(this.toVote & this.isSpeechOn){
-					if(obj.name == 'likeBtn' | obj.name == 'disLikeBtn' | obj.name == 'reportBtn'){
-						if(obj.name == 'likeBtn'){
+					if(obj.name == THUMB_UP_NAME | obj.name == THUMB_DOWN_NAME | obj.name == 'reportBtn'){
+						if(obj.name == THUMB_UP_NAME){
 							// 0 otherwise use getHexValue() to store inital hexvalue of the obj
-							this.setHexValue(obj, HEX_LIKE, "disLikeBtn", 0); 
+							this.setHexValue(obj, HEX_LIKE, this.thumbDownObj, 0); 
 							return;
-						}else if(obj.name == 'disLikeBtn'){
-							this.setHexValue(obj, HEX_DISLIKE, "likeBtn", 0);
+						}else if(obj.name == THUMB_DOWN_NAME){
+							this.setHexValue(obj, HEX_DISLIKE, this.thumbUpObj, 0);
 							return;
 						}else if(obj.name == 'reportBtn'){
-							this.setHexValue(obj, HEX_REPORT, "disLikeBtn", 0);
+							this.setHexValue(obj, HEX_REPORT, this.thumbUpObj, 0);
 							return;
 						}
 					}else{
 						// set back the colour 
-						this.setHexValueBack("likeBtn", 0);
-						this.setHexValueBack("disLikeBtn", 0);
+						this.setHexValue(this.thumbUpObj, 0);
+						//this.setHexValueBack(THUMB_UP_NAME, 0);
+						this.setHexValue(this.thumbDownObj, 0);
+						//this.setHexValueBack("disLikeBtn", 0);
 						this.setHexValueBack("reportBtn", 0);
 					}
 				}else{ 
@@ -941,17 +989,19 @@ var WebRocketApplication = IApplication.$extend(
 	onMousePressBtn : function(obj){
 		// recognize buttons when only a speech is on 
 		if(this.toVote & this.isSpeechOn){
-			if(obj.name == 'likeBtn' | obj.name == 'disLikeBtn' | obj.name == 'reportBtn'){
-				if(obj.name == 'likeBtn'){
+			if(obj.name == THUMB_UP_NAME | obj.name == THUMB_DOWN_NAME | obj.name == 'reportBtn'){
+				if(obj.name == THUMB_UP_NAME){
 					// vote like
 					this.onVote(1);
-					this.virtual.like();		
-					this.setHexValueBack("likeBtn", 0);					
-				}else if(obj.name == 'disLikeBtn'){
+					this.virtual.like();
+					this.setHexValue(this.thumbUpObj, 0);		
+					//this.setHexValueBack(THUMB_UP_NAME, 0);					
+				}else if(obj.name == THUMB_DOWN_NAME){
 					// vote dislike
 					this.onVote(0);
 					this.virtual.dislike();		
-					this.setHexValueBack("disLikeBtn", 0);
+					this.setHexValue(this.thumbDownObj, 0);
+					//this.setHexValueBack("disLikeBtn", 0);
 				}else if(obj.name == 'reportBtn'){
 					this.onVote(-1);
 					this.virtual.report();		
@@ -1085,6 +1135,13 @@ var WebRocketApplication = IApplication.$extend(
 			obj.material.emissive.setHex(toHexValue);
 		}
 	},
+
+	setSpeakerInfoDefault : function(){
+		this.speakerInfo.speakerInfo[0].generalInfo.name = "";
+		this.speakerInfo.speakerInfo[0].generalInfo.id = "";
+		this.speakerInfo.speakerInfo[1].entityInfo.name = "";
+		this.speakerInfo.speakerInfo[1].entityInfo.id = "";
+	},
 		
 	setSpeechBegin : function(infoData){	
 		this.isSpeechOn = 1; 	// speech is off state
@@ -1126,10 +1183,8 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.pause();
 		this.video.volume = SET_VOLUME_VALUE;
 		this.screenMesh.material.map = this.texture_waiting;
-		this.speechInfo.name = "";
-		this.speechInfo.topic = "";
-		this.speechInfo.startTime = "";
-		this.speechInfo.password = "";
+		this.setSpeakerInfoDefault();
+		this.setSpeechInfoDefault();
 	},
 	
 	setSpeechInfo : function(){	
@@ -1142,6 +1197,14 @@ var WebRocketApplication = IApplication.$extend(
 			return false;
 		}
 	},
+
+	setSpeechInfoDefault : function(){
+		this.speechInfo.speaker = "";
+		this.speechInfo.topic = "";
+		this.speechInfo.starttime = "";
+		this.speechInfo.password = "";
+		this.speechInfo.origin = "";
+	},
 	
 	setTimer : function(context){		
 		this.counter.innerHTML="Time remaining: "+TIME_LIMIT--;
@@ -1153,7 +1216,6 @@ var WebRocketApplication = IApplication.$extend(
 			this.entity.exec(EntityAction.Server, _MSG_RELEASE_PENDING, this.userInfo.avatarName);
 			$("infoDash").hide();			
 			this.counter.innerHTML="";
-			this.ifSentSpeechInfo = false;		// speech info is submitted
 		}else{
 			this.counter.innerHTML="";
 			$("infoDash").hide();
@@ -1188,7 +1250,7 @@ var WebRocketApplication = IApplication.$extend(
 					video.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
-				//context.virtual.start(blob, self.speechInfo);
+				context.virtual.start(blob, context.speechInfo);
 				console.log("i am the speaker");
 				console.log(video);
 				video.play();

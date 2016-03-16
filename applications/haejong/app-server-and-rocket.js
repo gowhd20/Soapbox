@@ -228,6 +228,7 @@ var Server = Class.extend({
 			this.isSpeechInfoGiven = 1;
 			TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
 			LogInfo("speech title: "+speechData.title);
+			//LogInfo(this.tempUserInfoIn);
 			SpeechControl(this, this.tempUserInfoIn, speechData, 1);
 			this.callSystemStatus();
 		}else{		// physical user
@@ -477,15 +478,13 @@ function SpeechControl(context, tempInfo, speechGivenInfo, action){
 					// when speech is off, tried to start speech
 					self.isSpeechOn = 0;			
 					console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+					me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
 
 					self.speakerInfo.speakerInfo[0].generalInfo.name = "";
 					self.speakerInfo.speakerInfo[0].generalInfo.id = "";
 					self.speakerInfo.speakerInfo[1].entityInfo.name = "";
 					self.speakerInfo.speakerInfo[1].entityInfo.id = "";
 					
-					me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
-					
-
 				}else{
 					LogInfo("speaker name doesn't match with end attempt entity");
 				}

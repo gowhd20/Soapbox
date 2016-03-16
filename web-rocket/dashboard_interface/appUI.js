@@ -110,13 +110,12 @@ Soapbox.Dashboard.prototype = {
 		infoDash.appendChild(submitSpeechInfoBtn);
 		$(titleInput).change(function(e){$(descriptionInput).focus()});
 		$(descriptionInput).change(function(e){$(submitSpeechInfoBtn).focus()});
-				
+	
 		// submit speech info
 		$(submitSpeechInfoBtn).click(function(){
 			var speechInfoValues = {"name":"", "title":document.getElementById("titleInput").value, 
 			"description":document.getElementById("descriptionInput").value,"startTime":"", "origin":"virtual"};
-			self.ifSentSpeechInfo = true;
-			self.speechInfo.title = speechInfoValues.title;
+			// speech info to send to the middleware
 			//self.speechInfo.description = speechInfoValues.description;
 
 			self.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechInfoValues);
