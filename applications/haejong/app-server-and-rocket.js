@@ -279,32 +279,54 @@ var Server = Class.extend({
 
 	// speech terminated
 	offSpeechTerminated : function(reply){
-		if(this.isSpeechInfoGiven == 1 & reply == 1){
-			/* singal to peers that speech ended */
-			LogInfo("Speech end request has been approved by speech. System terminates the speech ");
-			this.isSpeechInfoGiven = 0;
-			if(typeof this.tempUserInfoOut === 'undefined'){
-				LogInfo("sending tempUserInfoIn");
-				SpeechControl(this, this.tempUserInfoIn, "", 0);
-			}else{
-				LogInfo("sending tempUserInfoOut");
-				// either the speaker tried to leave the speech once or more, or it takes regular steps to finish the speech
-				SpeechControl(this, this.tempUserInfoOut, "", 0);
-			}
-			// warning, this try sometimes succeed without speaker in the virtual world
-			try{
-				if(typeof this.tempUserInfoOut === 'undefiend'){
-					TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+		var action;
+		if(typeof reply === 'string')
+			action = JSON.parse(reply);
+		else
+			action = reply;
+
+		if(action.origin === 'virtual'){
+			if(this.isSpeechInfoGiven == 1 & action.signal == 1){
+				/* singal to peers that speech ended */
+				LogInfo("Speech end request has been approved by speech. System terminates the speech ");
+				this.isSpeechInfoGiven = 0;
+				SpeechControl(this, this.speakerInfo, "", 0);
+				/*if(typeof this.tempUserInfoOut === 'undefined'){
+					LogInfo("sending tempUserInfoIn");
+					SpeechControl(this, this.tempUserInfoIn, "", 0);
 				}else{
-					TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+					LogInfo("sending tempUserInfoOut");
+					// either the speaker tried to leave the speech once or more, or it takes regular steps to finish the speech
+					SpeechControl(this, this.tempUserInfoOut, "", 0);
+				}*/
+				// warning, this try sometimes succeed without speaker in the virtual world
+				try{
+					//if(typeof this.tempUserInfoOut === 'undefiend'){
+					//	TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+					//}else{
+					//	TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+					//}
+					TeleportReq(this.speakerInfo.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+				}catch(e){
+					LogInfo("Speaker appears terminated speech irregular fashion");
 				}
-			}catch(e){
-				LogInfo("Speaker appeared terminated speech irregular fashion");
+			}else if(action == 0){
+				// end attempt was by mistake
+				// keep the speech running and return the speaker to the right position
+				TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
 			}
-		}else if(reply == 0){
-			// end attempt was by mistake
-			// keep the speech running and return the speaker to the right position
-			TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
+		}else{
+			if(this.isSpeechInfoGiven === 1 & action.signal === 1){
+				/* singal to peers that speech ended */
+				LogInfo("Speech end request has been issued by physical world, System terminates the speech");
+				this.isSpeechInfoGiven = 0;
+				SpeechControl(this, "", {"name":this.speakerInfo.speakerInfo[0].generalInfo.name,"signal":action.signal}, 0);
+
+			}else if(action === 0){
+				// end attempt was by mistake
+				// keep the speech running and return the speaker to the right position
+				// TODO: handle mis-signaled speech end request from physical world
+			}
 		}
 		this.callSystemStatus();
 	},

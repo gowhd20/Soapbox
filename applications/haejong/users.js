@@ -143,7 +143,7 @@ Soapbox.Users.prototype = {
 		}
 		return false;
 	},
-	// this doesn't workkkkkkkkkkkkkkkkkk!!!!!!!!!!!!!!!
+	
 	isUserCoordinator : function(userId){
 		if(this.coordinatorInfo.id === undefined)
 			return false;

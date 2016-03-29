@@ -159,7 +159,7 @@ var WebRocketApplication = IApplication.$extend(
 		virtual.setup(video);
 		
 		//handled by middleware when user is logging out
-		onbeforeunload = function(){virtual.unregister();};
+		//onbeforeunload = function(){virtual.unregister();};
 			
 		/**************************************************/
 		
@@ -1341,10 +1341,14 @@ var WebRocketApplication = IApplication.$extend(
 		this.virtual.onreceivedislikes = function(dislikes){
 			voteInfo.vote = 0;
 			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'dislike' has been updated by physical world
-		this.virtual.onreceivereports = function(reports){
-			voteInfo.vote = -1;
-			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'report' has been updated by physical world
-		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf	
+		//this.virtual.onreceivereports = function(reports){
+		//	voteInfo.vote = -1;
+		//	context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'report' has been updated by physical world
+		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf
+				this.virtual.onstopspeech = function(){
+			console.log("closed.....");
+			context.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, {'signal':1, 'origin':'physical'});
+		}	// stopped speech in physical world
 	},
 	
 	// init new user with params which sent from the server
