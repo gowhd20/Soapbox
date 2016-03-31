@@ -284,7 +284,7 @@ var Server = Class.extend({
 			action = JSON.parse(reply);
 		else
 			action = reply;
-
+		LogInfo(action)
 		if(action.origin === 'virtual'){
 			if(this.isSpeechInfoGiven == 1 & action.signal == 1){
 				/* singal to peers that speech ended */
@@ -320,7 +320,9 @@ var Server = Class.extend({
 				/* singal to peers that speech ended */
 				LogInfo("Speech end request has been issued by physical world, System terminates the speech");
 				this.isSpeechInfoGiven = 0;
-				SpeechControl(this, "", {"name":this.speakerInfo.speakerInfo[0].generalInfo.name,"signal":action.signal}, 0);
+				SpeechControl(this, "", {"name":this.speakerInfo.speakerInfo[0].generalInfo.name
+					,"signal":action.signal
+					,"origin":action.origin}, 0);
 
 			}else if(action === 0){
 				// end attempt was by mistake
@@ -450,25 +452,37 @@ function SpeechAddInfo(context, speechId, speechData, name, id, like, dislike, r
 	// action =1 > attempt to start speech
 	// action =2 > attempt to end speech
 function SpeechControl(context, tempInfo, speechGivenInfo, action){
-	if(speechGivenInfo.origin === "physical"){	// physical soapbox user
+	if(speechGivenInfo.origin === "physical"){	// physical soapbox username   // this wasnn't called
 		var speakerName = speechGivenInfo.name;
 		var self = context;
 		LogInfo("speaker name: "+speakerName);
-		if(action == 1){	
-			if(self.isSpeechOn == 1){
-				// when speech is on, tried to start speech
-				console.LogInfo("Speech is already on by user name: ", + self.speakerInfo.speakerInfo[0].generalInfo.name);
+
+		if(action == 1 && self.isSpeechOn == 0){	
+			self.speechCnt = GenerateSpeechId(self.speechCnt);
+			LogInfo("speech begins by " + speakerName);
+			SpeechAddInfo(self, self.speechCnt, speechGivenInfo, "", "", 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
+			self.isSpeechOn = 1; 		// set speech is now on by physical soapbox
+			self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name":speakerName, "id":""}}		// set speaker info
+			,{"entityInfo":{"entityName":"", "entityId":""}}]};
+			me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
+		}
+		else if(action == 0 && self.isSpeechOn == 1){
+			try{
+				// when speech ended by physical soapbox
+				self.isSpeechOn = 0;			
+				console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+				me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
+
+				self.speakerInfo.speakerInfo[0].generalInfo.name = "";
+				self.speakerInfo.speakerInfo[0].generalInfo.id = "";
+				self.speakerInfo.speakerInfo[1].entityInfo.name = "";
+				self.speakerInfo.speakerInfo[1].entityInfo.id = "";				
+
+			}catch(e){
+				console.LogInfo("exception, undefined speaker attempted to end speech");
 			}
-			else{
-				self.speechCnt = GenerateSpeechId(self.speechCnt);
-				LogInfo("speech begins by " + speakerName);
-				SpeechAddInfo(self, self.speechCnt, speechGivenInfo, "", "", 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
-				self.isSpeechOn = 1; 		// set speech is now on by physical soapbox
-				self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name":speakerName, "id":""}}		// set speaker info
-				,{"entityInfo":{"entityName":"", "entityId":""}}]};
-				me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
-			}
-		// action to end the speech
+		}else{
+			LogInfo("speech end has been requested, but there is no speech to end!");
 		}
 		
 	}else{		// virtual soapbox user
@@ -477,6 +491,7 @@ function SpeechControl(context, tempInfo, speechGivenInfo, action){
 		var entName = tempInfo.speakerInfo[1].entityInfo.entityName;
 		var entId = tempInfo.speakerInfo[1].entityInfo.entityId;
 		var self = context;
+
 		LogInfo("speaker ID: "+speakerId+" speaker name: "+speakerName);	
 		// action to begin the speech
 		if(action == 1){	

@@ -238,9 +238,9 @@ Soapbox.Dashboard.prototype = {
 		$(sendCommBtn).click(function(){
 			var v = document.getElementById("commentInput");
 			//addNewComment(self, v.value);
-			self.virtual.comment(self.userInfo.name, v.value);
+			self.virtual.comment(self.userInfo.name+self.userInfo.id, v.value);
 			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, 
-			{"userName":self.userInfo.name, "comment":v.value, "origin":"virtual"});
+			{"userName":self.userInfo.name+self.userInfo.id, "comment":v.value, "origin":"virtual"});
 			v.value = "";
 		});
 		

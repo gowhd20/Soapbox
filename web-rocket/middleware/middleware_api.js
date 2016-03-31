@@ -757,7 +757,7 @@ var middleware = (function() {
 			}
 		}
 		
-		function stopSpeechTransmission(initiative) {
+		function stopSpeechTransmission() {
             if(PeerConnection && PeerConnection.signalingState != "closed") {
                 PeerConnection.close();
                 PeerConnection = null;						
@@ -1013,7 +1013,6 @@ var middleware = (function() {
 		this.setup = setupVideoDisplayObject;
 		this.connect = connectMiddleware;
         this.register = registerInMiddleware;
-        this.unregister = unregisterItself;
         this.start = startBroadcast;
         this.stop = stopBroadcast;  //Only for speaker
 		this.send = sendMessageToMiddleware;
@@ -1079,6 +1078,10 @@ var middleware = (function() {
             //None
             console.log(speech_info);
         }
+        
+        window.onbeforeunload = function(event) {
+            unregisterItself();
+		};
         
         //Try to tell signaling server that it is about to leave watching the virtual soapbox 
 		function unregisterItself() {
@@ -1206,6 +1209,7 @@ var middleware = (function() {
 							}
                             //From soapbox speaker
                             else if (signal.type == "stop_broadcast") {
+                                stopSpeechTransmission();
                                 self.onstopspeech();
                             }                                
                             //From virtual receiver
@@ -1252,7 +1256,7 @@ var middleware = (function() {
             sendMessageToMiddleware("stop_broadcast", {"virtual_id": virtual_id});
         }        
                 
-		function stopSpeechTransmission(initiative) {
+		function stopSpeechTransmission() {
             console.log("Stopping speech transmission now")
             if(PeerConnection && PeerConnection.signalingState != "closed") {
                 PeerConnection.close();
@@ -1350,11 +1354,13 @@ var middleware = (function() {
             peers[receiver_id] = Offer.createOffer(options);			
 		}
 		
+        // consider timezone effect: offset in milliseconds
+        // http://stackoverflow.com/questions/10830357/javascript-toisostring-ignores-timezone-offset
         function sendMessageToMiddleware(type, payload) {     
             var message_object = {
                 'sender': self.itself,
                 'receiver': "middleware",
-                'timestamp': new Date().toISOString(),
+                'timestamp': (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString(),
                 'type': type,
                 'data': payload || {}
             };

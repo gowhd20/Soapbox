@@ -1056,11 +1056,13 @@ var WebRocketApplication = IApplication.$extend(
 			var ans = this.prompMsg("Would you like to end the speech?");
 			if (ans == true) {
 				// speaker agrees to end the speech
-				this.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, 1);
+				this.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, 
+					{"signal":1, "origin":"virtual"});
 				
 			} else if (ans == false) {
 				// end attempt was a mistake 
-				this.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, 0);
+				this.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST,
+					{"signal":0, "origin":"virtual"});
 			}
 		}
 	
