@@ -469,7 +469,7 @@ var middleware = (function() {
             var message_object = {
                 'sender': self.itself,
                 'receiver': "middleware",
-                'timestamp': new Date().toISOString(),
+                'timestamp': (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString(),
                 'type': type,
                 'data': payload || {}
             };
@@ -521,7 +521,7 @@ var middleware = (function() {
                 videoBlobs.push(blobs.video);
                 audioBlobs.push(blobs.audio);
                 //Save streams
-                var qqq = saveAs(blobs.video, "speech-video_" + new Date().toISOString() + ".webm");
+                var qqq = saveAs(blobs.video, "speech-video_" + (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString() + ".webm");
                 console.debug(qqq);
                 console.debug("SaveAs done now");
                 //saveAs(blobs.audio, "speech-audio_" + new Date().toISOString() + ".wav");
@@ -785,7 +785,7 @@ var middleware = (function() {
 			var message_object = {
 				'sender': self.itself,
 				'receiver': "middleware",
-				'timestamp': new Date().toISOString(),
+				'timestamp': (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString(),
 				'type': type,
 				'data': payload || {}
 			};
@@ -881,7 +881,7 @@ var middleware = (function() {
 			var message_object = {
 				'sender': self.itself,
 				'receiver': "middleware",
-				'timestamp': new Date().toISOString(),
+				'timestamp': (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString(),
 				'type': type,
 				'data': payload || {}
 			};

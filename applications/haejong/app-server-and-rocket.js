@@ -159,7 +159,7 @@ var Server = Class.extend({
 			if(this.speakerInfo.speakerInfo[0].generalInfo.id == connection.id){
 				LogInfo("speaker logged out during the speech, speaker id: "+this.speakerInfo.speakerInfo[0].generalInfo.id+
 				" "+connection.id+" logged out");
-				this.offSpeechTerminated(1);
+				this.offSpeechTerminated({"origin":"virtual", "signal":1});
 			}
 		}
         Log("Client #" + connection.id + " disconnected");

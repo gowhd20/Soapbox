@@ -233,6 +233,7 @@ var WebRocketApplication = IApplication.$extend(
 		onRenderFctsWithoutParam.push(function(){
 			try{
 				//console.log(Tundra.scene.entityByName("Avatar2").placeable.transform.pos.z);
+				//self.sendToServer();
 				self.dynamicVolumeObserver(self.avatarEntity);
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
@@ -294,82 +295,24 @@ var WebRocketApplication = IApplication.$extend(
 /* 		listOfThreeGroup = this.getListOfObj3D();
 		this.listOfThreeGroup = listOfThreeGroup; */
 		
-		/*function createCssRenderer() {
-			var cssRenderer = new THREE.CSS3DRenderer();
-			cssRenderer.setSize(window.innerWidth, window.innerHeight);
-			cssRenderer.domElement.style.position = 'absolute';
-			cssRenderer.domElement.style.top = 0;
-			console.log(cssRenderer);
-			return cssRenderer;
-		}*/
-	/*
-		function createPlane(w, h, position, rotation) {
-			var material = new THREE.MeshBasicMaterial({
-			  color: 0x000000,
-			  opacity: 0.0,
-			  side: THREE.DoubleSide
-			});
-			var geometry = new THREE.PlaneGeometry(w, h);
-			var mesh = new THREE.Mesh(geometry, material);
-			mesh.position.x = position.x;
-			mesh.position.y = position.y;
-			mesh.position.z = position.z;
-			mesh.rotation.x = rotation.x;
-			mesh.rotation.y = rotation.y;
-			mesh.rotation.z = rotation.z;
-			console.log(mesh);
-			return mesh;
-		}
-		function createCssObject(w, h, position,rotation, url) {
-
-			var html = [
-			  '<div style="width:' + w + 'px; height:' + h + 'px;">',
-			  '<iframe src="' + url + '" width="' + w + '" height="' + h + '">',
-			  '</iframe>',
-			  '</div>'
-			].join('\n');
-			var div = document.createElement('div');
-			$(div).html(html);
-			var cssObject = new THREE.CSS3DObject(div);
-			cssObject.position.x = position.x;
-			cssObject.position.y = position.y;
-			cssObject.position.z = position.z;
-			cssObject.rotation.x = rotation.x;
-			cssObject.rotation.y = rotation.y;
-			cssObject.rotation.z = rotation.z;
-			console.log(cssObject);
-			// add it to the css scene
-			return cssObject;
-		}
-		function create3dPage(w, h, position, rotation, url) {
-			var plane = createPlane(w, h, position, rotation);
-			console.log(plane);
-			threeMeshGroup.add(plane);
-			var cssObject = createCssObject(w, h, position,rotation, url);
-			console.log(cssObject);
-			Tundra.renderer.addCssObject(cssObject);
-		}
-		
-		console.log(Tundra.client);
-		console.log(Tundra);
-		var cssRenderer = Tundra.renderer.getCssRenderer();
-		//var cssScene = Tundra.renderer.getCssRendererScene();
-		console.log(Tundra.client);
-		console.log(Tundra);
-		//console.log(cssScene);
-		console.log(cssRenderer);
-		// important
-		//var cssRenderer = createCssRenderer();
-		//document.body.appendChild(glRenderer.domElement);
-		//document.body.appendChild(cssRenderer.domElement);
-		//cssRenderer.domElement.appendChild(glRenderer.domElement);
-		//initPolymer(cssRenderer);
-		//cssScene = new THREE.Scene();
-		create3dPage(10, 10, POSITION_DEFAULT,new THREE.Vector3(0, 45 * Math.PI / 180, 0),  'http://www.oulu.fi/english/');
-		//Tundra.renderer.cssRenderer = cssRenderer;
-		//Tundra.renderer.cssRendererScene = cssScene;
-*/
-
+		console.log(Tundra.renderer.renderer.domElement.toDataURL());
+		 var ws = new WebSocket("ws://localhost:8889/");
+		    var frame = 0;
+		    var isOpen = false;
+		    ws.onopen = function(e) {
+		        console.log('opening');
+		        isOpen = true;
+		    };
+		    ws.onclose = function(e) {
+		        console.log('closing');
+		        console.log(e);
+		        isOpen = false;
+		    };
+		    ws.onerror = function(e) {
+		        console.log('error');
+		        console.log(e);
+		    }
+		console.log(ws);	
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
 		requestAnimationFrame(function animation()
@@ -1399,7 +1342,25 @@ var WebRocketApplication = IApplication.$extend(
 			this.refreshVote(initObj.like, initObj.dislike);
 			$("dashboard").show();
 		}
-	}
+	},
+	sendToServer : function() {
+        var asString = Tundra.renderer.renderer.domElement.toDataURL();
+ 
+         if (isOpen) {
+         	console.log("open"); 
+            frame++;
+            ws.send(str2ab(frame+asString));
+         }
+    },
+ 
+    str2ab : function(str) {
+        var buf = new ArrayBuffer(str.length);
+        var bufView = new Uint8Array(buf);
+        for (var i=0, strLen=str.length; i<strLen; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+    }
 });
 
 
@@ -1432,7 +1393,6 @@ function haejongAsset(asset){
 	console.log(entity_soapHolder);
 
 }
-
 
 // TODO: handling keyboard press when starting speech
 
