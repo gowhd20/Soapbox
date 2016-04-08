@@ -42,16 +42,22 @@ var SOAPBOX_NAME = "http://localhost:8082/applications/haejong/soapbox.mesh_subm
 var THUMB_UP_NAME = "http://localhost:8082/applications/haejong/Cube_up.mesh_submesh_0";
 var THUMB_DOWN_NAME = "http://localhost:8082/applications/haejong/Cube_down.mesh_submesh_0";
 var PATH_TO_REGISTRATION = "speaker22/index.html";
-var GEO_SCREEN_DEFAULT = {"v1":0.01, "v2":2, "v3":2};
-var GEO_BUTTON_DEFAULT = {"v1":1, "v2":1, "v3":1};
-var POSITION_REPORT_DEFAULT = {"x":63.20, "y":8.10, "z":-39.36};
-var POSITION_LIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-46.36}
-var POSITION_DISLIKE_DEFAULT = {"x":63.20,"y":8.10,"z":-42.36};
+
+var GEO_SCREEN_DEFAULT = {"x":0.01, "y":2, "z":2};
+var GEO_BUTTON_DEFAULT = {"x":1, "y":1, "z":3};
+
+var POSITION_REPORT_DEFAULT = {"x":63.20, "y":8.10, "z":-44.36};
+var POSITION_LIKE_DEFAULT = {"x":63.20,"y":7.80,"z":-47.36}
+var POSITION_DISLIKE_DEFAULT = {"x":63.20,"y":7.80,"z":-41.36};
 var POSITION_DEFAULT = {"x":62.50, "y":10, "z":-53.35};
 var POSITION_SCREEN_DEFAULT  = {"x":60.21, "y":9.50, "z":-44.35};
+var POSITION_SCREEN_SOAPBOX  = {"x":61.31, "y":9.50, "z":-48.15};
+var POSITION_SCREEN_HOTSPOT  = {"x":61.31, "y":9.50, "z":-40.55};
+
 var HEX_LIKE = 0x00ff00;
 var HEX_DISLIKE = 0x6600ff;
 var HEX_REPORT = 0xff0000;
+
 var TIME_LIMIT_VALUE = 10;
 var TIME_LIMIT = TIME_LIMIT_VALUE;
 var SET_VOLUME_VALUE = 1;
@@ -81,17 +87,13 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(Physijs);
 		
 		var self = this;
-        this.$super("soapbox_virtual");
-		console.log("client connected");
-		
+        this.$super("soapbox_virtual");	
 		// user id
 		var userName = Tundra.client.loginProperties.username;
 		var userInfo = {"name" : userName, "id" : "", "avatarName" : ""};
-		this.userInfo = userInfo;
-		console.log(this.userInfo);
 
 		//this.initUi(self);
-		
+		var avatarEntity;
 		var onRenderFctsWithoutParam = [];
 		var onRenderFctsWithParams = [];
 		var listOfMeshObject = [];
@@ -104,35 +106,50 @@ var WebRocketApplication = IApplication.$extend(
 		var ifSentSpeechInfo = false;
 		var speechInfo = {"speaker": "", "topic": "", 
 				"starttime":"", "password": "", "origin":""};
-		
-		var numOfUsersInTheVenue = 0; 	// except me
-		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
+		var coordinatorInfo = {"name" : "", "id" : ""};
 		var isUserInTheVenue = 0;
+		var numOfUsersInTheVenue = 0; 	// except myself
+
+
+		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
 		this.isUserInTheVenue = isUserInTheVenue;	
 		this.speakerInfo = speakerInfo;
 		this.toVote = toVote;
-		var coordinatorInfo = {"name" : "", "id" : ""};
 		this.coordinatorInfo = coordinatorInfo;
-		var avatarEntity;
 		this.avatarEntity = avatarEntity;
 		this.timerHandler = timerHandler;
 		this.ifSentSpeechInfo = ifSentSpeechInfo;
 		this.speechInfo = speechInfo;
+		this.userInfo = userInfo;
+		console.log(this.userInfo);
 		
 		var ui = new Soapbox.Dashboard();
 		ui.initUi(this);
-		
+
 		/* Tundra entities */
 		var foothold = Tundra.scene.entityByName("soapbox_footbold");
 		
 		// video element
-		var video= document.createElement('video');
-		this.video = video;
+		var video = document.createElement('video');
 		this.video = video;
 		this.video.width = 320;
 		this.video.height = 240;
 		this.video.autoplay = true;
 		this.video.loop = true;
+
+		var videoS = document.createElement('video_soapbox');
+		this.videoS = videoS;
+		this.videoS.width = 320;
+		this.videoS.height = 240;
+		this.videoS.autoplay = true;
+		this.videoS.loop = true;
+
+		var videoH = document.createElement('video_hotspot');
+		this.videoH = videoH;
+		this.videoH.width = 320;
+		this.videoH.height = 240;
+		this.videoH.autoplay = true;
+		this.videoH.loop = true;
 		
 		/***********configure with middleware******************/
 		// middleware instance
@@ -164,14 +181,23 @@ var WebRocketApplication = IApplication.$extend(
 		/**************************************************/
 		
 		/* THREE */
+		/* VIDEO TEXTURES */
 		var videoTexture = new THREE.Texture(video);
 		this.videoTexture = videoTexture;
+		var videoTextureS = new THREE.Texture(videoS);
+		this.videoTextureS = videoTextureS;
+		var videoTextureH = new THREE.Texture(videoH);
+		this.videoTextureH = videoTextureH;
+
+		/* THREE OBJECT GROUP */
 		var threeMeshGroup = new THREE.Object3D();
 		this.threeMeshGroup = threeMeshGroup;
 
 		// textures
+		// texture init with waiting mode
 		tex = THREE.ImageUtils.loadTexture("./localAssets/like.jpg");
-		texture_waiting = THREE.ImageUtils.loadTexture("./localAssets/waiting.jpg", function(error){
+		texture_waiting = THREE.ImageUtils.loadTexture("./localAssets/waiting.jpg", 
+			function(error){
 			console.log(this,"image not loaded, error");
 		});
 		this.texture_waiting = texture_waiting;
@@ -180,22 +206,31 @@ var WebRocketApplication = IApplication.$extend(
 		//* create objects for the scene *//
 		////////////////////////////////////
 		
-		var url = []; 
-		var objPosition = [];
-		var geo = [];
-		// create screen object
-		// texture init with waiting mode 
-		var screenMesh = this.createCubeObj(this.videoTexture, "video_screen", POSITION_SCREEN_DEFAULT, geo);
+
+		// create screen objects 
+		var screenMesh = this.createCubeObj(this.videoTexture, 
+			"video_screen", 
+			POSITION_SCREEN_DEFAULT, 
+			{"geo":GEO_SCREEN_DEFAULT});
 		this.screenMesh = screenMesh;
-		// create like button object
-		//url = './localAssets/ic_sentiment_satisfied_black_24dp/web/ic_sentiment_satisfied_black_24dp_2x.jpg'; 		
-		//var btnMesh = this.createBtnObj(url, "likeBtn", POSITION_LIKE_DEFAULT, GEO_BUTTON_DEFAULT); // create likeBtn
-		// create dislike button object
-		//url = './localAssets/ic_sentiment_dissatisfied_black_24dp/web/ic_sentiment_dissatisfied_black_24dp_2x.jpg'; 	
-		//var btnMesh2 = this.createBtnObj(url, "disLikeBtn", POSITION_DISLIKE_DEFAULT, GEO_BUTTON_DEFAULT); // disLikeBtn
-		// create report button object
-		url = './localAssets/ic_sentiment_very_dissatisfied_black_24dp/web/ic_sentiment_very_dissatisfied_black_24dp_2x.jpg';
-		var reportBtn = this.createBtnObj(url, "reportBtn", POSITION_REPORT_DEFAULT,GEO_BUTTON_DEFAULT)
+
+		var screenSMesh = this.createCubeObj(this.videoTextureS, 
+			"video_soapbox_screen", 
+			POSITION_SCREEN_SOAPBOX, 
+			{"geo":GEO_SCREEN_DEFAULT,"rotation":{"x":0,"y":-0.6,"z":0}});
+		this.screenSMesh = screenSMesh;
+
+		var screenHMesh = this.createCubeObj(this.videoTextureS, 
+			"video_hotspot_screen", 
+			POSITION_SCREEN_HOTSPOT, 
+			{"geo":GEO_SCREEN_DEFAULT,"rotation":{"x":0,"y":0.6,"z":0}});
+		this.screenHMesh = screenHMesh;
+		
+		var url = './localAssets/ic_sentiment_very_dissatisfied_black_24dp/web/ic_sentiment_very_dissatisfied_black_24dp_2x.jpg';
+		var reportBtn = this.createBtnObj(url,
+		 "reportBtn", 
+		 POSITION_REPORT_DEFAULT,GEO_BUTTON_DEFAULT);
+		
 		// to change texture's emissive attribute
 		//var hexOfBtn1 = this.getHexValue(btnMesh);
 		//var hexOfBtn2 = this.getHexValue(btnMesh2);
@@ -204,10 +239,12 @@ var WebRocketApplication = IApplication.$extend(
 		Tundra.renderer.scene.add(this.threeMeshGroup);
 		console.log(Tundra.renderer);
 		console.log(Tundra);
+
 		////* Listeners *////
 		// entity event listeners
         this.entity.onEntityAction(this, this.onEntityAction);
 		foothold.onEntityAction(this, this.onEntityAction);
+
 
 		// mouse event listeners
 		var mouseEvents = Tundra.input.onMouseEvent(this, this.onMouseEvent); // function(context, callback) 
@@ -215,10 +252,12 @@ var WebRocketApplication = IApplication.$extend(
 		Tundra.events.subscribe(_MSG_MOUSE_RELEASE, this, this.onMouseRelease);
 		Tundra.events.subscribe(_MSG_MOUSE_HOVER, this, this.onMouseHoverObj);
 
+
         // introduce this user to the server
         this.entity.exec(EntityAction.Server, _MSG_INITIATION);
 		
-		/**************get video stream*******************/
+
+		/************** RENDER FUNCTIONS *******************/
 		//https://github.com/jeromeetienne/threex.videotexture/blob/master/examples/videotexture.html
 
 		/* functions to be rendered in a loop */		
@@ -238,7 +277,7 @@ var WebRocketApplication = IApplication.$extend(
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
 			}catch(e){
-				console.log("userInfo is not initiated yet or not given at all");
+				console.log("userInfo is yet initiated or not given at all");
 			}
 		});
 	
@@ -257,7 +296,7 @@ var WebRocketApplication = IApplication.$extend(
 
 		var soapboxObj = listOfMeshObject.find(getSoapboxObj);
 		this.soapboxObj = soapboxObj;
-		console.log(soapboxObj);
+
 
 		function getThumbUpObj(element, index, array) {		
 		  while (element.name == THUMB_UP_NAME) {
@@ -269,7 +308,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.thumbUpObj = thumbUpObj;
 		this.thumbUpObj.name = 'thumb_up';
 		THUMB_UP_NAME = 'thumb_up';
-		console.log(thumbUpObj);
 
 
 		function getThumbDownObj(element, index, array) {		
@@ -282,9 +320,9 @@ var WebRocketApplication = IApplication.$extend(
 		this.thumbDownObj = thumbDownObj;
 		this.thumbDownObj.name = 'thumb_down';
 		THUMB_DOWN_NAME = 'thumb_down';
-		console.log(thumbDownObj);
 
-		// handle irregular fashion in shutdown of the application
+
+		// **  handle irregular fashion in shutdown of the application ** //
 		window.onbeforeunload = function(event) {
 			if(self.isSpeakerMe()){
 				event.returnValue = "Write something clever here..";
@@ -292,11 +330,9 @@ var WebRocketApplication = IApplication.$extend(
 			}
 		};
 
-/* 		listOfThreeGroup = this.getListOfObj3D();
-		this.listOfThreeGroup = listOfThreeGroup; */
 		
-		console.log(Tundra.renderer.renderer.domElement.toDataURL());
-		 var ws = new WebSocket("ws://localhost:8889/");
+		//console.log(Tundra.renderer.renderer.domElement.toDataURL());
+		/*var ws = new WebSocket("ws://localhost:8889/");
 		    var frame = 0;
 		    var isOpen = false;
 		    ws.onopen = function(e) {
@@ -312,7 +348,8 @@ var WebRocketApplication = IApplication.$extend(
 		        console.log('error');
 		        console.log(e);
 		    }
-		console.log(ws);	
+		console.log(ws);*/	
+
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
 		requestAnimationFrame(function animation()
@@ -341,6 +378,7 @@ var WebRocketApplication = IApplication.$extend(
 		})
 		
     },
+
 	////////////////////////////////////////////
 	//*  this.methods in alphabetical order */// 
 	////////////////////////////////////////////
@@ -368,20 +406,12 @@ var WebRocketApplication = IApplication.$extend(
 		});				
 		comment.innerHTML = name + ": " + text;
 		
-		/* //mouse hover, not used 			
-		$(self.userIdInner).mouseover(function(){
-			$(self.userIdInner).css("background-color", "red");
-		});
-		$(self.userIdInner).mouseout(function(){
-			$(self.userIdInner).css("background-color", "white");
-		});	 */	
-		
 		var parent = this.dashboard.children["commentDiv"];
 		parent.appendChild(commentInnerDiv);
 		commentInnerDiv.appendChild(comment);
-
 	},
 	
+	//** Deplicated **//
 	// open up url for speech registration when virtual user try to do so 
 	callRegistration : function(url){
 		var _url = url
@@ -392,17 +422,53 @@ var WebRocketApplication = IApplication.$extend(
 	// change size of the screen accordingly to the number of users in the venue
 	changeScreenSize : function(numOfUsers){
 		if(numOfUsers >= 1){
-			this.screenMesh.scale.set(0.01, 4, 4); // will be pre-defined
+			// the value here will be pre-defined later
+			this.screenMesh.scale.set(0.01, 4, 4);
+			this.screenSMesh.scale.set(0.01, 4, 4);
+			this.screenHMesh.scale.set(0.01, 4, 4);
+
+			// Adjust height accroding to the scaled size
 			this.screenMesh.position.y = 12.50;
+			this.screenSMesh.position.y = 12.50;
+			this.screenSMesh.position.x = POSITION_SCREEN_SOAPBOX.x+1.2;
+			this.screenSMesh.position.z = POSITION_SCREEN_SOAPBOX.z-3.7;
+			this.screenHMesh.position.y = 12.50;
+			this.screenHMesh.position.x = POSITION_SCREEN_HOTSPOT.x+1.2;
+			this.screenHMesh.position.z = POSITION_SCREEN_HOTSPOT.z+3.7;
 		}else if(numOfUsers == 0){
-			this.screenMesh.scale.set(GEO_SCREEN_DEFAULT.v1, GEO_SCREEN_DEFAULT.v2, GEO_SCREEN_DEFAULT.v3);		// will be pre-defined
+			this.screenMesh.scale.set(GEO_SCREEN_DEFAULT.x, 
+			GEO_SCREEN_DEFAULT.y, 
+			GEO_SCREEN_DEFAULT.z);
+
+			this.screenSMesh.scale.set(GEO_SCREEN_DEFAULT.x, 
+			GEO_SCREEN_DEFAULT.y, 
+			GEO_SCREEN_DEFAULT.z);
+
+			this.screenHMesh.scale.set(GEO_SCREEN_DEFAULT.x, 
+			GEO_SCREEN_DEFAULT.y,
+			GEO_SCREEN_DEFAULT.z);
+
+			// Adjust height accroding to the scaled size
 			this.screenMesh.position.y = POSITION_SCREEN_DEFAULT.y;
+			this.screenSMesh.position.y = POSITION_SCREEN_SOAPBOX.y;
+			this.screenSMesh.position.x = POSITION_SCREEN_SOAPBOX.x;
+			this.screenSMesh.position.z = POSITION_SCREEN_SOAPBOX.z;
+			this.screenHMesh.position.y = POSITION_SCREEN_HOTSPOT.y;
+			this.screenHMesh.position.x = POSITION_SCREEN_HOTSPOT.x;
+			this.screenHMesh.position.z = POSITION_SCREEN_HOTSPOT.z;
 		}
 		console.log("screen size change " + numOfUsers);
 	},
 	
-	createBtnObj : function(url, name, initPosition, geo){
 
+	//******************* DOCUMENTATION ************************//
+	// - geo needs to be array 				 			        //
+	// - url needs to be string URL 							//
+	// - name is a Three object name for this object            //
+	// - position needs to be array with the keys of x,y, and z //
+	//**********************************************************//
+
+	createBtnObj : function(url, name, initPosition, geo){
 		if(!url){
 			console.log("error, no url of texture for the obj");
 			return;
@@ -417,14 +483,15 @@ var WebRocketApplication = IApplication.$extend(
 			var geo = [];
 		}
 		
-		var btnTexture = THREE.ImageUtils.loadTexture(url, function(error){
-			console.log(this,"image not loaded, error");
+		var btnTexture = THREE.ImageUtils.loadTexture(url, 
+			function(error){
+				console.log(this,"image not loaded, error");
 		});
 
 		var btnMaterial = new THREE.MeshLambertMaterial({map: btnTexture});
-		var btnGeometry = new THREE.BoxGeometry(geo.v1 ? geo.v1 : GEO_SCREEN_DEFAULT.v1
-		, geo.v2 ? geo.v2 : GEO_SCREEN_DEFAULT.v2
-		, geo.v3 ? geo.v3 : GEO_SCREEN_DEFAULT.v3);
+		var btnGeometry = new THREE.BoxGeometry(geo.x ? geo.x : GEO_SCREEN_DEFAULT.x
+		, geo.y ? geo.y : GEO_SCREEN_DEFAULT.y
+		, geo.z ? geo.z : GEO_SCREEN_DEFAULT.z);
 		var btnMesh = new THREE.Mesh( btnGeometry, btnMaterial );
 		
 		btnMesh.name = name;
@@ -438,35 +505,70 @@ var WebRocketApplication = IApplication.$extend(
 
 	},
 	
-	createCubeObj : function(texture, name, initPosition, geo){
+
+	//******************* DOCUMENTATION ************************//
+	// - geo needs to be either list or array 			        //
+	// - texture needs to be either string url or THREE.Texture //
+	// - name is a Three object name for this object            //
+	// - position needs to be array with the keys of x,y, and z //
+	//**********************************************************//
+
+	createCubeObj : function(texture, name, initPosition, attributes){
+		console.log(attributes);
 		if(!texture){
 			console.log("error, no url of texture for the obj");
 			return false;
-		}else if(typeof texture == 'string'){
-			var texture = THREE.ImageUtils.loadTexture(texture, function(error){
-				console.log(this,"image not loaded, error");
+		}else if(typeof texture === 'string'){
+			var texture = THREE.ImageUtils.loadTexture(texture, 
+				function(error){
+					console.log(this,"image not loaded, error");
 			});
 		}	
-		if(typeof name == 'undefined'){
+
+		if(typeof name === 'undefined'){
 			console.log("this obj has given no name");
 			var name = "";
-		}else if(typeof initPosition == 'undefined'){
+		}
+		if(typeof initPosition === 'undefined'){
 			console.log("warning, initial coordinate has not given, will be set as default value: 55, 9, -44");
 			var initPosition = [];
-		}else if(typeof geo == 'undefined'){
-			console.log("warning, initial geometry value has not given, will be set as default value: 2, 2, 2");
-			var geo = [];
 		}
-		var geometry = new THREE.BoxGeometry(geo[0] ? geo[0] : 2, geo[1] ? geo[1] : 2, geo[2] ? geo[2] : 2);
-		console.log(texture);
-		var material = new THREE.MeshLambertMaterial({ map: texture});
-		var cubeMesh = new THREE.Mesh(geometry, material);	
+		if(typeof attributes === 'undefined' || typeof attributes.geo === 'undefined'){
+			console.log("warning, initial geometry value has not given, will be set as default value: 2, 2, 2");
+		}
+
+		var geometry;
+		var material;
+		var cubeMesh;
+
+		if(typeof attributes.geo.x === 'undefined'){
+			geometry = new THREE.BoxGeometry(attributes.geo[0] ? attributes.geo[0] : 2, 
+				attributes.geo[1] ? attributes.geo[1] : 2, 
+				attributes.geo[2] ? attributes.geo[2] : 2);
+		}else{
+			geometry = new THREE.BoxGeometry(attributes.geo.x, 
+				attributes.geo.y, attributes.geo.z);
+		}
+
+		material = new THREE.MeshLambertMaterial({ map: texture});
+		cubeMesh = new THREE.Mesh(geometry, material);	
 		
 		cubeMesh.name = name;
 		cubeMesh.position.x = initPosition.x ? initPosition.x : 55;
 		cubeMesh.position.y = initPosition.y ? initPosition.y : 9;
 		cubeMesh.position.z = initPosition.z ? initPosition.z : -44;
 
+		if(attributes.scale){
+			cubeMesh.scale.set(attributes.scale.x,
+				attributes.scale.y,
+				attributes.scale.z);
+		}
+		if(attributes.rotation){
+			cubeMesh.rotation.set(attributes.rotation.x,
+				attributes.rotation.y,
+				attributes.rotation.z, "XYZ");
+		}
+		console.log(cubeMesh);
 		this.threeMeshGroup.add(cubeMesh);
 		
 		return cubeMesh;
@@ -480,6 +582,7 @@ var WebRocketApplication = IApplication.$extend(
 			USER_VOLUME_ZONE = 0;
 			return;			
 		}	// this can be any float ex) 9.x
+
 		var zoneVal = Math.floor(val/VOLUME_CHANGE_VALUE);
 		//console.log("changer: "+ zoneVal);
 		switch(parseInt(zoneVal)){
@@ -564,6 +667,7 @@ var WebRocketApplication = IApplication.$extend(
 		var x = ent.placeable.transform.pos.x;
 		var y =	ent.placeable.transform.pos.y;
 		var z = ent.placeable.transform.pos.z;
+
 		/** volume control algorithm **/
 		//////////////////////////////////////
 		//			|	   B	 |	  C	 	//
@@ -664,10 +768,8 @@ var WebRocketApplication = IApplication.$extend(
 		var speakerId = this.speakerInfo.speakerInfo[0].generalInfo.id;
 		
 		if(userId == speakerId){
-			//console.log("this user is the speaker");
 			return true;
 		}else{
-			//console.log("this user is not the speaker");
 			return false;
 		}
 	},
@@ -727,13 +829,17 @@ var WebRocketApplication = IApplication.$extend(
         }
 		else if(entityAction.name === _MSG_BROADCAST)
 		{ 
-		// entityAction.parameters[0] -> text
-		// entityAction.parameters[1] -> user name
-		// entityAction.parameters[2] -> user id or null if it's from physical world
+		//************************** Param info **************************************//
+		// entityAction.parameters[0] -> text                                         //
+		// entityAction.parameters[1] -> user name                                    //
+		// entityAction.parameters[2] -> user id or null if it's from physical world  //
+		//****************************************************************************//
 			this.addNewComment(entityAction.parameters[0], entityAction.parameters[1], entityAction.parameters[2]);
 		}
-		// entityAction.parameters[0] -> entity name
-		// entityAction.parameters[1] -> entity id
+		//************** Param info ******************//
+		// entityAction.parameters[0] -> entity name  //
+		// entityAction.parameters[1] -> entity id    //
+		//********************************************//
 		else if(entityAction.name === _MSG_SPEECH_BEGIN)
         {
         	this.ifSentSpeechInfo = true;			// speech info is submitted and accepted
@@ -823,10 +929,8 @@ var WebRocketApplication = IApplication.$extend(
 	
 	onMouseEvent : function(event){
 		// set live coordinate of the mouse
-		var x;
-		var y;
-		this.x = event.x;
-		this.y = event.y;
+		var x = event.x;
+		var y = event.y;
 		
 		if(event.type === "press"){
 			Tundra.events.send(_MSG_MOUSE_PRESS, event);
@@ -869,7 +973,9 @@ var WebRocketApplication = IApplication.$extend(
 					}
 				}else{ 
 				// find vote blocks, will be made a method in a near future		
-				}				
+				}
+				// ** Deplicated ** //
+				/*				
 				// find soapbox
 				if(obj.name == SOAPBOX_NAME){
 					this.setHexValue(obj, 996633);
@@ -882,31 +988,12 @@ var WebRocketApplication = IApplication.$extend(
 						this.setHexValue(this.soapboxObj, 0); // for some reason setHexValueBack() doesn't work
 						//this.setHexValueBack(this.soapbox_obj, 0);  // set back colour of soapbox to normal
 					}
-				}
+				}*/
 				
 				// find other obj if needed
 			}
 		}	
 	},
-	//// not working for some reason
-/* 	onMouseHoverBtn : function(obj){
-		// find mouse hover on voting blocks
-		if(obj.name == 'likeBtn' | obj.name == 'disLikeBtn'){
-			if(obj.name == 'likeBtn'){
-				console.log("im on likeBtn");
-				this.setHexValue(obj, 0x00ff00, "disLikeBtn", this.hexOfBtn2);
-				return;
-			}else if(obj.name == 'disLikeBtn'){
-				console.log("im on disLikeBtn");
-				this.setHexValue(obj, 0xff0000, "likeBtn", this.hexOfBtn1);
-				return;
-			}
-		}else{
-			// set back the colour 
-			this.setHexValueBack("likeBtn", this.hexOfBtn1);
-			this.setHexValueBack("disLikeBtn", this.hexOfBtn2);
-		}		
-	}, */
 	
 	onMousePress : function(event){		
 		var objTargetted;	
@@ -923,7 +1010,7 @@ var WebRocketApplication = IApplication.$extend(
 				var obj = objTargetted[i].object;
 				// user votes
 				this.onMousePressBtn(obj);
-				this.onMousePressSoapbox(obj)
+				//this.onMousePressSoapbox(obj)
 			}
 		}
 		//TODO		
@@ -953,15 +1040,7 @@ var WebRocketApplication = IApplication.$extend(
 			}
 		}		
 	},
-	
-	onMousePressSoapbox : function(obj){
-		// when user press the soapbox
-		if(obj.name == SOAPBOX_NAME){  
-			console.log("soapbox clicked");
-			this.callRegistration(PATH_TO_REGISTRATION);
-		}
-		
-	},
+
 	
 	// user vote on the speaker
 	onVote : function(vote){
@@ -1127,7 +1206,10 @@ var WebRocketApplication = IApplication.$extend(
 		$("dashboard").hide();
 		this.video.pause();
 		this.video.volume = SET_VOLUME_VALUE;
+		// three screens get into waiting mode
 		this.screenMesh.material.map = this.texture_waiting;
+		this.screenSMesh.material.map = this.texture_waiting;
+		this.screenHMesh.material.map = this.texture_waiting;
 		this.setSpeakerInfoDefault();
 		this.setSpeechInfoDefault();
 	},
@@ -1171,9 +1253,7 @@ var WebRocketApplication = IApplication.$extend(
 	},
 	
 	setLoop : function(context){
-		setTimeout(function(){
-			
-			
+		setTimeout(function(){		
 			context.setLoop();
 		}, 1000);
 	},
@@ -1269,6 +1349,8 @@ var WebRocketApplication = IApplication.$extend(
 			if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
 				return;
 			this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			this.videoTextureH.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 		}catch(e){
 			//console.log("video is not ready");
 		}
@@ -1291,7 +1373,6 @@ var WebRocketApplication = IApplication.$extend(
 		//	context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'report' has been updated by physical world
 		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf
 				this.virtual.onstopspeech = function(){
-			console.log("closed.....");
 			context.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, {'signal':1, 'origin':'physical'});
 		}	// stopped speech in physical world
 	},
@@ -1331,6 +1412,8 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
 			// user init with waiting mode
 			this.screenMesh.material.map = this.texture_waiting;
+			this.screenSMesh.material.map = this.texture_waiting;
+			this.screenHMesh.material.map = this.texture_waiting;
 		// if there is a speech going right now
 		}else if(this.isSpeechOn == 1){
 			// init speaker info if exist
@@ -1343,6 +1426,7 @@ var WebRocketApplication = IApplication.$extend(
 			$("dashboard").show();
 		}
 	},
+
 	sendToServer : function() {
         var asString = Tundra.renderer.renderer.domElement.toDataURL();
  
@@ -1390,7 +1474,6 @@ function haejongAsset(asset){
 	entity_hotspot.placeable.setPosition(new THREE.Vector3(70.2041016,7.68280506,-44.3602066));
 	entity_hotspot.placeable.setScale(new THREE.Vector3(1, 1, 1));
 	entity_hotspot.placeable.setRotation(new THREE.Vector3(0, 52, 0));
-	console.log(entity_soapHolder);
 
 }
 
