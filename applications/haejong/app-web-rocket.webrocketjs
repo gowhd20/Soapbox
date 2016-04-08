@@ -273,6 +273,10 @@ var WebRocketApplication = IApplication.$extend(
 			try{
 				//console.log(Tundra.scene.entityByName("Avatar2").placeable.transform.pos.z);
 				//self.sendToServer();
+				//****************************************   testing testing testing
+				var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
+			    window.open(dataUrl, "toDataURL() image", "width=1000, height=1000");
+			    //*******************************************************************
 				self.dynamicVolumeObserver(self.avatarEntity);
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
@@ -330,8 +334,6 @@ var WebRocketApplication = IApplication.$extend(
 			}
 		};
 
-		
-		//console.log(Tundra.renderer.renderer.domElement.toDataURL());
 		/*var ws = new WebSocket("ws://localhost:8889/");
 		    var frame = 0;
 		    var isOpen = false;
@@ -514,7 +516,6 @@ var WebRocketApplication = IApplication.$extend(
 	//**********************************************************//
 
 	createCubeObj : function(texture, name, initPosition, attributes){
-		console.log(attributes);
 		if(!texture){
 			console.log("error, no url of texture for the obj");
 			return false;
@@ -568,7 +569,6 @@ var WebRocketApplication = IApplication.$extend(
 				attributes.rotation.y,
 				attributes.rotation.z, "XYZ");
 		}
-		console.log(cubeMesh);
 		this.threeMeshGroup.add(cubeMesh);
 		
 		return cubeMesh;
@@ -1190,6 +1190,8 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
+		var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
+		window.open(dataUrl, "toDataURL() image", "width=2000, height=2000");
 	},
 	
 	setSpeechEnd : function(infoData){
