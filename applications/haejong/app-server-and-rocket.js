@@ -27,7 +27,6 @@ var _MSG_USER_TELEPORT_REQ 	 	= "MSG_teleport";
 var _MSG_ABORT_SPEECH			= "MSG_abort_speech";
 var _MSG_RELEASE_PENDING 		= "MSG_release_pending";
 
-
 var SET_LOCATION_TO_SPEECH  = {"x":66.12, "y":10, "z":-40.09};
 
 // the location for attempt of on/off speech
@@ -169,8 +168,15 @@ var Server = Class.extend({
     onClientIntroduction : function(){
         var connection = server.ActionSender();
 		var coordinatorInfo;
+		var name = connection.Property("username");
+
         if (connection != null){
-            Log("Client '" + connection.Property("username") + "' with id #" + connection.id + " is ready");
+        	LogInfo(this.Users.checkNameExist(name, connection.id));
+        	if(this.Users.checkNameExist(name, connection.id))
+        		name = connection.Property("username")+connection.id.toString();
+        	else
+        		name = connection.Property("username")
+            Log("Client id #" + connection.id + ", "+name+ " is ready");
 			LogInfo("if speech is?: "+this.isSpeechOn);
 			
 			// assign coordinator if not exist
@@ -178,10 +184,11 @@ var Server = Class.extend({
 				this.Users.selectCoordinator();
 				if(typeof this.speechInfo == 'undefined'){ 
 					// if there is no speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0, "actUserCnt" : this.Users.countUserInVenue};
+					var initParams = {"speechState":this.isSpeechOn, "userName":name, "userId":connection.id 
+					, "like":0, "dislike":0, "actUserCnt" : this.Users.countUserInVenue};
 				}else{ 
 					// if there is a speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
 					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
 					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
 					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
@@ -191,13 +198,14 @@ var Server = Class.extend({
 			}else{
 				if(typeof this.speechInfo == 'undefined'){ 
 					// if there is no speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "like":0, "dislike":0
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
+					, "like":0, "dislike":0
 					, "actUserCnt" : this.Users.countUserInVenue
 					, "coordinatorId":this.Users.coordinatorInfo.id
 					, "coordinatorName":this.Users.coordinatorInfo.name};
 				}else{ 
 					// if there is a speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id
+					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
 					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
 					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
 					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
@@ -264,7 +272,7 @@ var Server = Class.extend({
 				this.tempUserInfoIn.speakerInfo[0].generalInfo.id = 
 				this.Users.getUserIdByEntityName(ent.name);
 				this.tempUserInfoIn.speakerInfo[0].generalInfo.name = 
-				this.Users.getUserInfoById(this.tempUserInfoIn.speakerInfo[0].generalInfo.id);
+				this.Users.getUserNameById(this.tempUserInfoIn.speakerInfo[0].generalInfo.id);
 				// system is waiting for speech information to be filled
 				this.speechSystemPending.signal = 1;
 				this.speechSystemPending.userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id;
@@ -393,10 +401,12 @@ function OnScriptDestroyed(){
 function CommentControl(cmt){
 	var connection = server.ActionSender();
 	var cmt = JSON.parse(cmt);
+
 	if (connection != null){
 		if(cmt.origin == 'virtual'){
-			Log("Client '" + connection.Property("username") + "' with id #" + connection.id +" said-> "+cmt.comment);
-			me.Exec(4, _MSG_BROADCAST, cmt.comment, connection.Property("username"), connection.id);
+			var name = this.Users.getUserNameById(connection.id);
+			Log("Client '" + name + "' with id #" + connection.id +" said-> "+cmt.comment);
+			me.Exec(4, _MSG_BROADCAST, cmt.comment, name, connection.id);
 		}else{
 			Log("Person In physical world '" + cmt.userName+ " said-> "+cmt.comment);
 			me.Exec(4, _MSG_BROADCAST, cmt.comment, cmt.userName);

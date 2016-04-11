@@ -36,8 +36,43 @@ Soapbox.Users = function(){
 
 Soapbox.Users.prototype = {
 	
+	//*********************** Documentation *********************************************//
+	// if any class uses this method at any early stages, I recommend passing id as well //
+	// because of data sync issue 														 //
+	//***********************************************************************************// 
+
+	checkNameExist : function(name, id){
+		var searchingName = name;
+		var cntOnlineUsers = this.userCount;
+		var usrList = this.userInfoList;
+		var myId = id;
+
+		if(typeof id === 'undefined'){
+			for(var i=0;i<cntOnlineUsers;i++){
+				if(usrList[i].name === searchingName){
+					return true;
+				}
+			}
+		}else{
+			// search by sorting out myself from the list
+			for(var i=0;i<cntOnlineUsers;i++){
+				if(usrList[i].id !== myId && usrList[i].name === searchingName){
+					return true;
+				}
+			}
+		}
+		return false;
+	},
+	
 	storeUserData : function(userID, userConnection){
-		var userInfo = {"name":userConnection.Property("username"),"id":userID};
+		var name = userConnection.Property("username");
+		// use name+id when showing on comment dashboard to avoid confusion between virtual users with the same nick name
+		if(this.checkNameExist(name))
+			var userInfo = {"name":name+userID.toString(),
+							"id":userID};
+		else
+			var userInfo = {"name":name,
+							"id":userID};
 		this.userInfoList.push(userInfo);
 		console.LogInfo("user name: "+this.userInfoList[this.userCount].name);
 		console.LogInfo("user id: "+this.userInfoList[this.userCount].id);
@@ -124,10 +159,23 @@ Soapbox.Users.prototype = {
 		return id;
 	},
 	
-	getUserInfoById : function(id){
+	getUserNameById : function(id){
 		var searchingId = id;
 		return this.searchUserById(id);
 		
+	},
+
+	getUserIdByName : function(name){
+		var searchingName = name;
+		var cntOnlineUsers = this.userCount;
+		var usrList = this.userInfoList;
+
+		for(var i=0;i<cntOnlineUsers;i++){
+			if(usrList[i].name == searchingName){
+				return usrList[i].id;
+			}
+		}
+		return false;
 	},
 	
 	isUserAudience : function(userId){

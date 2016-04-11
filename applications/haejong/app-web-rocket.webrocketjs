@@ -64,6 +64,7 @@ var SET_VOLUME_VALUE = 1;
 var USER_VOLUME_ZONE = 0;
 var USER_POSITION_X;
 var USER_POSITION_Z;
+var NUM_FOR_INC_SCREEN_SIZE = 2;
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -89,8 +90,8 @@ var WebRocketApplication = IApplication.$extend(
 		var self = this;
         this.$super("soapbox_virtual");	
 		// user id
-		var userName = Tundra.client.loginProperties.username;
-		var userInfo = {"name" : userName, "id" : "", "avatarName" : ""};
+		//var userName = Tundra.client.loginProperties.username;
+		var userInfo = {"name" : "", "id" : "", "avatarName" : ""};
 
 		//this.initUi(self);
 		var avatarEntity;
@@ -121,7 +122,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.ifSentSpeechInfo = ifSentSpeechInfo;
 		this.speechInfo = speechInfo;
 		this.userInfo = userInfo;
-		console.log(this.userInfo);
 		
 		var ui = new Soapbox.Dashboard();
 		ui.initUi(this);
@@ -155,8 +155,7 @@ var WebRocketApplication = IApplication.$extend(
 		// middleware instance
 		var virtual = new Virtual();
 		this.virtual = virtual;	
-		var audience = new Audience();
-		this.audience = audience;
+
 		
 		virtual.connect(function(){
 			virtual.register();
@@ -274,8 +273,8 @@ var WebRocketApplication = IApplication.$extend(
 				//console.log(Tundra.scene.entityByName("Avatar2").placeable.transform.pos.z);
 				//self.sendToServer();
 				//****************************************   testing testing testing
-				var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
-			    window.open(dataUrl, "toDataURL() image", "width=1000, height=1000");
+				//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
+			    //window.open(dataUrl, "toDataURL() image", "width=1000, height=1000");
 			    //*******************************************************************
 				self.dynamicVolumeObserver(self.avatarEntity);
 				self.userJoinedVenue(self.avatarEntity);
@@ -423,7 +422,7 @@ var WebRocketApplication = IApplication.$extend(
 	
 	// change size of the screen accordingly to the number of users in the venue
 	changeScreenSize : function(numOfUsers){
-		if(numOfUsers >= 1){
+		if(numOfUsers >= NUM_FOR_INC_SCREEN_SIZE){
 			// the value here will be pre-defined later
 			this.screenMesh.scale.set(0.01, 4, 4);
 			this.screenSMesh.scale.set(0.01, 4, 4);
@@ -1178,6 +1177,9 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(obj);
 		// set video texture 
 		this.screenMesh.material.map = this.videoTexture;
+		//*********************************************//
+		// other screens should play at this point too //
+		//*********************************************//
 		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
@@ -1190,8 +1192,6 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
-		var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
-		window.open(dataUrl, "toDataURL() image", "width=2000, height=2000");
 	},
 	
 	setSpeechEnd : function(infoData){
@@ -1210,8 +1210,8 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.volume = SET_VOLUME_VALUE;
 		// three screens get into waiting mode
 		this.screenMesh.material.map = this.texture_waiting;
-		this.screenSMesh.material.map = this.texture_waiting;
-		this.screenHMesh.material.map = this.texture_waiting;
+		//this.screenSMesh.material.map = this.texture_waiting;
+		//this.screenHMesh.material.map = this.texture_waiting;
 		this.setSpeakerInfoDefault();
 		this.setSpeechInfoDefault();
 	},
@@ -1351,8 +1351,8 @@ var WebRocketApplication = IApplication.$extend(
 			if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
 				return;
 			this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;
-			this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
-			this.videoTextureH.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			//this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			//this.videoTextureH.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 		}catch(e){
 			//console.log("video is not ready");
 		}
@@ -1370,9 +1370,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.virtual.onreceivedislikes = function(dislikes){
 			voteInfo.vote = 0;
 			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'dislike' has been updated by physical world
-		//this.virtual.onreceivereports = function(reports){
-		//	voteInfo.vote = -1;
-		//	context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'report' has been updated by physical world
 		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf
 				this.virtual.onstopspeech = function(){
 			context.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, {'signal':1, 'origin':'physical'});
@@ -1383,6 +1380,7 @@ var WebRocketApplication = IApplication.$extend(
 	initParams : function(initObj){
 		console.log("current speech state: "+initObj.speechState);
 		this.isSpeechOn = initObj.speechState; 					// init speech state
+		this.userInfo.name = initObj.userName;					// given user name
 		this.userInfo.id = initObj.userId;						// user id issued by server
 		this.userInfo.avatarName = "Avatar" + initObj.userId;   // user avatar entity name
 		var actUserCnt = initObj.actUserCnt;					// users count who are possibly watching the speech
@@ -1390,8 +1388,10 @@ var WebRocketApplication = IApplication.$extend(
 		if(initObj.coordinatorId){
 			this.coordinatorInfo.id = initObj.coordinatorId;
 			this.coordinatorInfo.name = initObj.coordinatorName;
+			console.log("coordinator info:");
 			console.log(this.coordinatorInfo);
 		}
+		console.log("user info: ");
 		console.log(this.userInfo);
 		console.log("active user count: "+ actUserCnt);
 		
@@ -1414,8 +1414,8 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
 			// user init with waiting mode
 			this.screenMesh.material.map = this.texture_waiting;
-			this.screenSMesh.material.map = this.texture_waiting;
-			this.screenHMesh.material.map = this.texture_waiting;
+			//this.screenSMesh.material.map = this.texture_waiting;
+			//this.screenHMesh.material.map = this.texture_waiting;
 		// if there is a speech going right now
 		}else if(this.isSpeechOn == 1){
 			// init speaker info if exist
@@ -1423,6 +1423,9 @@ var WebRocketApplication = IApplication.$extend(
 			,{"entityInfo":{"entityName" : initObj.speakerEntityName, "entityId" : initObj.speakerEntityId}}]};
 			// set video texture 
 			this.screenMesh.material.map = this.videoTexture;
+			//*********************************************//
+			// other screens should play at this point too //
+			//*********************************************//
 			// init current like/dislike state sent from server
 			this.refreshVote(initObj.like, initObj.dislike);
 			$("dashboard").show();
