@@ -67,6 +67,8 @@ Soapbox.Users.prototype = {
 	storeUserData : function(userID, userConnection){
 		var name = userConnection.Property("username");
 		// use name+id when showing on comment dashboard to avoid confusion between virtual users with the same nick name
+		// @Note, this won't make any changes to user names in meshmoon system thus, developer may need to be careful always
+		// about names logged in console
 		if(this.checkNameExist(name))
 			var userInfo = {"name":name+userID.toString(),
 							"id":userID};
