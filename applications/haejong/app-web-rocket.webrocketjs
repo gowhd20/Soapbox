@@ -137,26 +137,29 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.autoplay = true;
 		this.video.loop = true;
 
-		var videoS = document.createElement('video_soapbox');
+		var videoS = document.createElement('video');
 		this.videoS = videoS;
 		this.videoS.width = 320;
 		this.videoS.height = 240;
 		this.videoS.autoplay = true;
 		this.videoS.loop = true;
 
-		var videoH = document.createElement('video_hotspot');
+		var videoH = document.createElement('video');
 		this.videoH = videoH;
 		this.videoH.width = 320;
 		this.videoH.height = 240;
 		this.videoH.autoplay = true;
 		this.videoH.loop = true;
+		console.log(this);
 		
 		/***********configure with middleware******************/
 		// middleware instance
 		var virtual = new Virtual();
 		this.virtual = virtual;	
 
-		
+        console.log(self.videoS);
+        console.log(self.video);
+
 		virtual.connect(function(){
 			virtual.register();
 			// callback, when speech started in physical world
@@ -164,18 +167,35 @@ var WebRocketApplication = IApplication.$extend(
 				// behaviour for the coordinator - notify the meshmoon server about speech info from physical soapbox
 				if(self.isCoordinatorMe()){
 					console.log(speech_info);
-					var speechInfoValues = {"name":speech_info.speaker, "title":speech_info.topic, 
-					"description":"", "startTime":speech_info.starttime, "origin":"physical"};	// lefttime == startTime
+
+					var speechInfoValues = {
+						"name":speech_info.speaker, 
+						"title":speech_info.topic, 
+						"description":"", 
+						"startTime":speech_info.starttime, 
+						"origin":"physical"
+					};	// lefttime == startTime
+
 					self.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechInfoValues);
 				}
 				
 				//self.promptSpeechMsg(1);	// call at last
 			} 
 		});
+
 		virtual.setup(video);
-		
+
+		// video feed from hotspot, might not be only one which would have predeteremined
+		virtual.onaddhotspotstream = function(event) {
+	        //Should assign it based on your logics
+
+	        self.videoS.src = URL.createObjectURL(event.stream);
+	        console.log(self.videoS);
+	        console.log(self.video);
+	        console.log("onaddhot");
+	    }
 		//handled by middleware when user is logging out
-		//onbeforeunload = function(){virtual.unregister();};
+		onbeforeunload = function(){virtual.unregister();};
 			
 		/**************************************************/
 		
@@ -195,10 +215,12 @@ var WebRocketApplication = IApplication.$extend(
 		// textures
 		// texture init with waiting mode
 		tex = THREE.ImageUtils.loadTexture("./localAssets/like.jpg");
+
 		texture_waiting = THREE.ImageUtils.loadTexture("./localAssets/waiting.jpg", 
 			function(error){
 			console.log(this,"image not loaded, error");
 		});
+
 		this.texture_waiting = texture_waiting;
 		
 		////////////////////////////////////
@@ -219,7 +241,7 @@ var WebRocketApplication = IApplication.$extend(
 			{"geo":GEO_SCREEN_DEFAULT,"rotation":{"x":0,"y":-0.6,"z":0}});
 		this.screenSMesh = screenSMesh;
 
-		var screenHMesh = this.createCubeObj(this.videoTextureS, 
+		var screenHMesh = this.createCubeObj(this.videoTextureH, 
 			"video_hotspot_screen", 
 			POSITION_SCREEN_HOTSPOT, 
 			{"geo":GEO_SCREEN_DEFAULT,"rotation":{"x":0,"y":0.6,"z":0}});
@@ -1043,7 +1065,10 @@ var WebRocketApplication = IApplication.$extend(
 	
 	// user vote on the speaker
 	onVote : function(vote){
-		var voteInfo = {"vote":vote, "origin":"virtual"};
+		var voteInfo = {
+			"vote":vote, 
+			"origin":"virtual"
+		};
 		this.toVote = 0;
 
 		if(vote==1){
@@ -1070,7 +1095,7 @@ var WebRocketApplication = IApplication.$extend(
 			if (confirm("A speech is about to begin! Click 'ok' to teleport to the venue") == true) {
 				this.onClickTeleport();
 				this.video.volume = 1;
-			} else {}
+			}
 			// action = 2 -> speech trigger and end related action
 		}else if(action == 2){
 			console.log("server noticed speaker tries to leave the soapbox");
@@ -1138,10 +1163,12 @@ var WebRocketApplication = IApplication.$extend(
 			}catch(err){
 				console.log("no emissive value on this object");
 			}
+
 		}else if(typeof nearObj == "string"){
 			obj.material.emissive.setHex(toHexValue);
 			var secondObj = this.threeMeshGroup.getObjectByName(nearObj);
 			secondObj.material.emissive.setHex(toHexValueSec);
+
 		}else{
 			obj.material.emissive.setHex(toHexValue);
 			nearObj.material.emissive.setHex(toHexValueSec);
@@ -1151,9 +1178,11 @@ var WebRocketApplication = IApplication.$extend(
 	setHexValueBack : function(obj, toHexValue){	
 		if(typeof obj == 'undefined'){
 			return false; 
+
 		}else if(typeof obj == "string"){
 			var obj = this.threeMeshGroup.getObjectByName(obj);
 			obj.material.emissive.setHex(toHexValue);
+
 		}else{
 			obj.material.emissive.setHex(toHexValue);
 		}
@@ -1177,6 +1206,7 @@ var WebRocketApplication = IApplication.$extend(
 		console.log(obj);
 		// set video texture 
 		this.screenMesh.material.map = this.videoTexture;
+		this.screenSMesh.material.map = this.videoTextureS;
 		//*********************************************//
 		// other screens should play at this point too //
 		//*********************************************//
@@ -1192,6 +1222,10 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
+
+		console.log(this.videoTexture);
+		console.log(this.videoTextureH);
+		console.log(this.videoTextureS);
 	},
 	
 	setSpeechEnd : function(infoData){
@@ -1210,7 +1244,7 @@ var WebRocketApplication = IApplication.$extend(
 		this.video.volume = SET_VOLUME_VALUE;
 		// three screens get into waiting mode
 		this.screenMesh.material.map = this.texture_waiting;
-		//this.screenSMesh.material.map = this.texture_waiting;
+		this.screenSMesh.material.map = this.texture_waiting;
 		//this.screenHMesh.material.map = this.texture_waiting;
 		this.setSpeakerInfoDefault();
 		this.setSpeechInfoDefault();
@@ -1279,7 +1313,6 @@ var WebRocketApplication = IApplication.$extend(
 				// speech started
 				context.virtual.start(blob, context.speechInfo);
 				console.log("i am the speaker");
-				console.log(video);
 				video.play();
 			},
 			function(error)
@@ -1299,7 +1332,7 @@ var WebRocketApplication = IApplication.$extend(
 			{
 				video.src = window.URL.createObjectURL(blob);
 				if(context.isSpeakerMe()){
-					video.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
+					videoS.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
 				//var startTime = current_time_string(); 		//Example: "21/02/2016 12:05"
@@ -1335,6 +1368,7 @@ var WebRocketApplication = IApplication.$extend(
 				console.log("you are in !!!!!");
 				//ent.dispatchEvent(test);
 			}
+
 		}else{
 			if(this.isUserInTheVenue == 1){
 				this.isUserInTheVenue = 0;
@@ -1348,10 +1382,11 @@ var WebRocketApplication = IApplication.$extend(
 
 	videoTextureUpdate : function(){
 		try{
-			if(this.video.readyState !== this.video.HAVE_ENOUGH_DATA)
-				return;
-			this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;
-			//this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			if(this.video.readyState == this.video.HAVE_ENOUGH_DATA)
+				this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+
+			//if(this.videoS.readyState == this.videoS.HAVE_ENOUGH_DATA)
+				//this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 			//this.videoTextureH.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 		}catch(e){
 			//console.log("video is not ready");
@@ -1360,18 +1395,32 @@ var WebRocketApplication = IApplication.$extend(
 	
 	initMiddlewareCallbacks : function(context){
 		console.log("callbacks for middleware registered");
-		var voteInfo = {"vote":"", "origin":"physical"};
+		var voteInfo = {
+			"vote":"", 
+			"origin":"physical"
+		};
 		//Register callbacks for speaker/coordinator
 		this.virtual.onreceivecomment = function(username, comment) {
-			context.entity.exec(EntityAction.Server, _MSG_COMMENTS, {"userName":username, "comment":comment, "origin":"physical"});};
+			context.entity.exec(EntityAction.Server, _MSG_COMMENTS, {
+				"userName":username, 
+				"comment":comment, 
+				"origin":"physical"
+			});
+		};
+
 		this.virtual.onreceivelikes = function(likes){
-			voteInfo.vote = 1;
-			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'like' has been updated by physical world
+				voteInfo.vote = 1;
+				context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);
+			};	// count on 'like' has been updated by physical world
+
 		this.virtual.onreceivedislikes = function(dislikes){
-			voteInfo.vote = 0;
-			context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);};	// count on 'dislike' has been updated by physical world
+				voteInfo.vote = 0;
+				context.entity.exec(EntityAction.Server, _MSG_VOTE, voteInfo);
+			};	// count on 'dislike' has been updated by physical world
+
 		this.virtual.onreceivecurrentusers = function(users){};  		//TODO - using online and offline in virtual to handle this inf
-				this.virtual.onstopspeech = function(){
+
+		this.virtual.onstopspeech = function(){
 			context.entity.exec(EntityAction.Server, _MSG_SPEECH_END_REQUEST, {'signal':1, 'origin':'physical'});
 		}	// stopped speech in physical world
 	},
@@ -1391,6 +1440,7 @@ var WebRocketApplication = IApplication.$extend(
 			console.log("coordinator info:");
 			console.log(this.coordinatorInfo);
 		}
+
 		console.log("user info: ");
 		console.log(this.userInfo);
 		console.log("active user count: "+ actUserCnt);
@@ -1406,6 +1456,7 @@ var WebRocketApplication = IApplication.$extend(
 			this.avatarEntity = Tundra.scene.entityByName(this.userInfo.avatarName);
 			this.avatarEntity.onEntityAction(this, this.onEntityAction);
 			console.log(this.avatarEntity);
+			
 		}catch(e){
 			console.log("Warning!!!, your avatar may not be able to trigger the speech");
 		}
@@ -1414,15 +1465,30 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
 			// user init with waiting mode
 			this.screenMesh.material.map = this.texture_waiting;
-			//this.screenSMesh.material.map = this.texture_waiting;
+			this.screenSMesh.material.map = this.texture_waiting;
 			//this.screenHMesh.material.map = this.texture_waiting;
 		// if there is a speech going right now
 		}else if(this.isSpeechOn == 1){
 			// init speaker info if exist
-			this.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : initObj.speakerName, "id" : initObj.speakerId}}
-			,{"entityInfo":{"entityName" : initObj.speakerEntityName, "entityId" : initObj.speakerEntityId}}]};
+			this.speakerInfo = 
+			{
+				"speakerInfo":[
+				{
+					"generalInfo":
+					{
+						"name" : initObj.speakerName, "id" : initObj.speakerId
+					}
+				},
+				{
+					"entityInfo":
+					{
+						"entityName" : initObj.speakerEntityName, "entityId" : initObj.speakerEntityId
+					}
+				}
+				]};
 			// set video texture 
 			this.screenMesh.material.map = this.videoTexture;
+			this.screenSMesh.material.map = this.videoTextureS;
 			//*********************************************//
 			// other screens should play at this point too //
 			//*********************************************//

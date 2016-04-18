@@ -55,7 +55,9 @@ var Server = Class.extend({
 		var tempUserInfoIn;		// user who attempted to begin the speech
 		var tempUserInfoOut;	// user who attempted to end the speech
 		var isSpeechInfoGiven = 0;	// flag for checking if speech info is given before trigger the speech
-		var speechSystemPending = {"signal":0, "userId":"", "entityId":""};
+		var speechSystemPending = {
+			"signal":0, "userId":"", "entityId":""
+		};
 		
 		this.speakerInfo = speakerInfo;
 		this.Users = Users;
@@ -106,25 +108,31 @@ var Server = Class.extend({
 			var userName;
 			if(typeof this.tempUserInfoIn === 'undefined'){
 				LogInfo("user in info is not set");
+
 			}else{
 				userName = this.tempUserInfoIn.speakerInfo[0].generalInfo.name?this.tempUserInfoIn.speakerInfo[0].generalInfo.name:"null";
 				userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id?this.tempUserInfoIn.speakerInfo[0].generalInfo.id:"null";
 				LogInfo("System triggered by? "+userName+" id? "+userId);
 			}
+
 			if(typeof this.tempUserInfoOut === 'undefined'){
 				LogInfo("user out info is not set");
+
 			}else{
 				userName = this.tempUserInfoOut.speakerInfo[0].generalInfo.name?this.tempUserInfoOut.speakerInfo[0].generalInfo.name:"null";
 				userId = this.tempUserInfoOut.speakerInfo[0].generalInfo.id?this.tempUserInfoOut.speakerInfo[0].generalInfo.id:"null";
 				LogInfo("System ended by? "+userName+" id? "+userId);
 			}
+
 			if(typeof this.speakerInfo === 'undefined'){
 				LogInfo("speaker is not defined");
+
 			}else{
 				userName = this.speakerInfo.speakerInfo[0].generalInfo.name?this.speakerInfo.speakerInfo[0].generalInfo.name:"null";
 				userId = this.speakerInfo.speakerInfo[0].generalInfo.id?this.speakerInfo.speakerInfo[0].generalInfo.id:"null";
 				LogInfo("Speaker is? "+userName+" id? "+userId);
 			}
+
 		}catch(e){
 			Log("Error, one or more system info not exist");
 		}
@@ -150,15 +158,26 @@ var Server = Class.extend({
 		}
 		// This will secure a speaker log off without completing the speech
 		// Handled by server to terminate the speech automatically 
-		if(typeof this.speakerInfo == 'undefiend'){Log("Client #" + connection.id + " disconnected");return;}
+		if(typeof this.speakerInfo == 'undefiend'){
+			Log("Client #" + connection.id + " disconnected");return;
+		}
+
 		else if(this.isSpeechOn == 1){
+
 			if(typeof this.speakerInfo.speakerInfo == 'undefined'){
 				LogInfo("speaker was not defined");
 			}
+
 			if(this.speakerInfo.speakerInfo[0].generalInfo.id == connection.id){
-				LogInfo("speaker logged out during the speech, speaker id: "+this.speakerInfo.speakerInfo[0].generalInfo.id+
+				LogInfo("speaker logged out during the speech, speaker id: "+
+					this.speakerInfo.speakerInfo[0].generalInfo.id+
 				" "+connection.id+" logged out");
-				this.offSpeechTerminated({"origin":"virtual", "signal":1});
+
+				this.offSpeechTerminated(
+					{
+						"origin":"virtual", 
+						"signal":1
+					});
 			}
 		}
         Log("Client #" + connection.id + " disconnected");
@@ -172,8 +191,10 @@ var Server = Class.extend({
 
         if (connection != null){
         	LogInfo(this.Users.checkNameExist(name, connection.id));
+
         	if(this.Users.checkNameExist(name, connection.id))
         		name = connection.Property("username")+connection.id.toString();
+
         	else
         		name = connection.Property("username")
             Log("Client id #" + connection.id + ", "+name+ " is ready");
@@ -182,37 +203,59 @@ var Server = Class.extend({
 			// assign coordinator if not exist
 			if(this.Users.coordinatorInfo.id == ""){
 				this.Users.selectCoordinator();
+
 				if(typeof this.speechInfo == 'undefined'){ 
 					// if there is no speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userName":name, "userId":connection.id 
-					, "like":0, "dislike":0, "actUserCnt" : this.Users.countUserInVenue};
+					var initParams = {
+						"speechState":this.isSpeechOn, 
+						"userName":name, "userId":connection.id, 
+						"like":0, "dislike":0, 
+						"actUserCnt" : this.Users.countUserInVenue
+					};
+
 				}else{ 
 					// if there is a speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
-					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
-					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
-					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
-					, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
-					, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName};
+					var initParams = {
+						"speechState":this.isSpeechOn, 
+						"userId":connection.id, 
+						"userName":name,
+						"like":this.speechInfo[this.speechCnt-1].like, 
+						"dislike":this.speechInfo[this.speechCnt-1].dislike,
+						"actUserCnt":this.Users.countUserInVenue, 
+						"speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id,
+						"speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name,
+						"speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId,
+						"speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName
+					};
 				}
 			}else{
 				if(typeof this.speechInfo == 'undefined'){ 
 					// if there is no speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
-					, "like":0, "dislike":0
-					, "actUserCnt" : this.Users.countUserInVenue
-					, "coordinatorId":this.Users.coordinatorInfo.id
-					, "coordinatorName":this.Users.coordinatorInfo.name};
+					var initParams = {
+						"speechState":this.isSpeechOn, 
+						"userId":connection.id, 
+						"userName":name,
+						"like":0, "dislike":0,
+						"actUserCnt" : this.Users.countUserInVenue,
+						"coordinatorId":this.Users.coordinatorInfo.id,
+						"coordinatorName":this.Users.coordinatorInfo.name
+					};
 				}else{ 
 					// if there is a speech going on right now
-					var initParams = {"speechState":this.isSpeechOn, "userId":connection.id, "userName":name
-					, "like":this.speechInfo[this.speechCnt-1].like, "dislike":this.speechInfo[this.speechCnt-1].dislike
-					, "actUserCnt":this.Users.countUserInVenue, "speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id
-					, "speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name
-					, "speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId
-					, "speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName
-					, "coordinatorId":this.Users.coordinatorInfo.id
-					, "coordinatorName":this.Users.coordinatorInfo.name};
+					var initParams = {
+						"speechState":this.isSpeechOn, 
+						"userId":connection.id, 
+						"userName":name,
+						"like":this.speechInfo[this.speechCnt-1].like, 
+						"dislike":this.speechInfo[this.speechCnt-1].dislike,
+						"actUserCnt":this.Users.countUserInVenue, 
+						"speakerId":this.speakerInfo.speakerInfo[0].generalInfo.id,
+						"speakerName":this.speakerInfo.speakerInfo[0].generalInfo.name,
+						"speakerEntityId":this.speakerInfo.speakerInfo[1].entityInfo.entityId,
+						"speakerEntityName":this.speakerInfo.speakerInfo[1].entityInfo.entityName,
+						"coordinatorId":this.Users.coordinatorInfo.id,
+						"coordinatorName":this.Users.coordinatorInfo.name
+					};
 				}
 			}
 			// message send back to client with speech info
@@ -229,16 +272,20 @@ var Server = Class.extend({
 		// speech info is given
 		/* server prepare the speech */
 		var speechData = JSON.parse(params);
+
 		if(speechData.origin === 'virtual'){	// virtual user 
 			this.releasePending();				// pending removed
+
 			LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);
 			LogInfo("Speaker provides speech info and the system now triggers the speech");
+
 			this.isSpeechInfoGiven = 1;
 			TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
 			LogInfo("speech title: "+speechData.title);
 			//LogInfo(this.tempUserInfoIn);
 			SpeechControl(this, this.tempUserInfoIn, speechData, 1);
 			this.callSystemStatus();
+
 		}else{		// physical user
 			LogInfo("speaker in physical world provides speech info and the system now triggers the speech");
 			this.isSpeechInfoGiven = 1;
@@ -256,11 +303,14 @@ var Server = Class.extend({
 		// if already a speech is ongoing, keep everybody else away from soapbox except speaker
 		// this will protect system from small bugs caused by unexpected situations
 		if(this.isSpeechOn === 1 & typeof this.speakerInfo !== 'undefined'){
+
 			if(this.speakerInfo.speakerInfo[1].entityInfo.entityId != this.tempUserInfoIn.speakerInfo[1].entityInfo.entityId){
 				TeleportReq(this.tempUserInfoIn.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
 				return false;
 			}
+
 		}else{
+
 			if(this.isSpeechInfoGiven == 0 & this.isSpeechOn == 0){
 				// if user who prompted pending tries it over again, this will sort out  
 				if(this.speechSystemPending.entityId === ent.id){
@@ -280,7 +330,8 @@ var Server = Class.extend({
 				LogInfo("Server pending signal= "+this.speechSystemPending.signal+" for "+this.speechSystemPending.userId);				
 				// send confirmation to the requester whether to begin the speech
 				ent.Exec(4, _MSG_SPEECH_BEGIN_REQUEST);
-			}else {}
+
+			}
 		}
 		this.callSystemStatus();
 	},
@@ -288,12 +339,17 @@ var Server = Class.extend({
 	// speech terminated
 	offSpeechTerminated : function(reply){
 		var action;
+
 		if(typeof reply === 'string')
 			action = JSON.parse(reply);
+
 		else
 			action = reply;
+
 		LogInfo(action)
+
 		if(action.origin === 'virtual'){
+
 			if(this.isSpeechInfoGiven == 1 & action.signal == 1){
 				/* singal to peers that speech ended */
 				LogInfo("Speech end request has been approved by speech. System terminates the speech ");
@@ -315,15 +371,19 @@ var Server = Class.extend({
 					//	TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
 					//}
 					TeleportReq(this.speakerInfo.speakerInfo[1].entityInfo.entityName, SET_STAY_OUT_SPEECH);
+
 				}catch(e){
 					LogInfo("Speaker appears terminated speech irregular fashion");
 				}
+
 			}else if(action == 0){
 				// end attempt was by mistake
 				// keep the speech running and return the speaker to the right position
 				TeleportReq(this.tempUserInfoOut.speakerInfo[1].entityInfo.entityName, SET_STAY_ON_SPEECH);
 			}
+
 		}else{
+
 			if(this.isSpeechInfoGiven === 1 & action.signal === 1){
 				/* singal to peers that speech ended */
 				LogInfo("Speech end request has been issued by physical world, System terminates the speech");
@@ -349,22 +409,38 @@ var Server = Class.extend({
 		if(typeof this.speakerInfo === 'undefined'){
 			return;
 		}
+
 		if(ent.id == this.speakerInfo.speakerInfo[1].entityInfo.entityId){
 			// if speech info was given and the speaker attempt to end the speech
 			// ask speaker for a confirmation
 			LogInfo("Speaker attempted to end the speech, speech state: "+this.isSpeechOn);
+
 			if(this.isSpeechInfoGiven == 1){
 				var speakerId = this.Users.getUserIdByEntityName(ent.name);
-				var speakerName = this.Users.getUserInfoById(speakerId);
-				
+				//var speakerName = this.Users.getUserInfoById(speakerId);
+				var speakerName = this.Users.getUserNameById(speakerId);
 				// save user info who try to leave the speech in the middle way
-				this.tempUserInfoOut = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}
-				,{"entityInfo":{"entityName" : ent.name, "entityId" : ent.id}}]};
+				this.tempUserInfoOut = {
+					"speakerInfo":[
+					{
+						"generalInfo":
+						{
+							"name" : speakerName, 
+							"id" : speakerId
+						}
+					},
+					{
+						"entityInfo":
+						{
+							"entityName" : ent.name, 
+							"entityId" : ent.id
+						}
+					}]};
 				
 				// send confirmation to the requestor whether it should end the speech
 				ent.Exec(4, _MSG_SPEECH_END_REQUEST);
 			}
-		}else {}
+		}
 		this.callSystemStatus();
 	},
 	
@@ -428,27 +504,56 @@ function SpeechAddInfo(context, speechId, speechData, name, id, like, dislike, r
 	if(speechData.origin === 'virtual'){
 		if(typeof self.speechInfo == "undefined"){
 			self.speechInfo = [];
-			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-			"userName":name, "userId":id, "like":like, 
-			"dislike":dislike, "report":report}; // name id undefiend
+			var info = {
+				"speechId":speechId, 
+				"speechTitle":speechData.title, 
+				"description":speechData.description,
+				"userName":name, 
+				"userId":id, 
+				"like":like, 
+				"dislike":dislike, 
+				"report":report
+			}; // name id undefiend
 			self.speechInfo.push(info);
+
 		}else{
-			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-			"userName":name, "userId":id, "like":like, 
-			"dislike":dislike, "report":report};
-			self.speechInfo.push(info);
+			var info = {
+				"speechId":speechId, 
+				"speechTitle":speechData.title, 
+				"description":speechData.description,
+				"userName":name, 
+				"userId":id, 
+				"like":like, 
+				"dislike":dislike, 
+				"report":report
+			};
+				self.speechInfo.push(info);
 		}
 	}else{
 		if(typeof self.speechInfo == "undefined"){
 			self.speechInfo = [];
-			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-			"userName":speechData.name, "userId":"", "like":like, 
-			"dislike":dislike, "report":report}; // name id undefiend
+			var info = {
+				"speechId":speechId, 
+				"speechTitle":speechData.title, 
+				"description":speechData.description,
+				"userName":speechData.name, 
+				"userId":"", 
+				"like":like, 
+				"dislike":dislike, 
+				"report":report
+				}; // name id undefiend
 			self.speechInfo.push(info);
 		}else{
-			var info = {"speechId":speechId, "speechTitle":speechData.title, "description":speechData.description,
-			"userName":speechData.name, "userId":id, "like":like, 
-			"dislike":dislike, "report":report};
+			var info = {
+				"speechId":speechId, 
+				"speechTitle":speechData.title, 
+				"description":speechData.description,
+				"userName":speechData.name, 
+				"userId":id, 
+				"like":like, 
+				"dislike":dislike, 
+				"report":report
+			};
 			self.speechInfo.push(info);
 		}
 	}
@@ -514,17 +619,35 @@ function SpeechControl(context, tempInfo, speechGivenInfo, action){
 				LogInfo("speech begins by " + speakerName + " id: "+ speakerId);
 				SpeechAddInfo(self, self.speechCnt, speechGivenInfo, speakerName, speakerId, 0, 0, 0);   // speechId, name, id, like, dislike, report // add speech info
 				self.isSpeechOn = 1; 	// set speech is now on
-				self.speakerInfo = {"speakerInfo":[{"generalInfo":{"name" : speakerName, "id" : speakerId}}		// set speaker info
-				,{"entityInfo":{"entityName" : entName, "entityId" : entId}}]};
+
+				// set speaker info
+				self.speakerInfo = {
+				"speakerInfo":[
+				{
+					"generalInfo":
+					{
+						"name" : speakerName, "id" : speakerId
+					}
+				},		
+				{
+					"entityInfo":
+					{
+						"entityName" : entName, 
+						"entityId" : entId
+					}
+				}
+				]};
 				me.Exec(4, _MSG_SPEECH_BEGIN, JSON.stringify(self.speakerInfo));
 			}
 		// action to end the speech
 		}else if(action == 0){
+			
 			try{
 				if(speakerId == self.speakerInfo.speakerInfo[0].generalInfo.id){
 					// when speech is off, tried to start speech
 					self.isSpeechOn = 0;			
-					console.LogInfo("speech ends by name: " + self.speakerInfo.speakerInfo[0].generalInfo.name);
+					console.LogInfo("speech ends by name: " + 
+						self.speakerInfo.speakerInfo[0].generalInfo.name);
 					me.Exec(4, _MSG_SPEECH_END, JSON.stringify(self.speakerInfo));
 
 					self.speakerInfo.speakerInfo[0].generalInfo.name = "";
@@ -535,6 +658,7 @@ function SpeechControl(context, tempInfo, speechGivenInfo, action){
 				}else{
 					LogInfo("speaker name doesn't match with end attempt entity");
 				}
+
 			}catch(e){
 				console.LogInfo("exception, undefined speaker attempted to end speech");
 			}
@@ -550,7 +674,9 @@ function TeleportReq(entName, setLocation){
 	if(typeof entName == 'undefined'){
 		LogInfo("Entity name user sent is not valid, can't teleport the user");
 		return false;
+
 	}else if(typeof setLocation.x == 'undefined'){
+
 		try{
 			LogInfo("location set as default ");
 			var ent = scene.GetEntityByName(entName);
@@ -560,10 +686,12 @@ function TeleportReq(entName, setLocation){
 			transform.pos.y = SET_LOCATION_TO_SPEECH.y;
 			transform.pos.z = SET_LOCATION_TO_SPEECH.z;
 			placeable.transform = transform;
+
 		}catch(e){
 			LogInfo("Entity not exist");
 		}
 	}else{
+
 		try{
 			var ent = scene.GetEntityByName(entName);
 			var placeable = ent.placeable;
@@ -572,6 +700,7 @@ function TeleportReq(entName, setLocation){
 			transform.pos.y = setLocation.y;
 			transform.pos.z = setLocation.z;
 			placeable.transform = transform;
+
 		}catch(e){
 			LogInfo("Entity not exist");
 		}
@@ -587,9 +716,11 @@ function VoteControl(vote){
 		if(voteInfo.vote == 1){
 			this.speechInfo[id].like = this.speechInfo[id].like+1;
 			me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+
 		}else if(voteInfo.vote == 0){
 			this.speechInfo[id].dislike = this.speechInfo[id].dislike+1;
 			me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+
 		}else if(voteInfo.vote < 0){
 			this.speechInfo[id].report = this.speechInfo[id].report+1;
 		}
@@ -608,9 +739,11 @@ function VoteControl(vote){
 		if(voteInfo.vote == 1){
 			this.speechInfo[id].like = this.speechInfo[id].like+1;
 			me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+
 		}else if(voteInfo.vote == 0){
 			this.speechInfo[id].dislike = this.speechInfo[id].dislike+1;
 			me.Exec(4, _MSG_VOTE, this.speechInfo[id].like, this.speechInfo[id].dislike);
+
 		}else if(voteInfo.vote < 0){
 			this.speechInfo[id].report = this.speechInfo[id].report+1;
 		}
