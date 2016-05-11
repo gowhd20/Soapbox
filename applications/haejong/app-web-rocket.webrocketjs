@@ -66,6 +66,8 @@ var USER_POSITION_X;
 var USER_POSITION_Z;
 var NUM_FOR_INC_SCREEN_SIZE = 2;
 
+var ISSPEAKERME = false;
+
 var WebRocketApplication = IApplication.$extend(
 {
     __init__ : function()
@@ -298,6 +300,10 @@ var WebRocketApplication = IApplication.$extend(
 				//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
 			    //window.open(dataUrl, "toDataURL() image", "width=1000, height=1000");
 			    //*******************************************************************
+			    if(self.isSpeechOn){
+					self.ws.send(Tundra.renderer.renderer.domElement.toDataURL("video/mp4", 0.5))
+
+				}
 				self.dynamicVolumeObserver(self.avatarEntity);
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
@@ -355,23 +361,37 @@ var WebRocketApplication = IApplication.$extend(
 			}
 		};
 
-		/*var ws = new WebSocket("ws://localhost:8889/");
-		    var frame = 0;
-		    var isOpen = false;
-		    ws.onopen = function(e) {
-		        console.log('opening');
-		        isOpen = true;
-		    };
-		    ws.onclose = function(e) {
-		        console.log('closing');
-		        console.log(e);
-		        isOpen = false;
-		    };
-		    ws.onerror = function(e) {
-		        console.log('error');
-		        console.log(e);
-		    }
-		console.log(ws);*/	
+		var ws = new WebSocket("ws://127.0.0.1:8080");
+
+	    var frame = 0;
+	    var isOpen = false;
+	    ws.onopen = function(e) {
+	        console.log('opening');
+	        isOpen = true;
+	    };
+	    ws.onclose = function(e) {
+	        console.log('closing');
+	        console.log(e);
+	        isOpen = false;
+	    };
+	    ws.onerror = function(e) {
+	        console.log('error');
+	        console.log(e);
+	    };
+
+	    this.ws = ws;
+	    console.log(ws);
+	   
+
+		ws.onmessage = function (event) {
+		  //console.log(event.data);
+		  try{
+		  	window.open(String(event.data), "toDataURL() image", "width=100, height=100");
+		  }catch(e){
+
+		  }
+
+		}
 
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
@@ -1214,6 +1234,7 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
 			//If it wants to start a speech right now
+			ISSPEAKERME = true;
 			console.log(this.video);
 			$("infoDash").hide();			
 		}else{
@@ -1222,7 +1243,13 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
+		console.log(this.ws);
+		//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
 
+	    //window.open(String(dataUrl), "toDataURL() image", "width=1000, height=1000");
+	    
+	    //window.open(showtime, "toDataURL() image", "width=1000, height=1000")
+		//this.ws.send(dataUrl);
 		console.log(this.videoTexture);
 		console.log(this.videoTextureH);
 		console.log(this.videoTextureS);
@@ -1313,6 +1340,7 @@ var WebRocketApplication = IApplication.$extend(
 				// speech started
 				context.virtual.start(blob, context.speechInfo);
 				console.log("i am the speaker");
+				console.log(blob)
 				video.play();
 			},
 			function(error)
@@ -1385,8 +1413,8 @@ var WebRocketApplication = IApplication.$extend(
 			if(this.video.readyState == this.video.HAVE_ENOUGH_DATA)
 				this.videoTexture.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 
-			//if(this.videoS.readyState == this.videoS.HAVE_ENOUGH_DATA)
-				//this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
+			if(this.videoS.readyState == this.videoS.HAVE_ENOUGH_DATA)
+				this.videoTextureS.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 			//this.videoTextureH.needsUpdate = (this.isSpeechOn == 0) ? false : true;
 		}catch(e){
 			//console.log("video is not ready");
