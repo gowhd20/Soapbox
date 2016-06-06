@@ -702,7 +702,6 @@ var WebRocketApplication = IApplication.$extend(
 		
 		if((SET_AREA_FOR_MIN_VOLUME_FROM.x>x && x>SET_AREA_FOR_MIN_VOLUME_TO.x) &&
 		(SET_AREA_FOR_MIN_VOLUME_FROM.z>z && z>SET_AREA_FOR_MIN_VOLUME_TO.z)){
-			console.log("stop shitting");
 			return false;
 		}
 		var x = ent.placeable.transform.pos.x;
