@@ -113,8 +113,13 @@ Soapbox.Dashboard.prototype = {
 	
 		// submit speech info
 		$(submitSpeechInfoBtn).click(function(){
-			var speechInfoValues = {"name":"", "title":document.getElementById("titleInput").value, 
-			"description":document.getElementById("descriptionInput").value,"startTime":"", "origin":"virtual"};
+			var speechInfoValues = {
+					"name":"", 
+					"title":document.getElementById("titleInput").value, 
+					"description":document.getElementById("descriptionInput").value,
+					"startTime":"", 
+					"origin":"virtual"
+				};
 			// speech info to send to the middleware
 			//self.speechInfo.description = speechInfoValues.description;
 
@@ -122,6 +127,14 @@ Soapbox.Dashboard.prototype = {
 			//document.getElementById("titleInput").value = "";
 			//document.getElementById("descriptionInput").value = "";
 		});
+
+		// empty edit box when user click on edit box
+		$(titleInput).click(function(){
+			document.getElementById("titleInput").value = "";
+		})
+		$(descriptionInput).click(function(){
+			document.getElementById("descriptionInput").value = "";
+		})
 		
 		// dashboard
 	    var dashboard = document.createElement('dashboard');

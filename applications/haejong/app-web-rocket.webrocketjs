@@ -64,9 +64,9 @@ var SET_VOLUME_VALUE = 1;
 var USER_VOLUME_ZONE = 0;
 var USER_POSITION_X;
 var USER_POSITION_Z;
-var NUM_FOR_INC_SCREEN_SIZE = 2;
 
 var ISSPEAKERME = false;
+var DETERMINE_SCREEN_SCALE = 1;
 
 var WebRocketApplication = IApplication.$extend(
 {
@@ -107,8 +107,10 @@ var WebRocketApplication = IApplication.$extend(
 		var toVote = 1;
 		var timerHandler;
 		var ifSentSpeechInfo = false;
-		var speechInfo = {"speaker": "", "topic": "", 
-				"starttime":"", "password": "", "origin":""};
+		var speechInfo = {
+						"speaker": "", "topic": "", 
+						"starttime":"", "password": "", "origin":""
+						};
 		var coordinatorInfo = {"name" : "", "id" : ""};
 		var isUserInTheVenue = 0;
 		var numOfUsersInTheVenue = 0; 	// except myself
@@ -152,7 +154,6 @@ var WebRocketApplication = IApplication.$extend(
 		this.videoH.height = 240;
 		this.videoH.autoplay = true;
 		this.videoH.loop = true;
-		console.log(this);
 		
 		/***********configure with middleware******************/
 		// middleware instance
@@ -191,10 +192,8 @@ var WebRocketApplication = IApplication.$extend(
 		virtual.onaddhotspotstream = function(event) {
 	        //Should assign it based on your logics
 
-	        self.videoS.src = URL.createObjectURL(event.stream);
 	        console.log(self.videoS);
 	        console.log(self.video);
-	        console.log("onaddhot");
 	    }
 		//handled by middleware when user is logging out
 		onbeforeunload = function(){virtual.unregister();};
@@ -229,7 +228,13 @@ var WebRocketApplication = IApplication.$extend(
 		//* create objects for the scene *//
 		////////////////////////////////////
 		
+		var dir = new THREE.Vector3(66.21,9.59,-44);
+		var origin = new THREE.Vector3(68.21,9.59,-44);
+		var length = 1;
+		var hex = 0xffff00;
 
+		var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+		this.threeMeshGroup.add(arrowHelper);
 		// create screen objects 
 		var screenMesh = this.createCubeObj(this.videoTexture, 
 			"video_screen", 
@@ -252,7 +257,7 @@ var WebRocketApplication = IApplication.$extend(
 		var url = './localAssets/ic_sentiment_very_dissatisfied_black_24dp/web/ic_sentiment_very_dissatisfied_black_24dp_2x.jpg';
 		var reportBtn = this.createBtnObj(url,
 		 "reportBtn", 
-		 POSITION_REPORT_DEFAULT,GEO_BUTTON_DEFAULT);
+		 POSITION_REPORT_DEFAULT, GEO_BUTTON_DEFAULT);
 		
 		// to change texture's emissive attribute
 		//var hexOfBtn1 = this.getHexValue(btnMesh);
@@ -295,23 +300,14 @@ var WebRocketApplication = IApplication.$extend(
 		onRenderFctsWithoutParam.push(function(){
 			try{
 				//console.log(Tundra.scene.entityByName("Avatar2").placeable.transform.pos.z);
-				//self.sendToServer();
-				//****************************************   testing testing testing
-				//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
-			    //window.open(dataUrl, "toDataURL() image", "width=1000, height=1000");
-			    //*******************************************************************
-			    if(self.isSpeechOn){
-					self.ws.send(Tundra.renderer.renderer.domElement.toDataURL("video/mp4", 0.5))
-
-				}
-				self.dynamicVolumeObserver(self.avatarEntity);
+				//self.dynamicVolumeObserver(self.avatarEntity);
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
 			}catch(e){
 				console.log("userInfo is yet initiated or not given at all");
 			}
 		});
-	
+
 		///////////////////////////////////////////////////////
 		
 		listOfMeshObject = this.getListOfMeshObj();
@@ -360,38 +356,6 @@ var WebRocketApplication = IApplication.$extend(
 				self.virtual.stop();
 			}
 		};
-
-		var ws = new WebSocket("ws://127.0.0.1:8080");
-
-	    var frame = 0;
-	    var isOpen = false;
-	    ws.onopen = function(e) {
-	        console.log('opening');
-	        isOpen = true;
-	    };
-	    ws.onclose = function(e) {
-	        console.log('closing');
-	        console.log(e);
-	        isOpen = false;
-	    };
-	    ws.onerror = function(e) {
-	        console.log('error');
-	        console.log(e);
-	    };
-
-	    this.ws = ws;
-	    console.log(ws);
-	   
-
-		ws.onmessage = function (event) {
-		  //console.log(event.data);
-		  try{
-		  	window.open(String(event.data), "toDataURL() image", "width=100, height=100");
-		  }catch(e){
-
-		  }
-
-		}
 
 		// loop for video render etc.
 		// im thinking this function title is not predetermined
@@ -464,11 +428,11 @@ var WebRocketApplication = IApplication.$extend(
 	
 	// change size of the screen accordingly to the number of users in the venue
 	changeScreenSize : function(numOfUsers){
-		if(numOfUsers >= NUM_FOR_INC_SCREEN_SIZE){
+		if(numOfUsers >= DETERMINE_SCREEN_SCALE){
 			// the value here will be pre-defined later
-			this.screenMesh.scale.set(0.01, 4, 4);
-			this.screenSMesh.scale.set(0.01, 4, 4);
-			this.screenHMesh.scale.set(0.01, 4, 4);
+			this.screenMesh.scale.set(0.01, 3, 3);
+			this.screenSMesh.scale.set(0.01, 3, 3);
+			this.screenHMesh.scale.set(0.01, 3, 3);
 
 			// Adjust height accroding to the scaled size
 			this.screenMesh.position.y = 12.50;
@@ -892,7 +856,7 @@ var WebRocketApplication = IApplication.$extend(
 				this.speechInfo.starttime = current_time_string();
 				this.speechInfo.password = "null";
 				console.log(this.speechInfo);
-				this.setVideoFeed(this, this.video);
+				this.setVideoFeed(this, this.video, this.videoS); 	// videoS temp
 			}
 			this.setSpeechBegin(entityAction.parameters[0]);
         }
@@ -902,6 +866,7 @@ var WebRocketApplication = IApplication.$extend(
 			//var speechTitle = this.setSpeechInfo();
 			document.getElementById("descriptionInput").value = "Speech description";
 			document.getElementById("titleInput").value = "Title";
+
 			//$("descriptionInput").value = "Speech description";
 			//$("titleInput").value = "Title";
 			$("infoDash").show();
@@ -1242,13 +1207,11 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
-		console.log(this.ws);
 		//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
 
 	    //window.open(String(dataUrl), "toDataURL() image", "width=1000, height=1000");
 	    
 	    //window.open(showtime, "toDataURL() image", "width=1000, height=1000")
-		//this.ws.send(dataUrl);
 		console.log(this.videoTexture);
 		console.log(this.videoTextureH);
 		console.log(this.videoTextureS);
@@ -1295,7 +1258,8 @@ var WebRocketApplication = IApplication.$extend(
 		this.speechInfo.origin = "";
 	},
 	
-	setTimer : function(context){		
+	setTimer : function(context){
+		this.counter.style.color = "#ff0000";	
 		this.counter.innerHTML="Time remaining: "+TIME_LIMIT--;
 		console.log(TIME_LIMIT);
 		if(TIME_LIMIT >= 0){
@@ -1320,7 +1284,7 @@ var WebRocketApplication = IApplication.$extend(
 		}, 1000);
 	},
 	
-	setVideoFeed : function(context, video){
+	setVideoFeed : function(context, video, videoS){
 		//chrome
 		if(navigator.webkitGetUserMedia){
 			console.log("passing navigator");
@@ -1332,14 +1296,17 @@ var WebRocketApplication = IApplication.$extend(
 			function(blob)
 			{
 				console.log("passing blob");
-				video.src = window.URL.createObjectURL(blob);
+				console.log(blob);
+				var strm = Tundra.renderer.renderer.domElement.captureStream();
+				console.log(strm);
+				videoS.src = window.URL.createObjectURL(blob);
+				video.src = window.URL.createObjectURL(strm);
 				if(context.isSpeakerMe()){
 					video.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
-				context.virtual.start(blob, context.speechInfo);
+				context.virtual.start(strm, context.speechInfo);
 				console.log("i am the speaker");
-				console.log(blob)
 				video.play();
 			},
 			function(error)
@@ -1362,9 +1329,9 @@ var WebRocketApplication = IApplication.$extend(
 					videoS.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
-				//var startTime = current_time_string(); 		//Example: "21/02/2016 12:05"
-				//var speech_info = {"name": "Jilin", "topic": "New speech", "startTime": startTime, "password": "abcdefg123"};
-				//context.virtual.start(blob, self.speechInfo); 
+				var startTime = current_time_string(); 		//Example: "21/02/2016 12:05"
+				var speech_info = {"name": "Jilin", "topic": "New speech", "startTime": startTime, "password": "abcdefg123"};
+				context.virtual.start(blob, self.speechInfo); 
 				console.log("i am the speaker");
 				console.log(video);
 				video.play();
@@ -1523,26 +1490,8 @@ var WebRocketApplication = IApplication.$extend(
 			this.refreshVote(initObj.like, initObj.dislike);
 			$("dashboard").show();
 		}
-	},
+	}
 
-	sendToServer : function() {
-        var asString = Tundra.renderer.renderer.domElement.toDataURL();
- 
-         if (isOpen) {
-         	console.log("open"); 
-            frame++;
-            ws.send(str2ab(frame+asString));
-         }
-    },
- 
-    str2ab : function(str) {
-        var buf = new ArrayBuffer(str.length);
-        var bufView = new Uint8Array(buf);
-        for (var i=0, strLen=str.length; i<strLen; i++) {
-            bufView[i] = str.charCodeAt(i);
-        }
-        return buf;
-    }
 });
 
 
