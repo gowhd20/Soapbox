@@ -323,6 +323,7 @@ var Server = Class.extend({
 				this.Users.getUserIdByEntityName(ent.name);
 				this.tempUserInfoIn.speakerInfo[0].generalInfo.name = 
 				this.Users.getUserNameById(this.tempUserInfoIn.speakerInfo[0].generalInfo.id);
+
 				// system is waiting for speech information to be filled
 				this.speechSystemPending.signal = 1;
 				this.speechSystemPending.userId = this.tempUserInfoIn.speakerInfo[0].generalInfo.id;

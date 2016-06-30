@@ -153,6 +153,35 @@ Soapbox.Dashboard.prototype = {
         });
 		//self.dashboard.style.overflow = "scroll";
 		document.body.appendChild(self.dashboard);
+
+		var audioVisualizingBoard = document.createElement("canvas");
+		audioVisualizingBoard.id = "audioVisualizingBoard";
+
+		$(audioVisualizingBoard).css({
+			position: "absolute",
+			"background-color" : "black",
+			width: "100%",
+			height: "100px",
+			top : "80px"
+		})
+		dashboard.appendChild(audioVisualizingBoard);
+
+		var micRangeBar = document.createElement("INPUT");
+		micRangeBar.setAttribute("type", "range");
+		micRangeBar.setAttribute("min", 0);
+		micRangeBar.setAttribute("max", 1);
+		micRangeBar.setAttribute("step", 0.01);
+		micRangeBar.id = "micRangeBar";
+
+		$(micRangeBar).css({
+			position: "absolute",
+			"background-color": "black",
+			width: "25%",
+			height: "30px",
+			top : "200px",
+			left: "10px"
+		})
+		dashboard.appendChild(micRangeBar);
 		
 		// vote status panel
 		var votePanel = document.createElement("div");
@@ -213,7 +242,8 @@ Soapbox.Dashboard.prototype = {
 		self.dashboard.appendChild(sendCommBtn);
 		// this will automate comment sending button
 		$(txtInput).change(function(e) {
-			$(sendCommBtn).focus();});
+			$(sendCommBtn).focus();
+		});
 			
 		// teleport to the speech venue
 		var teleportBtn = document.createElement("button");

@@ -197,7 +197,23 @@ var WebRocketApplication = IApplication.$extend(
 	    }
 		//handled by middleware when user is logging out
 		onbeforeunload = function(){virtual.unregister();};
+
+
+		var micRangeBar = document.getElementById('micRangeBar');
+		micRangeBar.addEventListener("change", function(evt){
+			if(typeof self.gainFilter === 'undefined')
+				return;
 			
+			// set a new audio track with adjusted volume value
+			self.gainFilter.gain.value = evt.target.value;
+			var oldTrack = self.basicStream.getAudioTracks()[0];
+			var newTrack = self.destination.stream.getAudioTracks()[0];
+			self.basicStream.removeTrack(oldTrack);
+			self.basicStream.addTrack(newTrack);			
+			self.videoS.src = window.URL.createObjectURL(self.basicStream);
+		}, false);
+
+
 		/**************************************************/
 		
 		/* THREE */
@@ -227,14 +243,10 @@ var WebRocketApplication = IApplication.$extend(
 		////////////////////////////////////
 		//* create objects for the scene *//
 		////////////////////////////////////
-		
-		var dir = new THREE.Vector3(66.21,9.59,-44);
-		var origin = new THREE.Vector3(68.21,9.59,-44);
-		var length = 1;
-		var hex = 0xffff00;
 
-		var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-		this.threeMeshGroup.add(arrowHelper);
+		// create arrow pointing to the soapbox
+		this.createIndicator();
+
 		// create screen objects 
 		var screenMesh = this.createCubeObj(this.videoTexture, 
 			"video_screen", 
@@ -267,6 +279,7 @@ var WebRocketApplication = IApplication.$extend(
 		Tundra.renderer.scene.add(this.threeMeshGroup);
 		console.log(Tundra.renderer);
 		console.log(Tundra);
+		console.log(this);
 
 		////* Listeners *////
 		// entity event listeners
@@ -283,7 +296,7 @@ var WebRocketApplication = IApplication.$extend(
 
         // introduce this user to the server
         this.entity.exec(EntityAction.Server, _MSG_INITIATION);
-		
+
 
 		/************** RENDER FUNCTIONS *******************/
 		//https://github.com/jeromeetienne/threex.videotexture/blob/master/examples/videotexture.html
@@ -305,6 +318,9 @@ var WebRocketApplication = IApplication.$extend(
 				//console.log(self.video.volume);
 			}catch(e){
 				console.log("userInfo is yet initiated or not given at all");
+			}
+			if(self.isSpeechOn){
+				self.drawAudioFrequency()
 			}
 		});
 
@@ -383,7 +399,7 @@ var WebRocketApplication = IApplication.$extend(
 			}
 			requestAnimationFrame(animation);
 		})
-		
+	
     },
 
 	////////////////////////////////////////////
@@ -577,6 +593,48 @@ var WebRocketApplication = IApplication.$extend(
 		this.threeMeshGroup.add(cubeMesh);
 		
 		return cubeMesh;
+	},
+
+	createIndicator : function(){
+		// order sensitive  -  direction, original position, length, color, width of the head of the arrow
+		var arrowHelper = new THREE.ArrowHelper(
+			new THREE.Vector3(66.20, -10 ,-44.36), 
+			new THREE.Vector3(66.20, 13,-44.36),
+			1.5,
+			0xff0000,
+			2);	// order sensitive
+		arrowHelper.name = "soapbox_indicator";
+		this.arrowHelper = arrowHelper;
+		this.threeMeshGroup.add(arrowHelper);
+		console.log(arrowHelper);
+	},
+
+	drawAudioFrequency : function(){
+		if(typeof this.analyser === 'undefined')
+			return;
+
+		var canvas = document.getElementById('audioVisualizingBoard');
+		var drawContext = canvas.getContext('2d');
+
+		// clean
+		drawContext.clearRect(0, 0, canvas.width, canvas.height);
+
+		this.analyser.smoothingTimeConstant = 0.8; // Smoothing
+		this.analyser.fftSize = 2048; // FFT_SIZE
+
+		// refresh frequencyData
+		this.analyser.getByteFrequencyData(this.frequencyData);
+
+		for(var i=0; i<this.analyser.frequencyBinCount; i++){
+			var value = this.frequencyData[i];
+			var percent = value / 256;
+			var height = canvas.height * percent;
+			var offset = canvas.height - height - 1;
+			var barWidth = canvas.width/this.analyser.frequencyBinCount;
+			var hue = i/this.analyser.frequencyBinCount * 360;
+			drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+			drawContext.fillRect(i * barWidth, offset, barWidth, height);
+		}	
 	},
 	
 	dynamicVolumeChanger : function(val){
@@ -1132,6 +1190,30 @@ var WebRocketApplication = IApplication.$extend(
 		// empty the vote panel
 		this.dashboard.children["votePanel"].children["voteType"].innerHTML = ""; 
 	},
+
+	setAudioAnalyser : function(gainVal=0.5){
+		// Build link between audio source to analyser for audio visualization
+		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+		var analyser = audioCtx.createAnalyser();
+		var source = audioCtx.createMediaStreamSource(this.basicStream);
+		var gainFilter = audioCtx.createGain();
+		var frequencyData = new Uint8Array(analyser.frequencyBinCount);
+		this.analyser = analyser;
+		this.gainFilter = gainFilter;
+		this.frequencyData = frequencyData;
+		this.destination = audioCtx.createMediaStreamDestination();
+
+		source.connect(analyser);
+		analyser.connect(gainFilter);
+		gainFilter.connect(this.destination);
+
+		gainFilter.gain.value = gainVal;
+
+		var oldTrack = this.basicStream.getAudioTracks()[0];
+		var newTrack = this.destination.stream.getAudioTracks()[0];
+		this.basicStream.removeTrack(oldTrack);
+		this.basicStream.addTrack(newTrack);	
+	},
 	
 	setDynamicObjScale : function(obj, scale){
 		var geoX = scale.x;
@@ -1207,14 +1289,7 @@ var WebRocketApplication = IApplication.$extend(
 			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
 		$("dashboard").show();
-		//var dataUrl = Tundra.renderer.renderer.domElement.toDataURL();
 
-	    //window.open(String(dataUrl), "toDataURL() image", "width=1000, height=1000");
-	    
-	    //window.open(showtime, "toDataURL() image", "width=1000, height=1000")
-		console.log(this.videoTexture);
-		console.log(this.videoTextureH);
-		console.log(this.videoTextureS);
 	},
 	
 	setSpeechEnd : function(infoData){
@@ -1237,6 +1312,13 @@ var WebRocketApplication = IApplication.$extend(
 		//this.screenHMesh.material.map = this.texture_waiting;
 		this.setSpeakerInfoDefault();
 		this.setSpeechInfoDefault();
+		
+		if(typeof this.basicStream !== 'undefined'){
+			// Turn off video and audio in the media stream
+			this.basicStream.getAudioTracks()[0].stop();
+			this.basicStream.getVideoTracks()[0].stop();
+		}
+
 	},
 	
 	setSpeechInfo : function(){	
@@ -1287,26 +1369,26 @@ var WebRocketApplication = IApplication.$extend(
 	setVideoFeed : function(context, video, videoS){
 		//chrome
 		if(navigator.webkitGetUserMedia){
-			console.log("passing navigator");
 			navigator.webkitGetUserMedia(
 			{
 				video:true,
 				audio:true
 			},
-			function(blob)
+			function(stream)
 			{
-				console.log("passing blob");
-				console.log(blob);
+
+				context.basicStream = stream;
+				context.setAudioAnalyser();
+
 				var strm = Tundra.renderer.renderer.domElement.captureStream();
-				console.log(strm);
-				videoS.src = window.URL.createObjectURL(blob);
+				videoS.src = window.URL.createObjectURL(stream);
 				video.src = window.URL.createObjectURL(strm);
+
 				if(context.isSpeakerMe()){
 					video.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
 				context.virtual.start(strm, context.speechInfo);
-				console.log("i am the speaker");
 				video.play();
 			},
 			function(error)
@@ -1315,33 +1397,9 @@ var WebRocketApplication = IApplication.$extend(
 				context.entity.exec(EntityAction.Server, _MSG_ABORT_SPEECH, 1);
 				alert('you have got no WebRTC webcam');
 			});
-			
-		// firefox
-		}else if(navigator.mozGetUserMedia){
-			navigator.mozGetUserMedia({
-				video:true,
-				audio:true
-			},
-			function(blob)
-			{
-				video.src = window.URL.createObjectURL(blob);
-				if(context.isSpeakerMe()){
-					videoS.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
-				}
-				// speech started
-				var startTime = current_time_string(); 		//Example: "21/02/2016 12:05"
-				var speech_info = {"name": "Jilin", "topic": "New speech", "startTime": startTime, "password": "abcdefg123"};
-				context.virtual.start(blob, self.speechInfo); 
-				console.log("i am the speaker");
-				console.log(video);
-				video.play();
-			},
-			function(error)
-			{
-				alert('you have got no WebRTC webcam');
-			});
+
 		}else{
-			console.log("video streaming failed");
+			console.log("other web browser");
 		}
 	},
 		
