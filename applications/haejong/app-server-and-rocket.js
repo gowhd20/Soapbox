@@ -5,7 +5,7 @@
 // Include dependency scripts.
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/class.js");
 engine.IncludeFile("http://meshmoon.data.s3.amazonaws.com/app/lib/admino-utils-common-deploy.js");
-engine.IncludeFile("Users.js");
+engine.IncludeFile("users.js");
 
 // Import QtCore for both server and client. Import QtGui only on client.
 engine.ImportExtension("qt.core"); 
@@ -42,7 +42,6 @@ LogInfo("app-server-and-rocket.js loaded");
 var Server = Class.extend({
     init : function(){
 		if (server.IsRunning()){
-			LogInfo("running");
 			var Users = server.AuthenticatedUsers();
 			if (Users.length == 0){}			
 		}
@@ -293,6 +292,7 @@ var Server = Class.extend({
 			SpeechControl(this, "", speechData, 1);
 			this.callSystemStatus();
 		}
+
 	},
 	
 	onSpeechRequested : function(ent){

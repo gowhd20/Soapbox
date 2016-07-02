@@ -46,13 +46,16 @@ Soapbox.Dashboard.prototype = {
 		var counter = document.createElement("b");
 		self.counter = counter;
 		counter.id = "counter";
+		counter.style.color = "#ff0000";
+
 		$(counter).css({
 		    position: "absolute",
-            "background-color" : "white",
-            width: "50%",
+            "background-color" : "black",
+            width: "100%",
             height: "30px",
 			top : "10px",
-			left: "25%"
+			left: "10%",
+			fontSize: "25px"
 
 		});
 		infoDash.appendChild(counter);
@@ -165,8 +168,9 @@ Soapbox.Dashboard.prototype = {
 			top : "80px"
 		})
 		dashboard.appendChild(audioVisualizingBoard);
+		audioVisualizingBoard.hidden = true;
 
-		var micRangeBar = document.createElement("INPUT");
+		var micRangeBar = document.createElement("input");
 		micRangeBar.setAttribute("type", "range");
 		micRangeBar.setAttribute("min", 0);
 		micRangeBar.setAttribute("max", 1);
@@ -182,6 +186,23 @@ Soapbox.Dashboard.prototype = {
 			left: "10px"
 		})
 		dashboard.appendChild(micRangeBar);
+		micRangeBar.hidden = true;
+
+		var speechTimeLimit = document.createElement("b");
+		self.speechTimeLimit = speechTimeLimit;
+		speechTimeLimit.id = "speechTimeLimit";
+		speechTimeLimit.style.color = "#ffffff";
+
+		$(speechTimeLimit).css({
+		    position: "absolute",
+            "background-color" : "black",
+			width: "70%",
+			height: "50px",
+			top : "200px",
+			right: "0px",
+			fontSize: "25px"
+		});
+		dashboard.appendChild(speechTimeLimit);
 		
 		// vote status panel
 		var votePanel = document.createElement("div");
@@ -248,7 +269,7 @@ Soapbox.Dashboard.prototype = {
 		// teleport to the speech venue
 		var teleportBtn = document.createElement("button");
 
-		teleportBtn.appendChild(document.createTextNode("Teleport to the speech"));
+		teleportBtn.appendChild(document.createTextNode("Teleport to the venue"));
 		teleportBtn.setAttribute("type", "button");
 		teleportBtn.id = "teleportBtn";
 		
@@ -261,6 +282,23 @@ Soapbox.Dashboard.prototype = {
 			
 		});
 		self.dashboard.appendChild(teleportBtn);
+
+		var endSpeechBtn = document.createElement("button");
+
+		endSpeechBtn.appendChild(document.createTextNode("End speech"));
+		endSpeechBtn.setAttribute("type", "button");
+		endSpeechBtn.id = "endSpeechBtn";
+		
+		$(endSpeechBtn).css({
+			position : "absolute",
+			"background-color" : "white",
+			bottom : "55px",
+			width: "100px",
+			right : "20px"
+			
+		});
+		self.dashboard.appendChild(endSpeechBtn);
+		endSpeechBtn.hidden = true;
 		
 		// div for comment area
 		var commentDiv = document.createElement("div");
@@ -280,16 +318,23 @@ Soapbox.Dashboard.prototype = {
 		// comment btn clicked
 		$(sendCommBtn).click(function(){
 			var v = document.getElementById("commentInput");
-			//addNewComment(self, v.value);
+			
 			self.virtual.comment(self.userInfo.name+self.userInfo.id, v.value);
-			self.entity.exec(EntityAction.Server, _MSG_COMMENTS, 
-			{"userName":self.userInfo.name+self.userInfo.id, "comment":v.value, "origin":"virtual"});
+			self.entity.exec(EntityAction.Server, 
+				_MSG_COMMENTS, 
+				{"userName":self.userInfo.name+self.userInfo.id, "comment":v.value, "origin":"virtual"});
+
 			v.value = "";
 		});
 		
 		// teleport btn clicked
 		$(teleportBtn).click(function(){
 			self.onClickTeleport();
+		});
+
+		// end speech button clicked
+		$(endSpeechBtn).click(function(){
+			self.promptSpeechMsg(2);	// confirm if the speaker wants to end the speech
 		});
 
 		$("dashboard").hide();

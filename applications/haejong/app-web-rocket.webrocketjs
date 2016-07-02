@@ -58,14 +58,13 @@ var HEX_LIKE = 0x00ff00;
 var HEX_DISLIKE = 0x6600ff;
 var HEX_REPORT = 0xff0000;
 
-var TIME_LIMIT_VALUE = 10;
-var TIME_LIMIT = TIME_LIMIT_VALUE;
+var SPEECH_TIMEOUT = 70;
+var TIME_LIMIT = 10;
 var SET_VOLUME_VALUE = 1;
 var USER_VOLUME_ZONE = 0;
 var USER_POSITION_X;
 var USER_POSITION_Z;
 
-var ISSPEAKERME = false;
 var DETERMINE_SCREEN_SCALE = 1;
 
 var WebRocketApplication = IApplication.$extend(
@@ -107,6 +106,7 @@ var WebRocketApplication = IApplication.$extend(
 		var toVote = 1;
 		var timerHandler;
 		var ifSentSpeechInfo = false;
+		var ifSpeakerMe = false;
 		var speechInfo = {
 						"speaker": "", "topic": "", 
 						"starttime":"", "password": "", "origin":""
@@ -115,7 +115,8 @@ var WebRocketApplication = IApplication.$extend(
 		var isUserInTheVenue = 0;
 		var numOfUsersInTheVenue = 0; 	// except myself
 
-
+		var timerHandler2;
+		this.timerHandler2 = timerHandler2;
 		this.numOfUsersInTheVenue = numOfUsersInTheVenue;
 		this.isUserInTheVenue = isUserInTheVenue;	
 		this.speakerInfo = speakerInfo;
@@ -126,6 +127,7 @@ var WebRocketApplication = IApplication.$extend(
 		this.ifSentSpeechInfo = ifSentSpeechInfo;
 		this.speechInfo = speechInfo;
 		this.userInfo = userInfo;
+		this.ifSpeakerMe = ifSpeakerMe;
 		
 		var ui = new Soapbox.Dashboard();
 		ui.initUi(this);
@@ -133,7 +135,7 @@ var WebRocketApplication = IApplication.$extend(
 		/* Tundra entities */
 		var foothold = Tundra.scene.entityByName("soapbox_footbold");
 		
-		// video element
+		// video elements
 		var video = document.createElement('video');
 		this.video = video;
 		this.video.width = 320;
@@ -270,10 +272,7 @@ var WebRocketApplication = IApplication.$extend(
 		var reportBtn = this.createBtnObj(url,
 		 "reportBtn", 
 		 POSITION_REPORT_DEFAULT, GEO_BUTTON_DEFAULT);
-		
-		// to change texture's emissive attribute
-		//var hexOfBtn1 = this.getHexValue(btnMesh);
-		//var hexOfBtn2 = this.getHexValue(btnMesh2);
+
  
 		// add objects to the three.scene
 		Tundra.renderer.scene.add(this.threeMeshGroup);
@@ -301,21 +300,22 @@ var WebRocketApplication = IApplication.$extend(
 		/************** RENDER FUNCTIONS *******************/
 		//https://github.com/jeromeetienne/threex.videotexture/blob/master/examples/videotexture.html
 
-		/* functions to be rendered in a loop */		
+		var flag = true;
+
+		/* functions to be rendered in a loop */		 
 		onRenderFctsWithoutParam.push(function(){
-			self.videoTextureUpdate(); 	
-		});
-		onRenderFctsWithoutParam.push(function(){
-			self.raycastData = self.rayCast();							
-		});
-		
-		// define whether user is near the screen 
-		onRenderFctsWithoutParam.push(function(){
+			self.videoTextureUpdate(); 
+			self.raycastData = self.rayCast();
+
+			flag = self.setArrowAnimation(flag);
+
 			try{
 				//console.log(Tundra.scene.entityByName("Avatar2").placeable.transform.pos.z);
-				//self.dynamicVolumeObserver(self.avatarEntity);
+
+				//self.dynamicVolumeObserver(self.avatarEntity); 	// not used at the moment! 
 				self.userJoinedVenue(self.avatarEntity);
 				//console.log(self.video.volume);
+				
 			}catch(e){
 				console.log("userInfo is yet initiated or not given at all");
 			}
@@ -328,38 +328,32 @@ var WebRocketApplication = IApplication.$extend(
 		
 		listOfMeshObject = this.getListOfMeshObj();
 		this.listOfMeshObject = listOfMeshObject;
-		
-		// get soapbox obj from meshmoon asset
-		// add into threejs scene 
-		function getSoapboxObj(element, index, array) {		
-		  while (element.name == SOAPBOX_NAME) {
+
+
+		// get soapbox obj from native asset
+		// add into threejs scene
+		var soapboxObj = listOfMeshObject.find(function(element, index, array){		
+		  while (element.name == SOAPBOX_NAME){
 			  return element;
 		  }
-		}
-
-		var soapboxObj = listOfMeshObject.find(getSoapboxObj);
+		});
 		this.soapboxObj = soapboxObj;
+		console.log(soapboxObj);
 
-
-		function getThumbUpObj(element, index, array) {		
-		  while (element.name == THUMB_UP_NAME) {
+		var thumbUpObj = listOfMeshObject.find(function(element, index, array){		
+		  while (element.name == THUMB_UP_NAME){
 			  return element;
 		  }
-		}
-
-		var thumbUpObj = listOfMeshObject.find(getThumbUpObj);
+		});
 		this.thumbUpObj = thumbUpObj;
 		this.thumbUpObj.name = 'thumb_up';
 		THUMB_UP_NAME = 'thumb_up';
 
-
-		function getThumbDownObj(element, index, array) {		
-		  while (element.name == THUMB_DOWN_NAME) {
+		var thumbDownObj = listOfMeshObject.find(function(element, index, array){		
+		  while (element.name == THUMB_DOWN_NAME){
 			  return element;
 		  }
-		}
-
-		var thumbDownObj = listOfMeshObject.find(getThumbDownObj);
+		});
 		this.thumbDownObj = thumbDownObj;
 		this.thumbDownObj.name = 'thumb_down';
 		THUMB_DOWN_NAME = 'thumb_down';
@@ -602,11 +596,13 @@ var WebRocketApplication = IApplication.$extend(
 			new THREE.Vector3(66.20, 13,-44.36),
 			1.5,
 			0xff0000,
-			2);	// order sensitive
+			2);
+
 		arrowHelper.name = "soapbox_indicator";
 		this.arrowHelper = arrowHelper;
 		this.threeMeshGroup.add(arrowHelper);
 		console.log(arrowHelper);
+		
 	},
 
 	drawAudioFrequency : function(){
@@ -850,7 +846,7 @@ var WebRocketApplication = IApplication.$extend(
 		{
 			console.log("getting list of object failed");
 		});
-		console.log(arr);
+		
 		if(arr.length !== 0)
 			return arr;
 		else
@@ -930,8 +926,7 @@ var WebRocketApplication = IApplication.$extend(
 			$("infoDash").show();
 
 			this.ifSentSpeechInfo = false;
-			TIME_LIMIT = TIME_LIMIT_VALUE;
-			this.setTimer(this);		// timer is working wrong 8/3/2016
+			this.setTimerForSpeechInfo(TIME_LIMIT);		// timer is working wrong 8/3/2016
 			//if(speechTitle != false){
 				// param : speech title or in the future, this could be a json format of data set
 			//	this.entity.exec(EntityAction.Server, _MSG_SPEECH_BEGIN_REQUEST, speechTitle);  
@@ -1138,7 +1133,7 @@ var WebRocketApplication = IApplication.$extend(
 				this.onClickTeleport();
 				this.video.volume = 1;
 			}
-			// action = 2 -> speech trigger and end related action
+		// action = 2 -> speech trigger and end related action
 		}else if(action == 2){
 			console.log("server noticed speaker tries to leave the soapbox");
 			var ans = this.prompMsg("Would you like to end the speech?");
@@ -1191,6 +1186,28 @@ var WebRocketApplication = IApplication.$extend(
 		this.dashboard.children["votePanel"].children["voteType"].innerHTML = ""; 
 	},
 
+	setArrowAnimation : function(flag){
+		if(!this.isSpeechOn){
+			this.arrowHelper.visible = true;
+			var y = this.arrowHelper.position.y;
+			
+			if(y > 13)
+				flag = false;
+			else if(y < 10)
+				flag = true;
+
+			if(flag){
+				this.arrowHelper.position.y = y+0.05;
+			}else
+				this.arrowHelper.position.y = y-0.05;
+		}else{
+			this.arrowHelper.visible = false;
+		}
+
+		return flag;
+
+	},
+
 	setAudioAnalyser : function(gainVal=0.5){
 		// Build link between audio source to analyser for audio visualization
 		var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1201,8 +1218,9 @@ var WebRocketApplication = IApplication.$extend(
 		this.analyser = analyser;
 		this.gainFilter = gainFilter;
 		this.frequencyData = frequencyData;
+		this.source = source;
 		this.destination = audioCtx.createMediaStreamDestination();
-
+		console.log(source);
 		source.connect(analyser);
 		analyser.connect(gainFilter);
 		gainFilter.connect(this.destination);
@@ -1273,21 +1291,34 @@ var WebRocketApplication = IApplication.$extend(
 		// set video texture 
 		this.screenMesh.material.map = this.videoTexture;
 		this.screenSMesh.material.map = this.videoTextureS;
+
 		//*********************************************//
 		// other screens should play at this point too //
 		//*********************************************//
 		
 		if(this.isSpeakerMe()){
 			this.dashboard.children["teleportBtn"].hidden = true;
-			//If it wants to start a speech right now
-			ISSPEAKERME = true;
-			console.log(this.video);
+			this.dashboard.children["endSpeechBtn"].hidden = false;
+			this.dashboard.children["micRangeBar"].hidden = false;
+			this.dashboard.children["audioVisualizingBoard"].hidden = false;
+			this.dashboard.children["speechTimeLimit"].hidden = false;
+
+			this.ifSpeakerMe = true;
+
+			// set timeout for the speech
+			this.setTimerForSpeech(SPEECH_TIMEOUT);
 			$("infoDash").hide();			
 		}else{
-			// this user is not the speaker 
+			// this user is not the speaker
 			this.dashboard.children["teleportBtn"].hidden = false;
-			//this.promptSpeechMsg(1);	// notify users that speech will soon begin
+			this.dashboard.children["endSpeechBtn"].hidden = true;
+			this.dashboard.children["micRangeBar"].hidden = true;
+			this.dashboard.children["audioVisualizingBoard"].hidden = true;
+			this.dashboard.children["speechTimeLimit"].hidden = true;
+
+			this.promptSpeechMsg(1);	// notify users that speech will soon begin
 		}
+
 		$("dashboard").show();
 
 	},
@@ -1303,9 +1334,11 @@ var WebRocketApplication = IApplication.$extend(
 		if(this.isSpeakerMe()){
 			this.virtual.stop();
 		}
+		
 		$("dashboard").hide();
 		this.video.pause();
 		this.video.volume = SET_VOLUME_VALUE;
+		
 		// three screens get into waiting mode
 		this.screenMesh.material.map = this.texture_waiting;
 		this.screenSMesh.material.map = this.texture_waiting;
@@ -1339,31 +1372,65 @@ var WebRocketApplication = IApplication.$extend(
 		this.speechInfo.password = "";
 		this.speechInfo.origin = "";
 	},
+
+	setTimerForSpeech : function(_timeout){
+		var context = this;
+		var timerHandler;
+		var lastMin = false;
+		this.speechTimeLimit.style.color = "#ffffff";
+
+		if( _timeout > 60 ){
+			this.speechTimeLimit.innerHTML=("0"+Math.floor((--_timeout)/60)).slice(-2) +":"+("0"+_timeout%60).slice(-2);
+		}else{
+			lastMin = true;
+			this.speechTimeLimit.innerHTML = "Last Minute!! "+ --_timeout;
+		}
+
+		if( this.isSpeechOn  == 1 && _timeout > 0 ){
+			if( lastMin )
+				this.speechTimeLimit.style.color = "#ff0000";
+
+			timerHandler = setTimeout( function(){
+				context.setTimerForSpeech(_timeout);
+			}, 1000);
+
+		}else if( _timeout <= 0){
+			clearTimeout(timerHandler);
+			// speech time-out forcibly terminate speech
+			this.entity.exec(EntityAction.Server, 
+				_MSG_SPEECH_END_REQUEST, 
+				{"signal":1, "origin":"virtual"});
+		}
+
+	},
 	
-	setTimer : function(context){
-		this.counter.style.color = "#ff0000";	
-		this.counter.innerHTML="Time remaining: "+TIME_LIMIT--;
-		console.log(TIME_LIMIT);
-		if(TIME_LIMIT >= 0){
-			this.timerHandler = setTimeout(function(){ context.timerHandler = context.setTimer(context) }, 1000);
-		}else if(this.ifSentSpeechInfo){
-			clearTimeout(this.timerHandler);
+	setTimerForSpeechInfo : function(_timeout, context){
+		var context = this;
+		var timerHandler;
+
+		if( _timeout >= 60 ){
+			this.counter.innerHTML=("0"+Math.floor((--_timeout)/60)).slice(-2) +":"+("0"+_timeout%60).slice(-2);
+		}else{	
+			this.counter.innerHTML = "Time remaining: "+_timeout--;
+		}
+		
+		if( !this.ifSentSpeechInfo && _timeout >= 0 ){
+			timerHandler = setTimeout( function(){ 
+				context.setTimerForSpeechInfo(_timeout); 
+			}, 1000);
+
+		}else if( this.ifSentSpeechInfo ){
+			clearTimeout(timerHandler);
 			this.entity.exec(EntityAction.Server, _MSG_RELEASE_PENDING, this.userInfo.avatarName);
 			$("infoDash").hide();			
-			this.counter.innerHTML="";
+			this.counter.innerHTML = "";
+
 		}else{
-			this.counter.innerHTML="";
+			this.counter.innerHTML = "";
 			$("infoDash").hide();
 			this.entity.exec(EntityAction.Server, _MSG_USER_TELEPORT_REQ, this.userInfo.avatarName);
 			this.entity.exec(EntityAction.Server, _MSG_RELEASE_PENDING, this.userInfo.avatarName);
 		}
-		console.log(this.ifSentSpeechInfo);
-	},
-	
-	setLoop : function(context){
-		setTimeout(function(){		
-			context.setLoop();
-		}, 1000);
 	},
 	
 	setVideoFeed : function(context, video, videoS){
@@ -1380,15 +1447,15 @@ var WebRocketApplication = IApplication.$extend(
 				context.basicStream = stream;
 				context.setAudioAnalyser();
 
-				var strm = Tundra.renderer.renderer.domElement.captureStream();
+				//var strm = Tundra.renderer.renderer.domElement.captureStream();
 				videoS.src = window.URL.createObjectURL(stream);
-				video.src = window.URL.createObjectURL(strm);
+				//video.src = window.URL.createObjectURL(strm);
 
 				if(context.isSpeakerMe()){
 					video.volume = SET_VOLUME_VALUE-1;		// set 0 volume for speaker himself
 				}
 				// speech started
-				context.virtual.start(strm, context.speechInfo);
+				//context.virtual.start(strm, context.speechInfo);
 				video.play();
 			},
 			function(error)
@@ -1512,8 +1579,10 @@ var WebRocketApplication = IApplication.$extend(
 		}catch(e){
 			console.log("Warning!!!, your avatar may not be able to trigger the speech");
 		}
+
 		// change the screen size according to the count of active users
-		this.changeScreenSize(actUserCnt);		
+		this.changeScreenSize(actUserCnt);	
+
 		if(this.isSpeechOn == 0 | typeof this.isSpeechOn == "undefined"){
 			// user init with waiting mode
 			this.screenMesh.material.map = this.texture_waiting;
