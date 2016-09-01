@@ -145,10 +145,22 @@ var Server = Class.extend({
 		//LogInfo("server frame updated");
     },
 
+    /**
+     * client connection triggered method
+     * @param {Integer} connId
+     * @param {Object} connection
+     */
+
     onClientConnected : function(connId, connection){
 		Log(connId);
         Log("Client #" + connection.id + " connected");
     },
+
+    /**
+     * client disconnection triggered method
+     * @param {Integer} connId
+     * @param {Object} connection
+     */
 
     onClientDisconnected : function(connId, connection){
 		if(this.speechSystemPending.userId == connId){
@@ -264,9 +276,11 @@ var Server = Class.extend({
             LogError("onClientIntroduction() null entity action sender!");
     },
 
-	// speech triggered
-	// params = speech info
-
+	/**
+     * Speech triggered
+     * @param {JSON formatted String} params: speech info
+     */
+     
 	onSpeechBegun : function(params){
 		// speech info is given
 		/* server prepare the speech */
